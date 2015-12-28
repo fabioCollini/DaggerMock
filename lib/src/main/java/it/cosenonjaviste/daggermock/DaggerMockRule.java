@@ -53,7 +53,15 @@ public class DaggerMockRule<C> implements MethodRule {
 
     private void initComponent(Object target) {
         try {
-            Class<?> daggerComponent = Class.forName(componentClass.getPackage().getName() + ".Dagger" + componentClass.getSimpleName());
+            String packageName = componentClass.getPackage().getName();
+            Class<?> daggerComponent;
+            if (componentClass.isMemberClass()) {
+                componentClass.getDeclaringClass();
+                String declaringClass = componentClass.getDeclaringClass().getSimpleName();
+                daggerComponent = Class.forName(packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName());
+            } else {
+                daggerComponent = Class.forName(packageName + ".Dagger" + componentClass.getSimpleName());
+            }
             Object builder = daggerComponent.getMethod("builder").invoke(null);
             MockOverrider mockOverrider = new MockOverrider(target, overridenObjects);
             for (Object module : modules) {

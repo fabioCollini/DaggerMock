@@ -31,7 +31,7 @@ public class MainServiceTest {
 
     @Mock MyPrinter myPrinter;
 
-    private MainService mainService;
+    MainService mainService;
 
     @Test
     public void testDoSomething() {

@@ -40,31 +40,17 @@ public class MockOverrider {
         checkMethodsVisibility(module, mocks);
         Answer defaultAnswer = new Answer() {
             @Override public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object mock = fields.get(invocation.getMethod().getReturnType());
+                Method method = invocation.getMethod();
+                Object mock = fields.get(method.getReturnType());
                 if (mock != null) {
                     return mock;
                 } else {
-                    return invocation.callRealMethod();
-//                    return invocation.getMethod().invoke(module, invocation.getArguments());
+                    method.setAccessible(true);
+                    return method.invoke(module, invocation.getArguments());
                 }
             }
         };
         return (T) Mockito.mock(module.getClass(), defaultAnswer);
-    }
-
-    public <T> T override(final Class<T> module) {
-        checkMethodsVisibility(module, mocks);
-        Answer defaultAnswer = new Answer() {
-            @Override public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object mock = fields.get(invocation.getMethod().getReturnType());
-                if (mock != null) {
-                    return mock;
-                } else {
-                    return invocation.callRealMethod();
-                }
-            }
-        };
-        return Mockito.mock(module, defaultAnswer);
     }
 
     private <T> void checkMethodsVisibility(T module, Set<Class> mocks) {
@@ -85,18 +71,6 @@ public class MockOverrider {
             throw new RuntimeException(message);
         }
     }
-//    private <T> void checkMethodsVisibility(T module, Set<Class> mocks) {
-//        HashSet<Class> mocksCopy = new HashSet<>(mocks);
-//        Method[] methods = module.getClass().getMethods();
-//        for (Method method : methods) {
-//            if (method.isAnnotationPresent(Provides.class)) {
-//                mocksCopy.remove(method.getReturnType());
-//            }
-//        }
-//        if (!mocksCopy.isEmpty()) {
-//            throw new RuntimeException("Mocks not");
-//        }
-//    }
 
     private static void extractFields(Object target, Map<Class, Object> map, Set<Class> mocks) {
         Field[] fields = target.getClass().getDeclaredFields();
