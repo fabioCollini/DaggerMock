@@ -1,10 +1,10 @@
 # DaggerMock
 A JUnit rule to easily override Dagger 2 objects
 
-Override an object managed by Dagger 2 is not easily, you need to define a TestModule and, if you want
+Override an object managed by Dagger 2 is not easy, you need to define a TestModule and, if you want
 to inject your test object, a TestComponent.
 
-Using a DaggerMockRule it's possible to override easily the objects defined in a Dagger module:
+Using a `DaggerMockRule` it's possible to override easily the objects defined in a Dagger module:
 
 ```java
 public class MainServiceTest {
@@ -33,13 +33,15 @@ public class MainServiceTest {
 }
 ```
 
-In this example MyModule contains three methods to provide RestService, MyPrinter and MainService objects.
-The DaggerMockRule rule dynamically creates a new module that override MyModule, it returns the mocks
-for restService and myPrinter instead of the real object.
+In this example
+[MyModule](https://github.com/fabioCollini/DaggerMock/blob/master/app/src/main/java/it/cosenonjaviste/daggermock/demo/MyModule.java)
+contains three methods to provide `RestService`, `MyPrinter` and `MainService` objects.
+The `DaggerMockRule` rule dynamically creates a new module that override `MyModule`, it returns the mocks
+for `restService` and `myPrinter` defined in test instead of the real objects.
 
 ## Espresso support
 
-A DaggerMockRule can be also used in an Espresso test:
+A `DaggerMockRule` can be also used in an Espresso test:
 
 ```java
 public class MainActivityTest {
@@ -71,7 +73,7 @@ public class MainActivityTest {
 
 ## Custom rules
 
-It's easy to create a DaggerMockRule subclass to avoid copy and paste and simplify the test code:
+It's easy to create a `DaggerMockRule` subclass to avoid copy and paste and simplify the test code:
 
 ```java
 public class MyRule extends DaggerMockRule<MyComponent> {
