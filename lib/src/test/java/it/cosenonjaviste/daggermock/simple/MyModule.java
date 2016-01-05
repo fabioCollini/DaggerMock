@@ -24,4 +24,8 @@ public class MyModule {
     @Provides public MyService provideMyService() {
         return new MyService();
     }
+
+    @Provides public MyService2 provideMyService2() {
+        return new MyService2();
+    }
 }

@@ -16,26 +16,8 @@
 
 package it.cosenonjaviste.daggermock.simple;
 
-import javax.inject.Inject;
-
-public class MainService {
-    private MyService myService;
-
-    @Inject public MyService2 myService2;
-
-    @Inject public MainService(MyService myService) {
-        this.myService = myService;
-    }
-
-    public MyService getMyService() {
-        return myService;
-    }
-
+public class MyService2 {
     public String get() {
-        return myService.get();
-    }
-
-    public String get2() {
-        return myService.get() + myService2.get();
+        return "AAA";
     }
 }
