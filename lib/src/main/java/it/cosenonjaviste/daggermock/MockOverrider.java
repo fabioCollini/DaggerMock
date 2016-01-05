@@ -55,7 +55,7 @@ public class MockOverrider {
     }
 
     public <T> T override(final T module) {
-        checkMethodsVisibility(module, mocks);
+        checkMethodsVisibility(module);
         Answer defaultAnswer = new Answer() {
             @Override public Object answer(InvocationOnMock invocation) throws Throwable {
                 Method method = invocation.getMethod();
@@ -71,18 +71,18 @@ public class MockOverrider {
         return (T) Mockito.mock(module.getClass(), defaultAnswer);
     }
 
-    private <T> void checkMethodsVisibility(T module, Set<Class> mocks) {
+    private <T> void checkMethodsVisibility(T module) {
         Method[] methods = module.getClass().getDeclaredMethods();
         List<Method> visibilityErrors = new ArrayList<>();
         for (Method method : methods) {
-            if (method.isAnnotationPresent(Provides.class) && mocks.contains(method.getReturnType())) {
-                if (!Modifier.isPublic(method.getModifiers())) {
+            if (method.isAnnotationPresent(Provides.class)) {
+                if (!Modifier.isPublic(method.getModifiers()) && !Modifier.isProtected(method.getModifiers())) {
                     visibilityErrors.add(method);
                 }
             }
         }
         if (!visibilityErrors.isEmpty()) {
-            String message = "The following methods has to be public:";
+            String message = "The following methods has to be public or protected:";
             for (Method visibilityError : visibilityErrors) {
                 message += "\n" + visibilityError;
             }

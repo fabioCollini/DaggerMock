@@ -31,7 +31,7 @@ public class MyModule {
         return new MyPrinter();
     }
 
-    @Provides MainService provideMainService(RestService restService, MyPrinter printer) {
+    @Provides public MainService provideMainService(RestService restService, MyPrinter printer) {
         return new MainService(restService, printer);
     }
 }

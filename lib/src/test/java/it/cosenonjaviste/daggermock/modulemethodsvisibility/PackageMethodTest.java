@@ -14,29 +14,47 @@
  * limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.privatemodulemethods;
+package it.cosenonjaviste.daggermock.modulemethodsvisibility;
 
 import org.junit.Test;
-import org.mockito.Mock;
 
+import javax.inject.Singleton;
+
+import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-public class PrivateModuleMethodTest {
-
-    @Mock MyService myService;
+public class PackageMethodTest {
 
     @Test
-    public void testErrorOnNotPublicMethods() throws Throwable {
+    public void testErrorOnPackageMethods() throws Throwable {
         try {
             DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
             rule.apply(null, null, this).evaluate();
             fail();
         } catch (RuntimeException e) {
-            assertThat(e.getMessage()).isEqualTo("java.lang.RuntimeException: The following methods has to be public:\n" +
-                    "it.cosenonjaviste.daggermock.privatemodulemethods.MyService it.cosenonjaviste.daggermock.privatemodulemethods.MyModule.provideMyService()");
+            assertThat(e.getMessage()).isEqualTo("java.lang.RuntimeException: The following methods has to be public or protected:\n" +
+                    "it.cosenonjaviste.daggermock.modulemethodsvisibility.MyService it.cosenonjaviste.daggermock.modulemethodsvisibility.PackageMethodTest$MyModule.provideMyService()");
         }
+    }
+
+    @Module
+    public static class MyModule {
+        @Provides MyService provideMyService() {
+            return new MyService();
+        }
+
+        private void privateMethod() {
+        }
+    }
+
+    @Singleton
+    @Component(modules = MyModule.class)
+    public interface MyComponent {
+        MainService mainService();
     }
 }

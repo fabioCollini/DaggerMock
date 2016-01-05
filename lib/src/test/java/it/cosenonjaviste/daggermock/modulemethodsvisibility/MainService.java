@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.privatemodulemethods;
+package it.cosenonjaviste.daggermock.modulemethodsvisibility;
 
-import dagger.Module;
-import dagger.Provides;
+import javax.inject.Inject;
 
-@Module
-public class MyModule {
-    @Provides MyService provideMyService() {
-        return new MyService();
+public class MainService {
+    private MyService myService;
+
+    @Inject public MainService(MyService myService) {
+        this.myService = myService;
+    }
+
+    public MyService getMyService() {
+        return myService;
     }
 }

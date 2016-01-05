@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.privatemodulemethods;
+package it.cosenonjaviste.daggermock.modulemethodsvisibility;
 
 public class MyService {
 }
