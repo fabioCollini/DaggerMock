@@ -41,7 +41,7 @@ for `restService` and `myPrinter` defined in the test instead of the real object
 
 ## Espresso support
 
-A `DaggerMockRule` can be also used in an Espresso test:
+A `DaggerMockRule` can also be used in an Espresso test:
 
 ```java
 public class MainActivityTest {
@@ -65,6 +65,37 @@ public class MainActivityTest {
         when(restService.doSomething()).thenReturn("abc");
 
         activityRule.launchActivity(null);
+
+        verify(myPrinter).print("ABC");
+    }
+}
+```
+
+## Robolectric support
+
+In a similar way a `DaggerMockRule` can be used in a Robolectric test:
+
+```java
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
+public class MainActivityTest {
+
+    @Rule public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
+            .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
+                @Override public void setComponent(MyComponent component) {
+                    ((App) RuntimeEnvironment.application).setComponent(component);
+                }
+            });
+
+    @Mock RestService restService;
+
+    @Mock MyPrinter myPrinter;
+
+    @Test
+    public void testCreateActivity() {
+        when(restService.doSomething()).thenReturn("abc");
+
+        Robolectric.setupActivity(MainActivity.class);
 
         verify(myPrinter).print("ABC");
     }
@@ -127,7 +158,7 @@ and the dependency in the build.gradle of the module:
 
 ```gradle
 dependencies {
-    compile 'com.github.fabioCollini:DaggerMock:0.3'
+    compile 'com.github.fabioCollini:DaggerMock:0.3.1'
 }
 ```
 

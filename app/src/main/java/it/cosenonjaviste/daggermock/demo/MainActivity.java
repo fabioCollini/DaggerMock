@@ -33,9 +33,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         App app = (App) getApplication();
-        System.out.println(app + " inject");
         MyComponent component = app.getComponent();
-        System.out.println(component);
         component.inject(this);
 
         mainService.doSomething();

@@ -64,6 +64,9 @@ dependencies {
     testCompile project(':lib')
     androidTestCompile project(':lib')
 
+    testCompile "org.robolectric:robolectric:3.0"
+    testCompile 'org.assertj:assertj-core:1.7.0'
+
     androidTestApt 'com.google.dagger:dagger-compiler:2.0.2'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile('com.google.dexmaker:dexmaker-mockito:1.2') {
