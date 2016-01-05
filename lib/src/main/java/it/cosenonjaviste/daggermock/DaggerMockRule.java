@@ -58,6 +58,11 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
+    public <S> DaggerMockRule<C> provides(Class<S> originalClass, Provider<S> provider) {
+        overridenObjects.put(originalClass, provider);
+        return this;
+    }
+
     public DaggerMockRule<C> providesMock(final Class<?>... originalClasses) {
         for (int i = 0; i < originalClasses.length; i++) {
             final Class<?> originalClass = originalClasses[i];

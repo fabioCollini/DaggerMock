@@ -24,4 +24,6 @@ import dagger.Component;
 @Component(modules = MyModule.class)
 public interface MyComponent {
     MainService mainService();
+
+    MyService myService();
 }
