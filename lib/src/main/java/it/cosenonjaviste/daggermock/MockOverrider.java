@@ -32,11 +32,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Provider;
+
 import dagger.Provides;
 
 public class MockOverrider {
 
-    private final Map<Class, Object> fields;
+    private final Map<Class, Provider> fields;
 
     private final Set<Class> mocks = new HashSet<>();
 
@@ -44,7 +46,7 @@ public class MockOverrider {
         this(target, null);
     }
 
-    public MockOverrider(Object target, Map<Class, Object> extraObjects) {
+    public MockOverrider(Object target, Map<Class, Provider> extraObjects) {
         fields = new HashMap<>();
         if (extraObjects != null) {
             fields.putAll(extraObjects);
@@ -57,9 +59,9 @@ public class MockOverrider {
         Answer defaultAnswer = new Answer() {
             @Override public Object answer(InvocationOnMock invocation) throws Throwable {
                 Method method = invocation.getMethod();
-                Object mock = fields.get(method.getReturnType());
-                if (mock != null) {
-                    return mock;
+                Provider provider = fields.get(method.getReturnType());
+                if (provider != null) {
+                    return provider.get();
                 } else {
                     method.setAccessible(true);
                     return method.invoke(module, invocation.getArguments());
@@ -88,14 +90,18 @@ public class MockOverrider {
         }
     }
 
-    private static void extractFields(Object target, Map<Class, Object> map, Set<Class> mocks) {
+    private static void extractFields(Object target, Map<Class, Provider> map, Set<Class> mocks) {
         Field[] fields = target.getClass().getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
             try {
-                Object value = field.get(target);
+                final Object value = field.get(target);
                 if (value != null) {
-                    map.put(field.getType(), value);
+                    map.put(field.getType(), new Provider() {
+                        @Override public Object get() {
+                            return value;
+                        }
+                    });
                     if (field.isAnnotationPresent(Mock.class) || field.isAnnotationPresent(Spy.class)) {
                         mocks.add(field.getType());
                     }

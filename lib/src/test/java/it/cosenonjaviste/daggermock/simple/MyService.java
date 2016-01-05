@@ -17,4 +17,7 @@
 package it.cosenonjaviste.daggermock.simple;
 
 public class MyService {
+    public String get() {
+        return "AAA";
+    }
 }

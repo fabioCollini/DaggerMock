@@ -28,4 +28,8 @@ public class MainService {
     public MyService getMyService() {
         return myService;
     }
+
+    public String get() {
+        return myService.get();
+    }
 }

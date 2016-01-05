@@ -28,11 +28,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Provider;
+
 public class DaggerMockRule<C> implements MethodRule {
     protected Class<C> componentClass;
     private ComponentSetter<C> componentSetter;
     private List<Object> modules = new ArrayList<>();
-    private final Map<Class, Object> overridenObjects = new HashMap<>();
+    private final Map<Class, Provider> overridenObjects = new HashMap<>();
 
     public DaggerMockRule(Class<C> componentClass, Object... modules) {
         this.componentClass = componentClass;
@@ -47,8 +49,21 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
-    public <S> DaggerMockRule<C> override(Class<S> originalClass, S newObject) {
-        overridenObjects.put(originalClass, newObject);
+    public <S> DaggerMockRule<C> provides(Class<S> originalClass, final S newObject) {
+        overridenObjects.put(originalClass, new Provider() {
+            @Override public Object get() {
+                return newObject;
+            }
+        });
+        return this;
+    }
+
+    public DaggerMockRule<C> providesMock(final Class<?> originalClass) {
+        overridenObjects.put(originalClass, new Provider() {
+            @Override public Object get() {
+                return Mockito.mock(originalClass);
+            }
+        });
         return this;
     }
 
