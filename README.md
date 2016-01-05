@@ -37,7 +37,7 @@ In this example
 [MyModule](https://github.com/fabioCollini/DaggerMock/blob/master/app/src/main/java/it/cosenonjaviste/daggermock/demo/MyModule.java)
 contains three methods to provide `RestService`, `MyPrinter` and `MainService` objects.
 The `DaggerMockRule` rule dynamically creates a new module that override `MyModule`, it returns the mocks
-for `restService` and `myPrinter` defined in test instead of the real objects.
+for `restService` and `myPrinter` defined in the test instead of the real objects.
 
 ## Espresso support
 
@@ -110,6 +110,24 @@ public class MainActivityTest {
 
         verify(myPrinter).print("ABC");
     }
+}
+```
+
+## JitPack configuration
+
+DaggerMock is available on [JitPack](https://jitpack.io/#fabioCollini/DaggerMock/),
+add the JitPack repository in your build.gradle (in top level dir):
+```gradle
+repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+}
+```
+and the dependency in the build.gradle of the module:
+
+```gradle
+dependencies {
+    compile 'com.github.fabioCollini:DaggerMock:0.3'
 }
 ```
 
