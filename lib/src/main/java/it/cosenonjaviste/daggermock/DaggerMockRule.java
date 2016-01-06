@@ -34,7 +34,7 @@ public class DaggerMockRule<C> implements MethodRule {
     protected Class<C> componentClass;
     private ComponentSetter<C> componentSetter;
     private List<Object> modules = new ArrayList<>();
-    private final Map<Class, Provider> overridenObjects = new HashMap<>();
+    private final Map<ObjectId, Provider> overridenObjects = new HashMap<>();
 
     public DaggerMockRule(Class<C> componentClass, Object... modules) {
         this.componentClass = componentClass;
@@ -50,7 +50,7 @@ public class DaggerMockRule<C> implements MethodRule {
     }
 
     public <S> DaggerMockRule<C> provides(Class<S> originalClass, final S newObject) {
-        overridenObjects.put(originalClass, new Provider() {
+        overridenObjects.put(new ObjectId(originalClass), new Provider() {
             @Override public Object get() {
                 return newObject;
             }
@@ -59,14 +59,14 @@ public class DaggerMockRule<C> implements MethodRule {
     }
 
     public <S> DaggerMockRule<C> provides(Class<S> originalClass, Provider<S> provider) {
-        overridenObjects.put(originalClass, provider);
+        overridenObjects.put(new ObjectId(originalClass), provider);
         return this;
     }
 
     public DaggerMockRule<C> providesMock(final Class<?>... originalClasses) {
         for (int i = 0; i < originalClasses.length; i++) {
             final Class<?> originalClass = originalClasses[i];
-            overridenObjects.put(originalClass, new Provider() {
+            overridenObjects.put(new ObjectId(originalClass), new Provider() {
                 @Override public Object get() {
                     return Mockito.mock(originalClass);
                 }

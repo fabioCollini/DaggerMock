@@ -16,9 +16,7 @@
 
 package it.cosenonjaviste.daggermock;
 
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -27,10 +25,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Provider;
 
@@ -38,20 +34,18 @@ import dagger.Provides;
 
 public class MockOverrider {
 
-    private final Map<Class, Provider> fields;
-
-    private final Set<Class> mocks = new HashSet<>();
+    private final Map<ObjectId, Provider> fields;
 
     public MockOverrider(Object target) {
         this(target, null);
     }
 
-    public MockOverrider(Object target, Map<Class, Provider> extraObjects) {
+    public MockOverrider(Object target, Map<ObjectId, Provider> extraObjects) {
         fields = new HashMap<>();
         if (extraObjects != null) {
             fields.putAll(extraObjects);
         }
-        extractFields(target, fields, mocks);
+        extractFields(target, fields);
     }
 
     public <T> T override(final T module) {
@@ -59,7 +53,7 @@ public class MockOverrider {
         Answer defaultAnswer = new Answer() {
             @Override public Object answer(InvocationOnMock invocation) throws Throwable {
                 Method method = invocation.getMethod();
-                Provider provider = fields.get(method.getReturnType());
+                Provider provider = getProvider(method);
                 if (provider != null) {
                     return provider.get();
                 } else {
@@ -69,6 +63,14 @@ public class MockOverrider {
             }
         };
         return (T) Mockito.mock(module.getClass(), defaultAnswer);
+    }
+
+    private Provider getProvider(Method method) {
+        Provider provider = fields.get(new ObjectId(method));
+        if (provider == null) {
+            provider = fields.get(new ObjectId(method.getReturnType()));
+        }
+        return provider;
     }
 
     private <T> void checkMethodsVisibility(T module) {
@@ -90,21 +92,18 @@ public class MockOverrider {
         }
     }
 
-    private static void extractFields(Object target, Map<Class, Provider> map, Set<Class> mocks) {
+    private static void extractFields(Object target, Map<ObjectId, Provider> map) {
         Field[] fields = target.getClass().getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
             try {
                 final Object value = field.get(target);
                 if (value != null) {
-                    map.put(field.getType(), new Provider() {
+                    map.put(new ObjectId(field), new Provider() {
                         @Override public Object get() {
                             return value;
                         }
                     });
-                    if (field.isAnnotationPresent(Mock.class) || field.isAnnotationPresent(Spy.class)) {
-                        mocks.add(field.getType());
-                    }
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Error accessing field " + field, e);
