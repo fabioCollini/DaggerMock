@@ -45,10 +45,13 @@ public class MainActivityTest {
     public void setUp() throws Exception {
         EspressoTestComponent component = DaggerEspressoTestComponent.builder().myModule(new EspressoTestModule()).build();
 
-        App app = (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        app.setComponent(component);
+        getAppFromInstrumentation().setComponent(component);
 
         component.inject(this);
+    }
+
+    private App getAppFromInstrumentation() {
+        return (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
     }
 
     @Test

@@ -36,14 +36,12 @@ public class MainServiceDaggerTest {
 
     @Inject MainService mainService;
 
-    @Before
-    public void setUp() throws Exception {
+    @Before public void setUp() {
         TestComponent component = DaggerTestComponent.builder().myModule(new TestModule()).build();
         component.inject(this);
     }
 
-    @Test
-    public void testDoSomething() {
+    @Test public void testDoSomething() {
         when(restService.doSomething()).thenReturn("abc");
 
         mainService.doSomething();

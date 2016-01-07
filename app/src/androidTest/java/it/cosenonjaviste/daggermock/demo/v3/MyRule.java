@@ -28,9 +28,12 @@ public class MyRule extends DaggerMockRule<MyComponent> {
         super(MyComponent.class, new MyModule());
         set(new DaggerMockRule.ComponentSetter<MyComponent>() {
             @Override public void setComponent(MyComponent component) {
-                App app = (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                app.setComponent(component);
+                getApp().setComponent(component);
             }
         });
+    }
+
+    private App getApp() {
+        return (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
     }
 }

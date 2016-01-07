@@ -30,8 +30,4 @@ public class MyModule {
     @Provides @Singleton public MyPrinter provideMyPrinter() {
         return new MyPrinter();
     }
-
-    @Provides public MainService provideMainService(RestService restService, MyPrinter printer) {
-        return new MainService(restService, printer);
-    }
 }

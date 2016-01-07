@@ -16,11 +16,13 @@
 
 package it.cosenonjaviste.daggermock.demo;
 
+import javax.inject.Inject;
+
 public class MainService {
     private RestService restService;
     private MyPrinter printer;
 
-    public MainService(RestService restService, MyPrinter printer) {
+    @Inject public MainService(RestService restService, MyPrinter printer) {
         this.restService = restService;
         this.printer = printer;
     }

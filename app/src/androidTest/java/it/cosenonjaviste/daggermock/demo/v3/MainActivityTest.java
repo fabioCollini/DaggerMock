@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 public class MainActivityTest {
 
-    @Rule public final MyRule daggerRule = new MyRule();
+    @Rule public MyRule daggerRule = new MyRule();
 
     @Rule public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, false, false);
 

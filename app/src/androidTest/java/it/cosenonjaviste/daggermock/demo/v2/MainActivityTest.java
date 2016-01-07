@@ -39,8 +39,7 @@ public class MainActivityTest {
     @Rule public final DaggerMockRule<MyComponent> daggerRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
             .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
                 @Override public void setComponent(MyComponent component) {
-                    App app = (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setComponent(component);
+                    getAppFromInstrumentation().setComponent(component);
                 }
             });
 
@@ -49,6 +48,10 @@ public class MainActivityTest {
     @Mock RestService restService;
 
     @Mock MyPrinter myPrinter;
+
+    private App getAppFromInstrumentation() {
+        return (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+    }
 
     @Test
     public void testCreateActivity() {
