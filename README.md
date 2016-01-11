@@ -161,7 +161,7 @@ and the dependency in the build.gradle of the module:
 
 ```gradle
 dependencies {
-    compile 'com.github.fabioCollini:DaggerMock:0.4'
+    testCompile 'com.github.fabioCollini:DaggerMock:0.4'
 }
 ```
 
