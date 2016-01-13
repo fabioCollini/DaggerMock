@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,10 +33,10 @@ import java.util.Map;
 import javax.inject.Provider;
 
 public class DaggerMockRule<C> implements MethodRule {
-    protected Class<C> componentClass;
+    private Class<C> componentClass;
     private ComponentSetter<C> componentSetter;
     private List<Object> modules = new ArrayList<>();
-    private List<Object> dependencies = new ArrayList<>();
+    private final Map<Class, List<Object>> dependencies = new HashMap<>();
     private final Map<ObjectId, Provider> overridenObjects = new HashMap<>();
 
     public DaggerMockRule(Class<C> componentClass, Object... modules) {
@@ -62,8 +63,8 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
-    public DaggerMockRule<C> addComponentDependency(Object dependency) {
-        dependencies.add(dependency);
+    public DaggerMockRule<C> addComponentDependency(Class componentClass, Object... modules) {
+        dependencies.put(componentClass, Arrays.asList(modules));
         return this;
     }
 
@@ -85,7 +86,15 @@ public class DaggerMockRule<C> implements MethodRule {
             public void evaluate() throws Throwable {
                 MockitoAnnotations.initMocks(target);
 
-                initComponent(target);
+                Object componentBuilder = initComponent(target, componentClass, modules);
+
+                componentBuilder = initComponentDependencies(componentBuilder, target);
+
+                C component = (C) buildComponent(componentBuilder);
+
+                if (componentSetter != null) {
+                    componentSetter.setComponent(component);
+                }
 
                 base.evaluate();
 
@@ -94,7 +103,8 @@ public class DaggerMockRule<C> implements MethodRule {
         };
     }
 
-    private void initComponent(Object target) {
+
+    private Object initComponent(Object target, Class componentClass, List<Object> modules) {
         try {
             String packageName = componentClass.getPackage().getName();
             Class<?> daggerComponent;
@@ -111,15 +121,29 @@ public class DaggerMockRule<C> implements MethodRule {
                 Method setMethod = getSetterMethod(builder, module);
                 builder = setMethod.invoke(builder, mockOverrider.override(module));
             }
-            for(Object component : dependencies) {
-                Method setMethod = getComponentSetterMethod(builder, component);
-                builder = setMethod.invoke(builder, component);
-            }
-            C component = (C) builder.getClass().getMethod("build").invoke(builder);
+            return builder;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-            if (componentSetter != null) {
-                componentSetter.setComponent(component);
+    private Object initComponentDependencies(Object componentBuilder, Object target) {
+        try {
+            for(Map.Entry<Class, List<Object>> entry : dependencies.entrySet()) {
+                Object componentDependencyBuilder = initComponent(target, entry.getKey(), entry.getValue());
+                Object componentDependency = buildComponent(componentDependencyBuilder);
+                Method setMethod = getComponentSetterMethod(componentBuilder, componentDependency);
+                componentBuilder = setMethod.invoke(componentBuilder, componentDependency);
             }
+            return componentBuilder;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Object buildComponent(Object builder) {
+        try {
+            return builder.getClass().getMethod("build").invoke(builder);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -149,11 +173,11 @@ public class DaggerMockRule<C> implements MethodRule {
         return builder.getClass().getMethod(setterName, daggerComponentClass.getInterfaces()[0]);
     }
 
-    public interface ComponentSetter<C> {
-        void setComponent(C component);
-    }
-
     private static String toCamelCase(String str) {
         return str.substring(0, 1).toLowerCase() + str.substring(1);
+    }
+
+    public interface ComponentSetter<C> {
+        void setComponent(C component);
     }
 }

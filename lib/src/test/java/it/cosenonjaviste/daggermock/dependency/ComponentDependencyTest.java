@@ -12,7 +12,7 @@ public class ComponentDependencyTest {
 
     @Rule
     public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
-            .addComponentDependency(DaggerMyComponent2.create())
+            .addComponentDependency(MyComponent2.class, new MyModule2())
             .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
                 @Override public void setComponent(MyComponent component) {
                     mainService = component.mainService();
@@ -21,12 +21,15 @@ public class ComponentDependencyTest {
 
     @Mock
     MyService myService;
+    @Mock
+    MyService2 myService2;
 
     private MainService mainService;
 
     @Test
-    public void testConstructorArgs() {
+    public void testComponentDependencyModulesCanBeOverriden() {
         assertThat(mainService).isNotNull();
         assertThat(mainService.getMyService()).isSameAs(myService);
+        assertThat(mainService.getMyService2()).isSameAs(myService2);
     }
 }

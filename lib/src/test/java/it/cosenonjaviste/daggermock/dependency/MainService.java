@@ -31,6 +31,10 @@ public class MainService {
         return myService;
     }
 
+    public MyService2 getMyService2() {
+        return myService2;
+    }
+
     public String get() {
         return myService.get();
     }
