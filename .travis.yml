@@ -12,7 +12,7 @@ env:
   global:
     MALLOC_ARENA_MAX=2
   matrix:
-    - ANDROID_TARGET=android-18 ANDROID_ABI=armeabi-v7a
+    - ANDROID_TARGET=android-19 ANDROID_ABI=armeabi-v7a
 
 android:
   components:
@@ -22,12 +22,17 @@ android:
     - android-23
     - extra-google-m2repository
     - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-18
+    - sys-img-armeabi-v7a-android-19
 
 before_script:
     - export "JAVA_OPTS=-Xmx1024m"
     - export "JAVA7_HOME=/usr/lib/jvm/java-7-oracle"
     - export "JAVA8_HOME=/usr/lib/jvm/java-8-oracle"
+    - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI --skin WVGA800
+    - ./gradlew :app:assembleDebug
+    - emulator -avd test -no-skin -no-audio -no-window &
+    - android-wait-for-emulator
+    - adb shell input keyevent 82 &
 
 script:
     - ./gradlew :lib:test :app:test :app:connectedAndroidTest --stacktrace
