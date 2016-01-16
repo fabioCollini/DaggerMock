@@ -1,0 +1,33 @@
+language: android
+jdk:
+    - oraclejdk8
+
+sudo: false
+
+cache:
+  directories:
+  - $HOME/.gradle/caches/
+
+env:
+  global:
+    MALLOC_ARENA_MAX=2
+  matrix:
+    - ANDROID_TARGET=android-18 ANDROID_ABI=armeabi-v7a
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-23.0.2
+    - android-23
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-18
+
+before_script:
+    - export "JAVA_OPTS=-Xmx1024m"
+    - export "JAVA7_HOME=/usr/lib/jvm/java-7-oracle"
+    - export "JAVA8_HOME=/usr/lib/jvm/java-8-oracle"
+
+script:
+    - ./gradlew :lib:test :app:test :app:connectedAndroidTest --stacktrace
