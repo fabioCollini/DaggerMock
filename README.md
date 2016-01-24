@@ -44,7 +44,7 @@ and it replaces them with Mockito mocks if there is a provider method in your mo
 
 [MyModule](https://github.com/fabioCollini/DaggerMock/blob/master/app/src/main/java/it/cosenonjaviste/daggermock/demo/MyModule.java)
 contains two methods to provide `RestService` and `MyPrinter` objects. Behind the scenes, the
-`DaggerMockRule` rule dynamically creates a new module that override `MyModule`, it returns the mocks
+`DaggerMockRule` rule dynamically creates a new module that overrides `MyModule`, it returns the mocks
 for `restService` and `myPrinter` defined in the test instead of the real objects, like this:
 
 ```java
