@@ -19,7 +19,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.7'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
 }
 
@@ -57,7 +57,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
 
     compile 'com.google.dagger:dagger:2.0.2'
-    compile 'org.glassfish:javax.annotation:10.0-b28'
+    compile 'javax.annotation:jsr250-api:1.0'
     apt 'com.google.dagger:dagger-compiler:2.0.2'
     testCompile 'com.google.dagger:dagger-compiler:2.0.2'
 
