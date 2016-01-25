@@ -5,7 +5,7 @@ A JUnit rule to easily override Dagger 2 objects
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-DaggerMock-green.svg?style=true)](https://android-arsenal.com/details/1/2987)
 [![](https://jitpack.io/v/fabioCollini/DaggerMock.svg)](https://jitpack.io/#fabioCollini/DaggerMock)
 
-Override an object managed by Dagger 2 is not easy, you need to define a TestModule and, if you want
+Overriding an object managed by Dagger 2 is not easy, you need to define a TestModule and, if you want
 to inject your test object, a TestComponent.
 
 Using a `DaggerMockRule` it's possible to override easily the objects defined in a Dagger module:
@@ -38,10 +38,26 @@ public class MainServiceTest {
 ```
 
 In this example
+
+When `DaggerMockRule` rule is instantiated, it looks for all @Mock annotated fields in your test class
+and it replaces them with Mockito mocks if there is a provider method in your module for that class.
+
 [MyModule](https://github.com/fabioCollini/DaggerMock/blob/master/app/src/main/java/it/cosenonjaviste/daggermock/demo/MyModule.java)
-contains three methods to provide `RestService`, `MyPrinter` and `MainService` objects.
-The `DaggerMockRule` rule dynamically creates a new module that override `MyModule`, it returns the mocks
-for `restService` and `myPrinter` defined in the test instead of the real objects.
+contains two methods to provide `RestService` and `MyPrinter` objects. Behind the scenes, the
+`DaggerMockRule` rule dynamically creates a new module that overrides `MyModule`, it returns the mocks
+for `restService` and `myPrinter` defined in the test instead of the real objects, like this:
+
+```java
+public class TestModule extends MyModule {
+    @Override public MyPrinter provideMyPrinter() {
+        return Mockito.mock(MyPrinter.class);
+    }
+
+    @Override public RestService provideRestService() {
+        return Mockito.mock(RestService.class);
+    }
+}
+```
 
 ## Espresso support
 
