@@ -28,7 +28,7 @@ public class MainService {
     }
 
     public void doSomething() {
-        String s = restService.doSomething();
+        String s = restService.getSomething();
         printer.print(s.toUpperCase());
     }
 }

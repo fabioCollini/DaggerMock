@@ -42,7 +42,7 @@ public class MainServiceDaggerTest {
     }
 
     @Test public void testDoSomething() {
-        when(restService.doSomething()).thenReturn("abc");
+        when(restService.getSomething()).thenReturn("abc");
 
         mainService.doSomething();
 

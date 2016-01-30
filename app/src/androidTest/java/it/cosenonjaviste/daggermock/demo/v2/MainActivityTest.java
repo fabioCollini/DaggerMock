@@ -55,7 +55,7 @@ public class MainActivityTest {
 
     @Test
     public void testCreateActivity() {
-        when(restService.doSomething()).thenReturn("abc");
+        when(restService.getSomething()).thenReturn("abc");
 
         activityRule.launchActivity(null);
 

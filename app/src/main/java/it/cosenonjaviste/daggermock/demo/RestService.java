@@ -17,7 +17,7 @@
 package it.cosenonjaviste.daggermock.demo;
 
 public class RestService {
-    public String doSomething() {
+    public String getSomething() {
         return "Hello world";
     }
 }

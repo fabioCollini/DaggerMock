@@ -28,7 +28,7 @@ public class MainServiceTest {
 
     @Test
     public void testDoSomething() {
-        when(restService.doSomething()).thenReturn("abc");
+        when(restService.getSomething()).thenReturn("abc");
 
         mainService.doSomething();
 
@@ -82,7 +82,7 @@ public class MainActivityTest {
 
     @Test
     public void testCreateActivity() {
-        when(restService.doSomething()).thenReturn("abc");
+        when(restService.getSomething()).thenReturn("abc");
 
         activityRule.launchActivity(null);
 
@@ -113,7 +113,7 @@ public class MainActivityTest {
 
     @Test
     public void testCreateActivity() {
-        when(restService.doSomething()).thenReturn("abc");
+        when(restService.getSomething()).thenReturn("abc");
 
         Robolectric.setupActivity(MainActivity.class);
 
@@ -155,7 +155,7 @@ public class MainActivityTest {
 
     @Test
     public void testCreateActivity() {
-        when(restService.doSomething()).thenReturn("abc");
+        when(restService.getSomething()).thenReturn("abc");
 
         activityRule.launchActivity(null);
 
