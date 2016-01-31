@@ -5,6 +5,9 @@ A JUnit rule to easily override Dagger 2 objects
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-DaggerMock-green.svg?style=true)](https://android-arsenal.com/details/1/2987)
 [![](https://jitpack.io/v/fabioCollini/DaggerMock.svg)](https://jitpack.io/#fabioCollini/DaggerMock)
 
+More info about testing using Dagger 2 and Mockito are available in this
+[Medium post](https://medium.com/@fabioCollini/android-testing-using-dagger-2-mockito-and-a-custom-junit-rule-c8487ed01b56).
+
 Overriding an object managed by Dagger 2 is not easy, you need to define a TestModule and, if you want
 to inject your test object, a TestComponent.
 
