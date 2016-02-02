@@ -20,7 +20,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public class MockOverrider {
         if (extraObjects != null) {
             fields.putAll(extraObjects);
         }
-        extractFields(target, fields);
+        ReflectUtils.extractFields(target, fields);
     }
 
     public <T> T override(final T module) {
@@ -92,22 +91,4 @@ public class MockOverrider {
         }
     }
 
-    private static void extractFields(Object target, Map<ObjectId, Provider> map) {
-        Field[] fields = target.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            try {
-                final Object value = field.get(target);
-                if (value != null) {
-                    map.put(new ObjectId(field), new Provider() {
-                        @Override public Object get() {
-                            return value;
-                        }
-                    });
-                }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Error accessing field " + field, e);
-            }
-        }
-    }
 }
