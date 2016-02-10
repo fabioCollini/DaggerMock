@@ -107,7 +107,7 @@ class ReflectUtils {
         try {
             return m.invoke(component);
         } catch (Exception e) {
-            throw new RuntimeException("Error invoking method " + m);
+            throw new RuntimeException("Error invoking method " + m, e);
         }
     }
 
@@ -115,7 +115,7 @@ class ReflectUtils {
         try {
             field.set(target, obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Error setting field " + field);
+            throw new RuntimeException("Error setting field " + field, e);
         }
     }
 }
