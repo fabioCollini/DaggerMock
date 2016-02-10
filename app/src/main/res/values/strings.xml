@@ -15,5 +15,5 @@
   -->
 
 <resources>
-    <string name="app_name">DaggerOverride</string>
+    <string name="app_name">DaggerMock</string>
 </resources>
