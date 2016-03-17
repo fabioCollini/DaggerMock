@@ -17,7 +17,9 @@
 package it.cosenonjaviste.daggermock.demo;
 
 import android.app.Application;
+import android.content.Context;
 import android.support.annotation.VisibleForTesting;
+import android.support.multidex.MultiDex;
 
 public class App extends Application {
     private MyComponent component;
@@ -39,5 +41,11 @@ public class App extends Application {
     @VisibleForTesting
     public void setComponent(MyComponent component) {
         this.component = component;
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 }

@@ -33,11 +33,12 @@ android {
 
     defaultConfig {
         applicationId "it.cosenonjaviste.daggeroverride"
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+        testInstrumentationRunner "it.cosenonjaviste.daggermock.demo.TestRunner"
     }
     buildTypes {
         release {
@@ -52,6 +53,24 @@ android {
 }
 
 dependencies {
+
+    compile 'com.google.android.gms:play-services:8.4.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.10.0'
+    compile 'com.google.guava:guava:18.0'
+
+    // Support Libraries
+    compile 'com.android.support:cardview-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:gridlayout-v7:23.1.1'
+    compile 'com.android.support:leanback-v17:23.1.1'
+    compile 'com.android.support:mediarouter-v7:23.1.1'
+    compile 'com.android.support:palette-v7:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.android.support:support-annotations:23.1.1'
+    compile 'com.android.support:support-v13:23.1.1'
+    compile 'com.android.support:support-v4:23.1.1'
+
+    compile 'com.android.support:multidex:1.0.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     compile 'com.android.support:appcompat-v7:23.1.1'
