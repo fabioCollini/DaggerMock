@@ -16,6 +16,8 @@
 
 package it.cosenonjaviste.daggermock;
 
+import org.junit.Rule;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -65,18 +67,20 @@ class ReflectUtils {
     public static void extractFields(Object target, Map<ObjectId, Provider> map) {
         Field[] fields = target.getClass().getDeclaredFields();
         for (Field field : fields) {
-            field.setAccessible(true);
-            try {
-                final Object value = field.get(target);
-                if (value != null) {
-                    map.put(new ObjectId(field), new Provider() {
-                        @Override public Object get() {
-                            return value;
-                        }
-                    });
+            if (field.getAnnotation(Rule.class) == null) {
+                field.setAccessible(true);
+                try {
+                    final Object value = field.get(target);
+                    if (value != null) {
+                        map.put(new ObjectId(field), new Provider() {
+                            @Override public Object get() {
+                                return value;
+                            }
+                        });
+                    }
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Error accessing field " + field, e);
                 }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Error accessing field " + field, e);
             }
         }
     }
