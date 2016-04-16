@@ -118,4 +118,15 @@ class ReflectUtils {
             throw new RuntimeException("Error setting field " + field, e);
         }
     }
+
+    public static Class<?> getDaggerComponentClass(Class componentClass) throws ClassNotFoundException {
+        String packageName = componentClass.getPackage().getName();
+        if (componentClass.isMemberClass()) {
+            componentClass.getDeclaringClass();
+            String declaringClass = componentClass.getDeclaringClass().getSimpleName();
+            return Class.forName(packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName());
+        } else {
+            return Class.forName(packageName + ".Dagger" + componentClass.getSimpleName());
+        }
+    }
 }

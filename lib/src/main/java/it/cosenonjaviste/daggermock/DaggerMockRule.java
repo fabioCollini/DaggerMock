@@ -123,7 +123,7 @@ public class DaggerMockRule<C> implements MethodRule {
 
     private Object initComponent(Class componentClass, List<Object> modules, ModuleOverrider moduleOverrider) {
         try {
-            Class<?> daggerComponent = getDaggerComponentClass(componentClass);
+            Class<?> daggerComponent = ReflectUtils.getDaggerComponentClass(componentClass);
             Object builder = daggerComponent.getMethod("builder").invoke(null);
             for (Object module : modules) {
                 Method setMethod = ReflectUtils.getSetterMethod(builder, module);
@@ -132,17 +132,6 @@ public class DaggerMockRule<C> implements MethodRule {
             return builder;
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private Class<?> getDaggerComponentClass(Class componentClass) throws ClassNotFoundException {
-        String packageName = componentClass.getPackage().getName();
-        if (componentClass.isMemberClass()) {
-            componentClass.getDeclaringClass();
-            String declaringClass = componentClass.getDeclaringClass().getSimpleName();
-            return Class.forName(packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName());
-        } else {
-            return Class.forName(packageName + ".Dagger" + componentClass.getSimpleName());
         }
     }
 
