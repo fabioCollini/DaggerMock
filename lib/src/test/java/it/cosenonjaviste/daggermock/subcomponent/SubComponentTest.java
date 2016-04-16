@@ -32,7 +32,7 @@ public class SubComponentTest {
     }
 
     @Test
-    public void testSubComponentNoDaggerMockWithDaggerMock() {
+    public void testSubComponentWithDaggerMock() {
         assertThat(mainService.getString()).isEqualTo("BBBB1");
     }
 }
