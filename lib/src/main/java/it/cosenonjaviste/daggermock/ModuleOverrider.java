@@ -20,13 +20,17 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 import dagger.Provides;
@@ -45,12 +49,36 @@ public class ModuleOverrider {
             fields.putAll(extraObjects);
         }
         ReflectUtils.extractFields(target, fields);
+
+        checkOverriddenInjectAnnotatedClass();
+    }
+
+    private void checkOverriddenInjectAnnotatedClass() {
+        Set<String> errors = new HashSet<>();
+        for (Map.Entry<ObjectId, Provider> entry : fields.entrySet()) {
+            ObjectId objectId = entry.getKey();
+            Constructor[] constructors = objectId.objectClass.getConstructors();
+            for (Constructor constructor : constructors) {
+                if (constructor.getAnnotation(Inject.class) != null) {
+                    errors.add(objectId.objectClass.getName());
+                }
+            }
+        }
+        if (!errors.isEmpty()) {
+            StringBuilder b = new StringBuilder("Error while trying to override objects:\n");
+            for (String error : errors) {
+                b.append(error).append("\n");
+            }
+            b.append("You must define overridden objects using a @Provides annotated method instead of using @Inject annotation");
+            throw new RuntimeException(b.toString());
+        }
     }
 
     public <T> T override(final T module) {
         checkMethodsVisibility(module);
         Answer defaultAnswer = new Answer() {
-            @Override public Object answer(InvocationOnMock invocation) throws Throwable {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
                 Method method = invocation.getMethod();
                 Provider provider = getProvider(method);
                 if (provider != null) {
