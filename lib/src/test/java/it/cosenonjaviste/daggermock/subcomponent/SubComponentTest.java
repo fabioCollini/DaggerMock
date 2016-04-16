@@ -5,28 +5,34 @@ import org.junit.Test;
 
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class SubComponentTest {
 
     @Rule
     public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
-            .addComponentDependency(MySubComponent.class, new MyModule2())
             .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
                 @Override
                 public void setComponent(MyComponent component) {
-                    mainService = component.mySubComponent().mainService();
+                    mainService = component.mySubComponent(new MySubModule()).mainService();
                 }
             });
 
-//    @Mock
-    String s;
-//    @Mock
-    Integer i;
+    String s = "BBBB";
+
+    Integer i = 1;
 
     private MainService mainService;
 
     @Test
-    public void testSubComponent() throws Exception {
-        System.out.println(mainService);
+    public void testSubComponentNoDaggerMock() {
+        MyComponent component = DaggerMyComponent.builder().build();
+        MainService mainService = component.mySubComponent(new MySubModule()).mainService();
+        assertThat(mainService.getString()).isEqualTo("AAAA12345");
+    }
 
+    @Test
+    public void testSubComponentNoDaggerMockWithDaggerMock() {
+        assertThat(mainService.getString()).isEqualTo("BBBB1");
     }
 }

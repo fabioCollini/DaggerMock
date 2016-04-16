@@ -31,15 +31,15 @@ import javax.inject.Provider;
 
 import dagger.Provides;
 
-public class MockOverrider {
+public class ModuleOverrider {
 
     private final Map<ObjectId, Provider> fields;
 
-    public MockOverrider(Object target) {
+    public ModuleOverrider(Object target) {
         this(target, null);
     }
 
-    public MockOverrider(Object target, Map<ObjectId, Provider> extraObjects) {
+    public ModuleOverrider(Object target, Map<ObjectId, Provider> extraObjects) {
         fields = new HashMap<>();
         if (extraObjects != null) {
             fields.putAll(extraObjects);

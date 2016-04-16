@@ -2,7 +2,7 @@ package it.cosenonjaviste.daggermock.subcomponent;
 
 import dagger.Subcomponent;
 
-@Subcomponent(modules = MyModule2.class)
+@Subcomponent(modules = MySubModule.class)
 public interface MySubComponent {
     MainService mainService();
 }

@@ -24,7 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import it.cosenonjaviste.daggermock.MockOverrider;
+import it.cosenonjaviste.daggermock.ModuleOverrider;
 import it.cosenonjaviste.daggermock.demo.DaggerMyComponent;
 import it.cosenonjaviste.daggermock.demo.MainService;
 import it.cosenonjaviste.daggermock.demo.MyComponent;
@@ -47,7 +47,7 @@ public class MainServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        MyComponent component = DaggerMyComponent.builder().myModule(new MockOverrider(this).override(new MyModule())).build();
+        MyComponent component = DaggerMyComponent.builder().myModule(new ModuleOverrider(this).override(new MyModule())).build();
         mainService = component.mainService();
     }
 

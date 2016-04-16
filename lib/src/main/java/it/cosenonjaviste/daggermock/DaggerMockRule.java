@@ -87,11 +87,15 @@ public class DaggerMockRule<C> implements MethodRule {
             public void evaluate() throws Throwable {
                 MockitoAnnotations.initMocks(target);
 
-                Object componentBuilder = initComponent(target, componentClass, modules);
+                ModuleOverrider moduleOverrider = new ModuleOverrider(target, overridenObjects);
+
+                Object componentBuilder = initComponent(componentClass, modules, moduleOverrider);
 
                 componentBuilder = initComponentDependencies(componentBuilder, target);
 
                 C component = (C) ReflectUtils.buildComponent(componentBuilder);
+
+                component = new ComponentOverrider(moduleOverrider).override(componentClass, component);
 
                 if (componentSetter != null) {
                     componentSetter.setComponent(component);
@@ -117,22 +121,13 @@ public class DaggerMockRule<C> implements MethodRule {
         }
     }
 
-    private Object initComponent(Object target, Class componentClass, List<Object> modules) {
+    private Object initComponent(Class componentClass, List<Object> modules, ModuleOverrider moduleOverrider) {
         try {
-            String packageName = componentClass.getPackage().getName();
-            Class<?> daggerComponent;
-            if (componentClass.isMemberClass()) {
-                componentClass.getDeclaringClass();
-                String declaringClass = componentClass.getDeclaringClass().getSimpleName();
-                daggerComponent = Class.forName(packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName());
-            } else {
-                daggerComponent = Class.forName(packageName + ".Dagger" + componentClass.getSimpleName());
-            }
+            Class<?> daggerComponent = getDaggerComponentClass(componentClass);
             Object builder = daggerComponent.getMethod("builder").invoke(null);
-            MockOverrider mockOverrider = new MockOverrider(target, overridenObjects);
             for (Object module : modules) {
                 Method setMethod = ReflectUtils.getSetterMethod(builder, module);
-                builder = setMethod.invoke(builder, mockOverrider.override(module));
+                builder = setMethod.invoke(builder, moduleOverrider.override(module));
             }
             return builder;
         } catch (Exception e) {
@@ -140,10 +135,21 @@ public class DaggerMockRule<C> implements MethodRule {
         }
     }
 
+    private Class<?> getDaggerComponentClass(Class componentClass) throws ClassNotFoundException {
+        String packageName = componentClass.getPackage().getName();
+        if (componentClass.isMemberClass()) {
+            componentClass.getDeclaringClass();
+            String declaringClass = componentClass.getDeclaringClass().getSimpleName();
+            return Class.forName(packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName());
+        } else {
+            return Class.forName(packageName + ".Dagger" + componentClass.getSimpleName());
+        }
+    }
+
     private Object initComponentDependencies(Object componentBuilder, Object target) {
         try {
             for (Map.Entry<Class, List<Object>> entry : dependencies.entrySet()) {
-                Object componentDependencyBuilder = initComponent(target, entry.getKey(), entry.getValue());
+                Object componentDependencyBuilder = initComponent(entry.getKey(), entry.getValue(), new ModuleOverrider(target, overridenObjects));
                 Object componentDependency = ReflectUtils.buildComponent(componentDependencyBuilder);
                 Method setMethod = ReflectUtils.getComponentSetterMethod(componentBuilder, componentDependency);
                 componentBuilder = setMethod.invoke(componentBuilder, componentDependency);

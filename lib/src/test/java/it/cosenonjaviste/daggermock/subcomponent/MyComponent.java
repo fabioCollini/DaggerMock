@@ -16,11 +16,13 @@
 
 package it.cosenonjaviste.daggermock.subcomponent;
 
+import javax.inject.Singleton;
+
 import dagger.Component;
 
-@Component(modules = MyModule.class, dependencies = MySubComponent.class)
+@Singleton
+@Component(modules = MyModule.class)
 public interface MyComponent {
-    MainService mainService();
 
-    MySubComponent mySubComponent();
+    MySubComponent mySubComponent(MySubModule mySubModule);
 }

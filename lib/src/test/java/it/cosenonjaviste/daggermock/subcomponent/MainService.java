@@ -28,4 +28,8 @@ public class MainService {
     @Inject
     public MainService() {
     }
+
+    public String getString() {
+        return s + i;
+    }
 }
