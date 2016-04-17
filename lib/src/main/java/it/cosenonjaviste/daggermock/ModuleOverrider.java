@@ -20,54 +20,25 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 import dagger.Provides;
 
 public class ModuleOverrider {
 
-    private final Map<ObjectId, Provider> fields;
+    private final OverriddenObjectsMap overriddenObjectsMap;
 
     public ModuleOverrider(Object target) {
-        this(target, null);
+        this(new OverriddenObjectsMap(target, null));
     }
 
-    public ModuleOverrider(Object target, Map<ObjectId, Provider> extraObjects) {
-        fields = new HashMap<>();
-        if (extraObjects != null) {
-            fields.putAll(extraObjects);
-        }
-        ReflectUtils.extractFields(target, fields);
-
-        checkOverriddenInjectAnnotatedClass();
-    }
-
-    private void checkOverriddenInjectAnnotatedClass() {
-        Set<String> errors = new HashSet<>();
-        for (Map.Entry<ObjectId, Provider> entry : fields.entrySet()) {
-            ObjectId objectId = entry.getKey();
-            Constructor[] constructors = objectId.objectClass.getConstructors();
-            for (Constructor constructor : constructors) {
-                if (constructor.getAnnotation(Inject.class) != null) {
-                    errors.add(objectId.objectClass.getName());
-                }
-            }
-        }
-        ErrorsFormatter.throwExceptionOnErrors(
-                "Error while trying to override objects",
-                errors,
-                "You must define overridden objects using a @Provides annotated method instead of using @Inject annotation");
+    public ModuleOverrider(OverriddenObjectsMap overriddenObjectsMap) {
+        this.overriddenObjectsMap = overriddenObjectsMap;
     }
 
     public <T> T override(final T module) {
@@ -76,7 +47,7 @@ public class ModuleOverrider {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Method method = invocation.getMethod();
-                Provider provider = getProvider(method);
+                Provider provider = overriddenObjectsMap.getProvider(method);
                 if (provider != null) {
                     return provider.get();
                 } else {
@@ -86,14 +57,6 @@ public class ModuleOverrider {
             }
         };
         return (T) Mockito.mock(module.getClass(), defaultAnswer);
-    }
-
-    private Provider getProvider(Method method) {
-        Provider provider = fields.get(new ObjectId(method));
-        if (provider == null) {
-            provider = fields.get(new ObjectId(method.getReturnType()));
-        }
-        return provider;
     }
 
     private <T> void checkMethodsVisibility(T module) {
@@ -107,14 +70,5 @@ public class ModuleOverrider {
             }
         }
         ErrorsFormatter.throwExceptionOnErrors("The following methods has to be public or protected", visibilityErrors);
-    }
-
-    public boolean containsField(Class<?> type) {
-        for (ObjectId objectId : fields.keySet()) {
-            if (objectId.objectClass.equals(type)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

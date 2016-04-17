@@ -93,13 +93,15 @@ public class DaggerMockRule<C> implements MethodRule {
             public void evaluate() throws Throwable {
                 MockitoAnnotations.initMocks(target);
 
-                ModuleOverrider moduleOverrider = new ModuleOverrider(target, overridenObjects);
+                OverriddenObjectsMap overriddenObjectsMap = new OverriddenObjectsMap(target, overridenObjects);
 
-                checkOverridesInSubComponentsWithNoParameters(componentClass, moduleOverrider);
+                ModuleOverrider moduleOverrider = new ModuleOverrider(overriddenObjectsMap);
+
+                checkOverridesInSubComponentsWithNoParameters(componentClass, overriddenObjectsMap);
 
                 Object componentBuilder = initComponent(componentClass, modules, moduleOverrider);
 
-                componentBuilder = initComponentDependencies(componentBuilder, target);
+                componentBuilder = initComponentDependencies(componentBuilder, moduleOverrider);
 
                 C component = (C) ReflectUtils.buildComponent(componentBuilder);
 
@@ -118,13 +120,13 @@ public class DaggerMockRule<C> implements MethodRule {
         };
     }
 
-    private void checkOverridesInSubComponentsWithNoParameters(Class<?> componentClass, ModuleOverrider moduleOverrider) {
+    private void checkOverridesInSubComponentsWithNoParameters(Class<?> componentClass, OverriddenObjectsMap overriddenObjectsMap) {
         HashSet<String> errors = new HashSet<>();
-        checkOverridesInSubComponentsWithNoParameters(componentClass, moduleOverrider, errors);
+        checkOverridesInSubComponentsWithNoParameters(componentClass, overriddenObjectsMap, errors);
         ErrorsFormatter.throwExceptionOnErrors("Error while trying to override subComponents objects", errors);
     }
 
-    private void checkOverridesInSubComponentsWithNoParameters(Class<?> componentClass, ModuleOverrider moduleOverrider, Set<String> errors) {
+    private void checkOverridesInSubComponentsWithNoParameters(Class<?> componentClass, OverriddenObjectsMap overriddenObjectsMap, Set<String> errors) {
         Method[] methods = componentClass.getMethods();
         for (Method method : methods) {
             Subcomponent subComponentAnnotation = method.getReturnType().getAnnotation(Subcomponent.class);
@@ -134,13 +136,13 @@ public class DaggerMockRule<C> implements MethodRule {
                     if (!existsParameter(method, module)) {
                         Method[] moduleMethods = module.getMethods();
                         for (Method moduleMethod : moduleMethods) {
-                            if (!moduleMethod.getDeclaringClass().equals(Object.class) && moduleOverrider.containsField(moduleMethod.getReturnType())) {
+                            if (!moduleMethod.getDeclaringClass().equals(Object.class) && overriddenObjectsMap.containsField(moduleMethod.getReturnType())) {
                                 errors.add(moduleMethod.getReturnType().getName());
                             }
                         }
                     }
                 }
-                checkOverridesInSubComponentsWithNoParameters(method.getReturnType(), moduleOverrider, errors);
+                checkOverridesInSubComponentsWithNoParameters(method.getReturnType(), overriddenObjectsMap, errors);
             }
         }
     }
@@ -180,10 +182,10 @@ public class DaggerMockRule<C> implements MethodRule {
         }
     }
 
-    private Object initComponentDependencies(Object componentBuilder, Object target) {
+    private Object initComponentDependencies(Object componentBuilder, ModuleOverrider moduleOverrider) {
         try {
             for (Map.Entry<Class, List<Object>> entry : dependencies.entrySet()) {
-                Object componentDependencyBuilder = initComponent(entry.getKey(), entry.getValue(), new ModuleOverrider(target, overridenObjects));
+                Object componentDependencyBuilder = initComponent(entry.getKey(), entry.getValue(), moduleOverrider);
                 Object componentDependency = ReflectUtils.buildComponent(componentDependencyBuilder);
                 Method setMethod = ReflectUtils.getComponentSetterMethod(componentBuilder, componentDependency);
                 componentBuilder = setMethod.invoke(componentBuilder, componentDependency);
