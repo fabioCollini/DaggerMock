@@ -16,16 +16,11 @@
 
 package it.cosenonjaviste.daggermock;
 
-import org.junit.Rule;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import javax.inject.Provider;
 
 class ReflectUtils {
     public static Object buildComponent(Object builder) {
@@ -59,27 +54,6 @@ class ReflectUtils {
                 moduleClass = moduleClass.getSuperclass();
                 if (moduleClass.equals(Object.class)) {
                     throw e;
-                }
-            }
-        }
-    }
-
-    public static void extractFields(Object target, Map<ObjectId, Provider> map) {
-        Field[] fields = target.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            if (field.getAnnotation(Rule.class) == null) {
-                field.setAccessible(true);
-                try {
-                    final Object value = field.get(target);
-                    if (value != null) {
-                        map.put(new ObjectId(field), new Provider() {
-                            @Override public Object get() {
-                                return value;
-                            }
-                        });
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Error accessing field " + field, e);
                 }
             }
         }

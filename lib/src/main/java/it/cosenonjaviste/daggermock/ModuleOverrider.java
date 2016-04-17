@@ -34,7 +34,8 @@ public class ModuleOverrider {
     private final OverriddenObjectsMap overriddenObjectsMap;
 
     public ModuleOverrider(Object target) {
-        this(new OverriddenObjectsMap(target, null));
+        this(new OverriddenObjectsMap());
+        overriddenObjectsMap.init(target);
     }
 
     public ModuleOverrider(OverriddenObjectsMap overriddenObjectsMap) {
