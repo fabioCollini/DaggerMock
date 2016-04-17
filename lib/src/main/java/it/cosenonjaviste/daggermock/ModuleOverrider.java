@@ -64,14 +64,10 @@ public class ModuleOverrider {
                 }
             }
         }
-        if (!errors.isEmpty()) {
-            StringBuilder b = new StringBuilder("Error while trying to override objects:\n");
-            for (String error : errors) {
-                b.append(error).append("\n");
-            }
-            b.append("You must define overridden objects using a @Provides annotated method instead of using @Inject annotation");
-            throw new RuntimeException(b.toString());
-        }
+        ErrorsFormatter.throwExceptionOnErrors(
+                "Error while trying to override objects",
+                errors,
+                "You must define overridden objects using a @Provides annotated method instead of using @Inject annotation");
     }
 
     public <T> T override(final T module) {
@@ -102,21 +98,23 @@ public class ModuleOverrider {
 
     private <T> void checkMethodsVisibility(T module) {
         Method[] methods = module.getClass().getDeclaredMethods();
-        List<Method> visibilityErrors = new ArrayList<>();
+        List<String> visibilityErrors = new ArrayList<>();
         for (Method method : methods) {
             if (method.isAnnotationPresent(Provides.class)) {
                 if (!Modifier.isPublic(method.getModifiers()) && !Modifier.isProtected(method.getModifiers())) {
-                    visibilityErrors.add(method);
+                    visibilityErrors.add(method.toString());
                 }
             }
         }
-        if (!visibilityErrors.isEmpty()) {
-            String message = "The following methods has to be public or protected:";
-            for (Method visibilityError : visibilityErrors) {
-                message += "\n" + visibilityError;
-            }
-            throw new RuntimeException(message);
-        }
+        ErrorsFormatter.throwExceptionOnErrors("The following methods has to be public or protected", visibilityErrors);
     }
 
+    public boolean containsField(Class<?> type) {
+        for (ObjectId objectId : fields.keySet()) {
+            if (objectId.objectClass.equals(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

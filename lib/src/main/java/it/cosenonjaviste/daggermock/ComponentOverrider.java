@@ -32,21 +32,23 @@ public class ComponentOverrider {
         this.moduleOverrider = moduleOverrider;
     }
 
-    public <T> T override(Class<T> componentClass, final T component) {
+    public <T> T override(Class<T> componentClass, final Object component) {
         Answer defaultAnswer = new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Method method = invocation.getMethod();
                 Object[] arguments = invocation.getArguments();
-                if (isSubComponent(method.getReturnType()) && arguments.length > 0) {
+                if (isSubComponent(method.getReturnType())) {
                     Object[] mockedArguments = new Object[arguments.length];
                     for (int i = 0; i < arguments.length; i++) {
                         mockedArguments[i] = moduleOverrider.override(arguments[i]);
                     }
                     arguments = mockedArguments;
+                    Object originalSubComponent = method.invoke(component, arguments);
+                    return override(method.getReturnType(), originalSubComponent);
+                } else {
+                    return method.invoke(component, arguments);
                 }
-                method.setAccessible(true);
-                return method.invoke(component, arguments);
             }
         };
         return Mockito.mock(componentClass, defaultAnswer);

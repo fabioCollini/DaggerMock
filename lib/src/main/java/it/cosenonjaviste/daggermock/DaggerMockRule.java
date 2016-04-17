@@ -28,10 +28,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Provider;
+
+import dagger.Subcomponent;
 
 public class DaggerMockRule<C> implements MethodRule {
     private Class<C> componentClass;
@@ -52,7 +56,8 @@ public class DaggerMockRule<C> implements MethodRule {
 
     public <S> DaggerMockRule<C> provides(Class<S> originalClass, final S newObject) {
         overridenObjects.put(new ObjectId(originalClass), new Provider() {
-            @Override public Object get() {
+            @Override
+            public Object get() {
                 return newObject;
             }
         });
@@ -81,13 +86,16 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
-    @Override public Statement apply(final Statement base, FrameworkMethod method, final Object target) {
+    @Override
+    public Statement apply(final Statement base, FrameworkMethod method, final Object target) {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
                 MockitoAnnotations.initMocks(target);
 
                 ModuleOverrider moduleOverrider = new ModuleOverrider(target, overridenObjects);
+
+                checkOverridesInSubComponentsWithNoParameters(componentClass, moduleOverrider);
 
                 Object componentBuilder = initComponent(componentClass, modules, moduleOverrider);
 
@@ -108,6 +116,43 @@ public class DaggerMockRule<C> implements MethodRule {
                 Mockito.validateMockitoUsage();
             }
         };
+    }
+
+    private void checkOverridesInSubComponentsWithNoParameters(Class<?> componentClass, ModuleOverrider moduleOverrider) {
+        HashSet<String> errors = new HashSet<>();
+        checkOverridesInSubComponentsWithNoParameters(componentClass, moduleOverrider, errors);
+        ErrorsFormatter.throwExceptionOnErrors("Error while trying to override subComponents objects", errors);
+    }
+
+    private void checkOverridesInSubComponentsWithNoParameters(Class<?> componentClass, ModuleOverrider moduleOverrider, Set<String> errors) {
+        Method[] methods = componentClass.getMethods();
+        for (Method method : methods) {
+            Subcomponent subComponentAnnotation = method.getReturnType().getAnnotation(Subcomponent.class);
+            if (subComponentAnnotation != null) {
+                Class<?>[] modules = subComponentAnnotation.modules();
+                for (Class<?> module : modules) {
+                    if (!existsParameter(method, module)) {
+                        Method[] moduleMethods = module.getMethods();
+                        for (Method moduleMethod : moduleMethods) {
+                            if (!moduleMethod.getDeclaringClass().equals(Object.class) && moduleOverrider.containsField(moduleMethod.getReturnType())) {
+                                errors.add(moduleMethod.getReturnType().getName());
+                            }
+                        }
+                    }
+                }
+                checkOverridesInSubComponentsWithNoParameters(method.getReturnType(), moduleOverrider, errors);
+            }
+        }
+    }
+
+    private boolean existsParameter(Method method, Class<?> module) {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        for (Class<?> parameterClass : parameterTypes) {
+            if (parameterClass.equals(module)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void initInjectFromComponentFields(Object target, C component) {
