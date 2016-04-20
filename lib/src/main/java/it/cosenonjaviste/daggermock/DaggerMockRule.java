@@ -96,7 +96,7 @@ public class DaggerMockRule<C> implements MethodRule {
                     componentSetter.setComponent(component);
                 }
 
-                initInjectFromComponentFields(target, component);
+                initInjectFromComponentFields(new ObjectWrapper<>(target), new ObjectWrapper<>(component));
 
                 base.evaluate();
 
@@ -105,13 +105,29 @@ public class DaggerMockRule<C> implements MethodRule {
         };
     }
 
-    private void initInjectFromComponentFields(Object target, C component) {
-        List<Field> fields = ReflectUtils.extractAnnotatedFields(target, InjectFromComponent.class);
+    private void initInjectFromComponentFields(ObjectWrapper<Object> target, ObjectWrapper<C> component) {
+        List<Field> fields = target.extractAnnotatedFields(InjectFromComponent.class);
         for (Field field : fields) {
-            Method m = ReflectUtils.getMethodReturning(component.getClass(), field.getType());
-            if (m != null) {
-                Object obj = ReflectUtils.invokeMethod(component, m);
-                ReflectUtils.setFieldValue(target, field, obj);
+            InjectFromComponent annotation = field.getAnnotation(InjectFromComponent.class);
+            Class<?>[] annotationValues = annotation.value();
+            if (annotationValues.length == 0) {
+                Method m = component.getMethodReturning(field.getType());
+                if (m != null) {
+                    Object obj = component.invokeMethod(m);
+                    target.setFieldValue(field, obj);
+                }
+            } else {
+                Object obj = ReflectUtils.newInstance(annotationValues[0]);
+                Method injectMethod = component.getMethodWithParameter(obj.getClass());
+                if (injectMethod != null) {
+                    component.invokeMethod(injectMethod, obj);
+                    for (int i = 1; i < annotationValues.length; i++) {
+                        Class<?> c = annotationValues[i];
+                        obj = ReflectUtils.getFieldValue(obj, c);
+                    }
+                    Object fieldValue = ReflectUtils.getFieldValue(obj, field.getType());
+                    target.setFieldValue(field, fieldValue);
+                }
             }
         }
     }

@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock;
+package it.cosenonjaviste.daggermock.injectfromcomponentwithparams;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.inject.Inject;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+public class Service1 {
+    @Inject Service2 service2;
 
-@Target({FIELD})
-@Retention(RUNTIME)
-@Documented
-public @interface InjectFromComponent {
-    Class<?>[] value() default {};
+    @Inject public Service1() {
+    }
 }

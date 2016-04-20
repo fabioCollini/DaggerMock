@@ -81,9 +81,35 @@ class ReflectUtils {
         return null;
     }
 
-    public static Object invokeMethod(Object component, Method m) {
+    public static Method getMethodWithParameter(Class<?> declaringClass, Class<?> parameterClass) {
+        Method[] methods = declaringClass.getMethods();
+        for (Method method : methods) {
+            Class<?>[] parameters = method.getParameterTypes();
+            if (parameters.length == 1 && parameters[0].equals(parameterClass)) {
+                return method;
+            }
+        }
+        return null;
+    }
+
+    public static Object getFieldValue(Object obj, Class<?> fieldClass) {
+        Field[] fields = obj.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getType().equals(fieldClass)) {
+                field.setAccessible(true);
+                try {
+                    return field.get(obj);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Object invokeMethod(Object component, Method m, Object... args) {
         try {
-            return m.invoke(component);
+            return m.invoke(component, args);
         } catch (Exception e) {
             throw new RuntimeException("Error invoking method " + m, e);
         }
@@ -105,6 +131,14 @@ class ReflectUtils {
             return Class.forName(packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName());
         } else {
             return Class.forName(packageName + ".Dagger" + componentClass.getSimpleName());
+        }
+    }
+
+    public static <T> T newInstance(Class<T> classToInject) {
+        try {
+            return classToInject.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Error instantiating class " + classToInject.getName(), e);
         }
     }
 }
