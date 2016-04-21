@@ -37,7 +37,7 @@ public class PackageMethodTest {
             rule.apply(null, null, this).evaluate();
             fail();
         } catch (RuntimeException e) {
-            assertThat(e.getMessage()).isEqualTo("java.lang.RuntimeException: The following methods has to be public or protected:\n" +
+            assertThat(e.getMessage()).isEqualTo("The following methods has to be public or protected:\n" +
                     "it.cosenonjaviste.daggermock.modulemethodsvisibility.MyService it.cosenonjaviste.daggermock.modulemethodsvisibility.PackageMethodTest$MyModule.provideMyService()");
         }
     }

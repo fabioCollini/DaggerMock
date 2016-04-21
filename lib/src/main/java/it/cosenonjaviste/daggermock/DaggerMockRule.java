@@ -117,15 +117,16 @@ public class DaggerMockRule<C> implements MethodRule {
                     target.setFieldValue(field, obj);
                 }
             } else {
-                Object obj = ReflectUtils.newInstance(annotationValues[0]);
-                Method injectMethod = component.getMethodWithParameter(obj.getClass());
+                Class<Object> classToInject = (Class<Object>) annotationValues[0];
+                ObjectWrapper<Object> obj = ObjectWrapper.newInstance(classToInject);
+                Method injectMethod = component.getMethodWithParameter(classToInject);
                 if (injectMethod != null) {
-                    component.invokeMethod(injectMethod, obj);
+                    component.invokeMethod(injectMethod, obj.getValue());
                     for (int i = 1; i < annotationValues.length; i++) {
                         Class<?> c = annotationValues[i];
-                        obj = ReflectUtils.getFieldValue(obj, c);
+                        obj = new ObjectWrapper<>(obj.getFieldValue(c));
                     }
-                    Object fieldValue = ReflectUtils.getFieldValue(obj, field.getType());
+                    Object fieldValue = obj.getFieldValue(field.getType());
                     target.setFieldValue(field, fieldValue);
                 }
             }
@@ -133,17 +134,12 @@ public class DaggerMockRule<C> implements MethodRule {
     }
 
     private Object initComponent(Class componentClass, List<Object> modules, ModuleOverrider moduleOverrider) {
-        try {
-            Class<?> daggerComponent = ReflectUtils.getDaggerComponentClass(componentClass);
-            Object builder = daggerComponent.getMethod("builder").invoke(null);
-            for (Object module : modules) {
-                Method setMethod = ReflectUtils.getSetterMethod(builder, module);
-                builder = setMethod.invoke(builder, moduleOverrider.override(module));
-            }
-            return builder;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        Class<Object> daggerComponent = ReflectUtils.getDaggerComponentClass(componentClass);
+        ObjectWrapper<Object> builderWrapper = ObjectWrapper.invokeStaticMethod(daggerComponent, "builder");
+        for (Object module : modules) {
+            builderWrapper = builderWrapper.invokeBuilderSetter(module.getClass(), moduleOverrider.override(module));
         }
+        return builderWrapper.getValue();
     }
 
     private Object initComponentDependencies(Object componentBuilder, ModuleOverrider moduleOverrider) {

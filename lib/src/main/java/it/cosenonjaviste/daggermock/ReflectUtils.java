@@ -43,8 +43,7 @@ class ReflectUtils {
         return builder.getClass().getMethod(setterName, daggerComponentClass.getInterfaces()[0]);
     }
 
-    public static Method getSetterMethod(Object builder, Object module) throws NoSuchMethodException {
-        Class<?> moduleClass = module.getClass();
+    public static Method getSetterMethod(Object builder, Class<?> moduleClass) throws NoSuchMethodException {
         while (true) {
             try {
                 String moduleName = moduleClass.getSimpleName();
@@ -123,22 +122,19 @@ class ReflectUtils {
         }
     }
 
-    public static Class<?> getDaggerComponentClass(Class componentClass) throws ClassNotFoundException {
+    public static <T> Class<T> getDaggerComponentClass(Class componentClass) {
         String packageName = componentClass.getPackage().getName();
+        String className;
         if (componentClass.isMemberClass()) {
-            componentClass.getDeclaringClass();
             String declaringClass = componentClass.getDeclaringClass().getSimpleName();
-            return Class.forName(packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName());
+            className = packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName();
         } else {
-            return Class.forName(packageName + ".Dagger" + componentClass.getSimpleName());
+            className = packageName + ".Dagger" + componentClass.getSimpleName();
         }
-    }
-
-    public static <T> T newInstance(Class<T> classToInject) {
         try {
-            return classToInject.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Error instantiating class " + classToInject.getName(), e);
+            return (Class<T>) Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Error searching class " + className, e);
         }
     }
 }
