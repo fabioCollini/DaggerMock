@@ -19,6 +19,16 @@ public class ObjectWrapper<T> {
         return ReflectUtils.getMethodReturning(obj.getClass(), type);
     }
 
+    public <C> C invokeMethod(String methodName) {
+        Method m;
+        try {
+            m = obj.getClass().getMethod("build");
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Method " + methodName + " not found in object " + obj, e);
+        }
+        return (C) invokeMethod(m);
+    }
+
     public Object invokeMethod(Method m, Object... args) {
         return ReflectUtils.invokeMethod(obj, m, args);
     }
@@ -45,10 +55,26 @@ public class ObjectWrapper<T> {
 
     public ObjectWrapper<T> invokeBuilderSetter(Class<?> parameterClass, Object parameter) {
         try {
-            Method setMethod = ReflectUtils.getSetterMethod(obj, parameterClass);
+            Method setMethod = getSetterMethod(obj, parameterClass);
             return new ObjectWrapper<T>((T) setMethod.invoke(obj, parameter));
         } catch (Exception e) {
             throw new RuntimeException("Error invoking setter with parameter " + parameterClass + " on object " + obj, e);
+        }
+    }
+
+
+    public static Method getSetterMethod(Object builder, Class<?> moduleClass) throws NoSuchMethodException {
+        while (true) {
+            try {
+                String moduleName = moduleClass.getSimpleName();
+                String setterName = ReflectUtils.toCamelCase(moduleName);
+                return builder.getClass().getMethod(setterName, moduleClass);
+            } catch (NoSuchMethodException e) {
+                moduleClass = moduleClass.getSuperclass();
+                if (moduleClass.equals(Object.class)) {
+                    throw e;
+                }
+            }
         }
     }
 

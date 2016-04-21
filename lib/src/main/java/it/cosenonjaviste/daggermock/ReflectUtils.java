@@ -23,39 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ReflectUtils {
-    public static Object buildComponent(Object builder) {
-        try {
-            return builder.getClass().getMethod("build").invoke(builder);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static String toCamelCase(String str) {
         return str.substring(0, 1).toLowerCase() + str.substring(1);
-    }
-
-    public static Method getComponentSetterMethod(Object builder, Object component) throws NoSuchMethodException {
-        Class<?> daggerComponentClass = component.getClass();
-        String daggerComponentName = daggerComponentClass.getSimpleName();
-        String componentName = daggerComponentName.replace("Dagger", "");
-        String setterName = toCamelCase(componentName);
-        return builder.getClass().getMethod(setterName, daggerComponentClass.getInterfaces()[0]);
-    }
-
-    public static Method getSetterMethod(Object builder, Class<?> moduleClass) throws NoSuchMethodException {
-        while (true) {
-            try {
-                String moduleName = moduleClass.getSimpleName();
-                String setterName = toCamelCase(moduleName);
-                return builder.getClass().getMethod(setterName, moduleClass);
-            } catch (NoSuchMethodException e) {
-                moduleClass = moduleClass.getSuperclass();
-                if (moduleClass.equals(Object.class)) {
-                    throw e;
-                }
-            }
-        }
     }
 
     public static List<Field> extractAnnotatedFields(Object target, Class<? extends Annotation> annotationClass) {
@@ -119,22 +88,6 @@ class ReflectUtils {
             field.set(target, obj);
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Error setting field " + field, e);
-        }
-    }
-
-    public static <T> Class<T> getDaggerComponentClass(Class componentClass) {
-        String packageName = componentClass.getPackage().getName();
-        String className;
-        if (componentClass.isMemberClass()) {
-            String declaringClass = componentClass.getDeclaringClass().getSimpleName();
-            className = packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName();
-        } else {
-            className = packageName + ".Dagger" + componentClass.getSimpleName();
-        }
-        try {
-            return (Class<T>) Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Error searching class " + className, e);
         }
     }
 }
