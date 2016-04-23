@@ -23,21 +23,10 @@ group='com.github.fabioCollini.daggermock'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-configurations {
-    provided
-}
-
-sourceSets {
-    [main, test].each { set ->
-        set.compileClasspath += configurations.provided
-        set.runtimeClasspath += configurations.provided
-    }
-}
-
 dependencies {
     compile 'org.mockito:mockito-core:1.10.19'
     compile 'junit:junit:4.12'
-    provided 'com.google.dagger:dagger:2.1'
+    compileOnly 'com.google.dagger:dagger:2.1'
 
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'junit:junit:4.12'
