@@ -33,6 +33,8 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import it.cosenonjaviste.daggermock.ComponentClassWrapper.SubComponentMethod;
+
 public class DaggerMockRule<C> implements MethodRule {
     private ComponentClassWrapper<C> componentClass;
     private ComponentSetter<C> componentSetter;
@@ -119,18 +121,42 @@ public class DaggerMockRule<C> implements MethodRule {
             } else {
                 Class<Object> classToInject = (Class<Object>) annotationValues[0];
                 ObjectWrapper<Object> obj = ObjectWrapper.newInstance(classToInject);
-                Method injectMethod = component.getMethodWithParameter(classToInject);
-                if (injectMethod != null) {
-                    component.invokeMethod(injectMethod, obj.getValue());
-                    for (int i = 1; i < annotationValues.length; i++) {
-                        Class<?> c = annotationValues[i];
-                        obj = new ObjectWrapper<>(obj.getFieldValue(c));
-                    }
-                    Object fieldValue = obj.getFieldValue(field.getType());
-                    target.setFieldValue(field, fieldValue);
+                injectObject(component, obj);
+                for (int i = 1; i < annotationValues.length; i++) {
+                    Class<?> c = annotationValues[i];
+                    obj = new ObjectWrapper<>(obj.getFieldValue(c));
                 }
+                Object fieldValue = obj.getFieldValue(field.getType());
+                target.setFieldValue(field, fieldValue);
             }
         }
+    }
+
+    private void injectObject(ObjectWrapper<C> component, ObjectWrapper<Object> obj) {
+        Method injectMethod = component.getMethodWithParameter(obj.getValue().getClass());
+        if (injectMethod != null) {
+            component.invokeMethod(injectMethod, obj.getValue());
+        } else {
+            boolean injected = injectObjectUsingSubComponents(component, obj);
+            if (!injected) {
+                throw new RuntimeException("Inject method for class " + obj.getValue().getClass() +
+                        " not found in component " + component.getValue().getClass() + " or in subComponents");
+            }
+        }
+    }
+
+    private boolean injectObjectUsingSubComponents(ObjectWrapper<C> component, ObjectWrapper<Object> obj) {
+        ComponentClassWrapper<?> componentClassWrapper = new ComponentClassWrapper<>(component.getValue().getClass());
+        List<SubComponentMethod<?>> subComponentMethods = componentClassWrapper.getSubComponentMethods();
+        for (SubComponentMethod<?> subComponentMethod : subComponentMethods) {
+            Method injectMethod = subComponentMethod.subComponentClassWrapper.getMethodWithParameter(obj.getValue().getClass());
+            if (injectMethod != null) {
+                ObjectWrapper<?> subComponent = subComponentMethod.createSubComponent(component);
+                subComponent.invokeMethod(injectMethod, obj.getValue());
+                return true;
+            }
+        }
+        return false;
     }
 
     private ObjectWrapper<Object> initComponent(ComponentClassWrapper<?> componentClass, List<Object> modules, ModuleOverrider moduleOverrider) {

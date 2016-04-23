@@ -16,7 +16,9 @@
 
 package it.cosenonjaviste.daggermock;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +48,10 @@ public class ComponentClassWrapper<T> {
         return ret;
     }
 
+    public Method getMethodWithParameter(Class<?> parameterClass) {
+        return ReflectUtils.getMethodWithParameter(wrappedClass, parameterClass);
+    }
+
     public <T> Class<T> getDaggerComponentClass() {
         String packageName = wrappedClass.getPackage().getName();
         String className;
@@ -60,6 +66,10 @@ public class ComponentClassWrapper<T> {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Error searching class " + className, e);
         }
+    }
+
+    public ObjectWrapper<T> newInstance() {
+        return ObjectWrapper.newInstance(getWrappedClass());
     }
 
     public static class SubComponentMethod<T> {
@@ -83,6 +93,49 @@ public class ComponentClassWrapper<T> {
                 }
             }
             return false;
+        }
+
+        public ObjectWrapper<?> createSubComponent(ObjectWrapper<?> component) {
+            Parameter[] parameters = method.getParameters();
+            if (parameters.length == 0) {
+                try {
+                    return new ObjectWrapper<>(method.invoke(component.getValue()));
+                } catch (Exception e) {
+                    throw new RuntimeException("Error invoking method " + method + " on component " + component, e);
+                }
+            } else {
+                Object[] args = instantiateModules(parameters);
+                try {
+                    return new ObjectWrapper<>(method.invoke(component.getValue(), args));
+                } catch (Exception e) {
+                    throw new RuntimeException("Error invoking method " + method + " on component " + component, e);
+                }
+            }
+        }
+    }
+
+    private static Object[] instantiateModules(Parameter[] parameters) {
+        Object[] args = new Object[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter p = parameters[i];
+            Class<?> moduleClass = p.getType();
+            args[i] = instantiateModule(moduleClass);
+        }
+        return args;
+    }
+
+    private static Object instantiateModule(Class<?> moduleClass) {
+        try {
+            Constructor<?>[] constructors = moduleClass.getConstructors();
+            if (constructors.length == 0) {
+                return moduleClass.newInstance();
+            } else {
+                // instantiate the module passing null arguments to constructor
+                Object[] args = new Object[constructors[0].getParameters().length];
+                return constructors[0].newInstance(args);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error instantiating module " + moduleClass, e);
         }
     }
 }
