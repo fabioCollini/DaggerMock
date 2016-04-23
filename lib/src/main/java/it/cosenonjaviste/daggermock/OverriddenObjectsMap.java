@@ -24,13 +24,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import dagger.Subcomponent;
+import static it.cosenonjaviste.daggermock.ComponentClassWrapper.SubComponentMethod;
 
 class OverriddenObjectsMap {
     private final Map<ObjectId, Provider> fields = new HashMap<>();
@@ -44,7 +45,8 @@ class OverriddenObjectsMap {
                     final Object value = field.get(target);
                     if (value != null) {
                         fields.put(new ObjectId(field), new Provider() {
-                            @Override public Object get() {
+                            @Override
+                            public Object get() {
                                 return value;
                             }
                         });
@@ -73,25 +75,22 @@ class OverriddenObjectsMap {
                 "You must define overridden objects using a @Provides annotated method instead of using @Inject annotation");
     }
 
-    public void checkOverridesInSubComponentsWithNoParameters(Class<?> componentClass) {
+    public void checkOverridesInSubComponentsWithNoParameters(ComponentClassWrapper<?> componentClass) {
         HashSet<String> errors = new HashSet<>();
         checkOverridesInSubComponentsWithNoParameters(componentClass, errors);
         ErrorsFormatter.throwExceptionOnErrors("Error while trying to override subComponents objects", errors);
     }
 
-    private void checkOverridesInSubComponentsWithNoParameters(Class<?> componentClass, Set<String> errors) {
-        Method[] methods = componentClass.getMethods();
-        for (Method method : methods) {
-            Subcomponent subComponentAnnotation = method.getReturnType().getAnnotation(Subcomponent.class);
-            if (subComponentAnnotation != null) {
-                Class<?>[] modules = subComponentAnnotation.modules();
-                for (Class<?> module : modules) {
-                    if (!existsParameter(method, module)) {
-                        checkOverridesInSubComponentModule(module, errors);
-                    }
+    private void checkOverridesInSubComponentsWithNoParameters(ComponentClassWrapper<?> componentClass, Set<String> errors) {
+        List<SubComponentMethod<?>> methods = componentClass.getSubComponentMethods();
+        for (SubComponentMethod<?> method : methods) {
+            Class<?>[] modules = method.modules;
+            for (Class<?> module : modules) {
+                if (!method.existsParameter(module)) {
+                    checkOverridesInSubComponentModule(module, errors);
                 }
-                checkOverridesInSubComponentsWithNoParameters(method.getReturnType(), errors);
             }
+            checkOverridesInSubComponentsWithNoParameters(method.subComponentClassWrapper, errors);
         }
     }
 
@@ -102,16 +101,6 @@ class OverriddenObjectsMap {
                 errors.add(moduleMethod.getReturnType().getName());
             }
         }
-    }
-
-    private boolean existsParameter(Method method, Class<?> module) {
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        for (Class<?> parameterClass : parameterTypes) {
-            if (parameterClass.equals(module)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public Provider getProvider(Method method) {

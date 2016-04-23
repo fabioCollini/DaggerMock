@@ -34,14 +34,14 @@ import java.util.Map;
 import javax.inject.Provider;
 
 public class DaggerMockRule<C> implements MethodRule {
-    private Class<C> componentClass;
+    private ComponentClassWrapper<C> componentClass;
     private ComponentSetter<C> componentSetter;
     private List<Object> modules = new ArrayList<>();
-    private final Map<Class, List<Object>> dependencies = new HashMap<>();
+    private final Map<ComponentClassWrapper<?>, List<Object>> dependencies = new HashMap<>();
     private final OverriddenObjectsMap overriddenObjectsMap = new OverriddenObjectsMap();
 
     public DaggerMockRule(Class<C> componentClass, Object... modules) {
-        this.componentClass = componentClass;
+        this.componentClass = new ComponentClassWrapper<>(componentClass);
         Collections.addAll(this.modules, modules);
     }
 
@@ -60,8 +60,8 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
-    public DaggerMockRule<C> addComponentDependency(Class componentClass, Object... modules) {
-        dependencies.put(componentClass, Arrays.asList(modules));
+    public DaggerMockRule<C> addComponentDependency(Class<?> componentClass, Object... modules) {
+        dependencies.put(new ComponentClassWrapper<>(componentClass), Arrays.asList(modules));
         return this;
     }
 
@@ -90,7 +90,7 @@ public class DaggerMockRule<C> implements MethodRule {
 
                 C component = componentBuilder.invokeMethod("build");
 
-                component = new ComponentOverrider(moduleOverrider).override(componentClass, component);
+                component = new ComponentOverrider(moduleOverrider).override(componentClass.getWrappedClass(), component);
 
                 if (componentSetter != null) {
                     componentSetter.setComponent(component);
@@ -133,8 +133,8 @@ public class DaggerMockRule<C> implements MethodRule {
         }
     }
 
-    private ObjectWrapper<Object> initComponent(Class componentClass, List<Object> modules, ModuleOverrider moduleOverrider) {
-        Class<Object> daggerComponent = getDaggerComponentClass(componentClass);
+    private ObjectWrapper<Object> initComponent(ComponentClassWrapper<?> componentClass, List<Object> modules, ModuleOverrider moduleOverrider) {
+        Class<Object> daggerComponent = componentClass.getDaggerComponentClass();
         ObjectWrapper<Object> builderWrapper = ObjectWrapper.invokeStaticMethod(daggerComponent, "builder");
         for (Object module : modules) {
             builderWrapper = builderWrapper.invokeBuilderSetter(module.getClass(), moduleOverrider.override(module));
@@ -142,28 +142,11 @@ public class DaggerMockRule<C> implements MethodRule {
         return builderWrapper;
     }
 
-
-    private static <T> Class<T> getDaggerComponentClass(Class componentClass) {
-        String packageName = componentClass.getPackage().getName();
-        String className;
-        if (componentClass.isMemberClass()) {
-            String declaringClass = componentClass.getDeclaringClass().getSimpleName();
-            className = packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName();
-        } else {
-            className = packageName + ".Dagger" + componentClass.getSimpleName();
-        }
-        try {
-            return (Class<T>) Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Error searching class " + className, e);
-        }
-    }
-
     private ObjectWrapper<Object> initComponentDependencies(ObjectWrapper<Object> componentBuilder, ModuleOverrider moduleOverrider) {
-        for (Map.Entry<Class, List<Object>> entry : dependencies.entrySet()) {
+        for (Map.Entry<ComponentClassWrapper<?>, List<Object>> entry : dependencies.entrySet()) {
             ObjectWrapper<Object> componentDependencyBuilder = initComponent(entry.getKey(), entry.getValue(), moduleOverrider);
             Object componentDependency = componentDependencyBuilder.invokeMethod("build");
-            componentBuilder = componentBuilder.invokeBuilderSetter(entry.getKey(), componentDependency);
+            componentBuilder = componentBuilder.invokeBuilderSetter(entry.getKey().getWrappedClass(), componentDependency);
         }
         return componentBuilder;
     }
