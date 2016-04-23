@@ -68,10 +68,6 @@ public class ComponentClassWrapper<T> {
         }
     }
 
-    public ObjectWrapper<T> newInstance() {
-        return ObjectWrapper.newInstance(getWrappedClass());
-    }
-
     public static class SubComponentMethod<T> {
         private final Method method;
 
