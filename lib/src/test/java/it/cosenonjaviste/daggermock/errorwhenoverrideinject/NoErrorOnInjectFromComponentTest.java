@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.simple;
+package it.cosenonjaviste.daggermock.errorwhenoverrideinject;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import it.cosenonjaviste.daggermock.DaggerMockRule;
+import it.cosenonjaviste.daggermock.InjectFromComponent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SimpleTest {
-    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
-            .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
-                @Override public void setComponent(MyComponent component) {
-                    mainService = component.mainService();
-                }
-            });
+public class NoErrorOnInjectFromComponentTest {
+
+    @Rule public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule());
 
     @Mock MyService myService;
 
-    private MainService mainService;
+    @InjectFromComponent MainService mainService;
 
     @Test
-    public void testConstructorArgs() {
+    public void testErrorWhenDefiningAFieldThatDoesntOverride() {
         assertThat(mainService).isNotNull();
-        assertThat(mainService.getMyService()).isSameAs(myService);
     }
 }

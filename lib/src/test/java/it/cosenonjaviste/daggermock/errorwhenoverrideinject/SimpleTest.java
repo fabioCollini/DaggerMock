@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.simple;
+package it.cosenonjaviste.daggermock.errorwhenoverrideinject;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public class SimpleTest {
-    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
-            .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
-                @Override public void setComponent(MyComponent component) {
-                    mainService = component.mainService();
-                }
-            });
-
     @Mock MyService myService;
 
-    private MainService mainService;
+    @Mock MyService2 myService2;
 
     @Test
-    public void testConstructorArgs() {
-        assertThat(mainService).isNotNull();
-        assertThat(mainService.getMyService()).isSameAs(myService);
+    public void testErrorWhenDefiningAFieldThatDoesntOverride() {
+        try {
+            DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
+            rule.apply(null, null, this).evaluate();
+
+            fail();
+        } catch (Throwable e) {
+            assertThat(e.getMessage())
+                    .contains("Error while trying to override objects")
+                    .contains(MyService2.class.getName());
+        }
     }
 }

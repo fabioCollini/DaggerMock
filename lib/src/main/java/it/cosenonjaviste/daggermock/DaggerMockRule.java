@@ -33,15 +33,17 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import it.cosenonjaviste.daggermock.ComponentClassWrapper.SubComponentMethod;
+
 public class DaggerMockRule<C> implements MethodRule {
-    private Class<C> componentClass;
+    private ComponentClassWrapper<C> componentClass;
     private ComponentSetter<C> componentSetter;
     private List<Object> modules = new ArrayList<>();
-    private final Map<Class, List<Object>> dependencies = new HashMap<>();
-    private final Map<ObjectId, Provider> overridenObjects = new HashMap<>();
+    private final Map<ComponentClassWrapper<?>, List<Object>> dependencies = new HashMap<>();
+    private final OverriddenObjectsMap overriddenObjectsMap = new OverriddenObjectsMap();
 
     public DaggerMockRule(Class<C> componentClass, Object... modules) {
-        this.componentClass = componentClass;
+        this.componentClass = new ComponentClassWrapper<>(componentClass);
         Collections.addAll(this.modules, modules);
     }
 
@@ -51,53 +53,52 @@ public class DaggerMockRule<C> implements MethodRule {
     }
 
     public <S> DaggerMockRule<C> provides(Class<S> originalClass, final S newObject) {
-        overridenObjects.put(new ObjectId(originalClass), new Provider() {
-            @Override public Object get() {
-                return newObject;
-            }
-        });
+        overriddenObjectsMap.put(originalClass, newObject);
         return this;
     }
 
     public <S> DaggerMockRule<C> provides(Class<S> originalClass, Provider<S> provider) {
-        overridenObjects.put(new ObjectId(originalClass), provider);
+        overriddenObjectsMap.putProvider(originalClass, provider);
         return this;
     }
 
-    public DaggerMockRule<C> addComponentDependency(Class componentClass, Object... modules) {
-        dependencies.put(componentClass, Arrays.asList(modules));
+    public DaggerMockRule<C> addComponentDependency(Class<?> componentClass, Object... modules) {
+        dependencies.put(new ComponentClassWrapper<>(componentClass), Arrays.asList(modules));
         return this;
     }
 
     public DaggerMockRule<C> providesMock(final Class<?>... originalClasses) {
-        for (final Class<?> originalClass : originalClasses) {
-            overridenObjects.put(new ObjectId(originalClass), new Provider() {
-                @Override
-                public Object get() {
-                    return Mockito.mock(originalClass);
-                }
-            });
-        }
+        overriddenObjectsMap.putMocks(originalClasses);
         return this;
     }
 
-    @Override public Statement apply(final Statement base, FrameworkMethod method, final Object target) {
+    @Override
+    public Statement apply(final Statement base, FrameworkMethod method, final Object target) {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
                 MockitoAnnotations.initMocks(target);
 
-                Object componentBuilder = initComponent(target, componentClass, modules);
+                overriddenObjectsMap.init(target);
+                overriddenObjectsMap.checkOverriddenInjectAnnotatedClass();
 
-                componentBuilder = initComponentDependencies(componentBuilder, target);
+                ModuleOverrider moduleOverrider = new ModuleOverrider(overriddenObjectsMap);
 
-                C component = (C) ReflectUtils.buildComponent(componentBuilder);
+                overriddenObjectsMap.checkOverridesInSubComponentsWithNoParameters(componentClass);
+
+                ObjectWrapper<Object> componentBuilder = initComponent(componentClass, modules, moduleOverrider);
+
+                componentBuilder = initComponentDependencies(componentBuilder, moduleOverrider);
+
+                C component = componentBuilder.invokeMethod("build");
+
+                component = new ComponentOverrider(moduleOverrider).override(componentClass.getWrappedClass(), component);
 
                 if (componentSetter != null) {
                     componentSetter.setComponent(component);
                 }
 
-                initInjectFromComponentFields(target, component);
+                initInjectFromComponentFields(new ObjectWrapper<>(target), new ObjectWrapper<>(component));
 
                 base.evaluate();
 
@@ -106,52 +107,74 @@ public class DaggerMockRule<C> implements MethodRule {
         };
     }
 
-    private void initInjectFromComponentFields(Object target, C component) {
-        List<Field> fields = ReflectUtils.extractAnnotatedFields(target, InjectFromComponent.class);
+    private void initInjectFromComponentFields(ObjectWrapper<Object> target, ObjectWrapper<C> component) {
+        List<Field> fields = target.extractAnnotatedFields(InjectFromComponent.class);
         for (Field field : fields) {
-            Method m = ReflectUtils.getMethodReturning(component.getClass(), field.getType());
-            if (m != null) {
-                Object obj = ReflectUtils.invokeMethod(component, m);
-                ReflectUtils.setFieldValue(target, field, obj);
-            }
-        }
-    }
-
-    private Object initComponent(Object target, Class componentClass, List<Object> modules) {
-        try {
-            String packageName = componentClass.getPackage().getName();
-            Class<?> daggerComponent;
-            if (componentClass.isMemberClass()) {
-                componentClass.getDeclaringClass();
-                String declaringClass = componentClass.getDeclaringClass().getSimpleName();
-                daggerComponent = Class.forName(packageName + ".Dagger" + declaringClass + "_" + componentClass.getSimpleName());
+            InjectFromComponent annotation = field.getAnnotation(InjectFromComponent.class);
+            Class<?>[] annotationValues = annotation.value();
+            if (annotationValues.length == 0) {
+                Method m = component.getMethodReturning(field.getType());
+                if (m != null) {
+                    Object obj = component.invokeMethod(m);
+                    target.setFieldValue(field, obj);
+                }
             } else {
-                daggerComponent = Class.forName(packageName + ".Dagger" + componentClass.getSimpleName());
+                Class<Object> classToInject = (Class<Object>) annotationValues[0];
+                ObjectWrapper<Object> obj = ObjectWrapper.newInstance(classToInject);
+                injectObject(component, obj);
+                for (int i = 1; i < annotationValues.length; i++) {
+                    Class<?> c = annotationValues[i];
+                    obj = new ObjectWrapper<>(obj.getFieldValue(c));
+                }
+                Object fieldValue = obj.getFieldValue(field.getType());
+                target.setFieldValue(field, fieldValue);
             }
-            Object builder = daggerComponent.getMethod("builder").invoke(null);
-            MockOverrider mockOverrider = new MockOverrider(target, overridenObjects);
-            for (Object module : modules) {
-                Method setMethod = ReflectUtils.getSetterMethod(builder, module);
-                builder = setMethod.invoke(builder, mockOverrider.override(module));
-            }
-            return builder;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private Object initComponentDependencies(Object componentBuilder, Object target) {
-        try {
-            for (Map.Entry<Class, List<Object>> entry : dependencies.entrySet()) {
-                Object componentDependencyBuilder = initComponent(target, entry.getKey(), entry.getValue());
-                Object componentDependency = ReflectUtils.buildComponent(componentDependencyBuilder);
-                Method setMethod = ReflectUtils.getComponentSetterMethod(componentBuilder, componentDependency);
-                componentBuilder = setMethod.invoke(componentBuilder, componentDependency);
+    private void injectObject(ObjectWrapper<C> component, ObjectWrapper<Object> obj) {
+        Method injectMethod = component.getMethodWithParameter(obj.getValue().getClass());
+        if (injectMethod != null) {
+            component.invokeMethod(injectMethod, obj.getValue());
+        } else {
+            boolean injected = injectObjectUsingSubComponents(component, obj);
+            if (!injected) {
+                throw new RuntimeException("Inject method for class " + obj.getValue().getClass() +
+                        " not found in component " + component.getValue().getClass() + " or in subComponents");
             }
-            return componentBuilder;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
+    }
+
+    private boolean injectObjectUsingSubComponents(ObjectWrapper<C> component, ObjectWrapper<Object> obj) {
+        ComponentClassWrapper<?> componentClassWrapper = new ComponentClassWrapper<>(component.getValue().getClass());
+        List<SubComponentMethod<?>> subComponentMethods = componentClassWrapper.getSubComponentMethods();
+        for (SubComponentMethod<?> subComponentMethod : subComponentMethods) {
+            Method injectMethod = subComponentMethod.subComponentClassWrapper.getMethodWithParameter(obj.getValue().getClass());
+            if (injectMethod != null) {
+                ObjectWrapper<?> subComponent = subComponentMethod.createSubComponent(component);
+                subComponent.invokeMethod(injectMethod, obj.getValue());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private ObjectWrapper<Object> initComponent(ComponentClassWrapper<?> componentClass, List<Object> modules, ModuleOverrider moduleOverrider) {
+        Class<Object> daggerComponent = componentClass.getDaggerComponentClass();
+        ObjectWrapper<Object> builderWrapper = ObjectWrapper.invokeStaticMethod(daggerComponent, "builder");
+        for (Object module : modules) {
+            builderWrapper = builderWrapper.invokeBuilderSetter(module.getClass(), moduleOverrider.override(module));
+        }
+        return builderWrapper;
+    }
+
+    private ObjectWrapper<Object> initComponentDependencies(ObjectWrapper<Object> componentBuilder, ModuleOverrider moduleOverrider) {
+        for (Map.Entry<ComponentClassWrapper<?>, List<Object>> entry : dependencies.entrySet()) {
+            ObjectWrapper<Object> componentDependencyBuilder = initComponent(entry.getKey(), entry.getValue(), moduleOverrider);
+            Object componentDependency = componentDependencyBuilder.invokeMethod("build");
+            componentBuilder = componentBuilder.invokeBuilderSetter(entry.getKey().getWrappedClass(), componentDependency);
+        }
+        return componentBuilder;
     }
 
     public interface ComponentSetter<C> {

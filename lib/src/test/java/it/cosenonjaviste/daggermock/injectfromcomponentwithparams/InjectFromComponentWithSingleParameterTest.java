@@ -14,47 +14,43 @@
  * limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.modulemethodsvisibility;
+package it.cosenonjaviste.daggermock.injectfromcomponentwithparams;
 
+import org.junit.Rule;
 import org.junit.Test;
-
-import javax.inject.Singleton;
 
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
+import it.cosenonjaviste.daggermock.InjectFromComponent;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
-public class PackageMethodTest {
+public class InjectFromComponentWithSingleParameterTest {
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
+
+    String s1 = "test1";
+
+    @InjectFromComponent(MyActivity.class)
+    MainService mainService;
 
     @Test
-    public void testErrorOnPackageMethods() throws Throwable {
-        try {
-            DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
-            rule.apply(null, null, this).evaluate();
-            fail();
-        } catch (RuntimeException e) {
-            assertThat(e.getMessage()).isEqualTo("The following methods has to be public or protected:\n" +
-                    "it.cosenonjaviste.daggermock.modulemethodsvisibility.MyService it.cosenonjaviste.daggermock.modulemethodsvisibility.PackageMethodTest$MyModule.provideMyService()");
-        }
+    public void testInjectFromComponentWithSingleParameter() {
+        assertThat(mainService).isNotNull();
+        assertThat(mainService.get()).isEqualTo("test1");
     }
 
     @Module
     public static class MyModule {
-        @Provides MyService provideMyService() {
-            return new MyService();
-        }
-
-        private void privateMethod() {
+        @Provides
+        public String provideS1() {
+            return "s1";
         }
     }
 
-    @Singleton
     @Component(modules = MyModule.class)
     public interface MyComponent {
-        MainService mainService();
+        void inject(MyActivity myActivity);
     }
 }

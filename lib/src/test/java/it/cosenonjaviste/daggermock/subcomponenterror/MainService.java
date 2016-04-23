@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock;
+package it.cosenonjaviste.daggermock.subcomponenterror;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.inject.Inject;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+public class MainService {
+    @Inject
+    public String string;
 
-@Target({FIELD})
-@Retention(RUNTIME)
-@Documented
-public @interface InjectFromComponent {
-    Class<?>[] value() default {};
+    @Inject
+    public Integer i;
+
+    @Inject
+    public Long l;
+
+    @Inject
+    public Short s;
+
+    @Inject
+    public MainService() {
+    }
+
+    public String getString() {
+        return string + "_" + i + "_" + l + "_" + s;
+    }
 }

@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock;
+package it.cosenonjaviste.daggermock.errorwhenoverrideinject;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.inject.Inject;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+public class MainService {
+    @Inject MyService myService;
 
-@Target({FIELD})
-@Retention(RUNTIME)
-@Documented
-public @interface InjectFromComponent {
-    Class<?>[] value() default {};
+    @Inject MyService2 myService2;
+
+    @Inject
+    public MainService() {
+    }
+
+    public String get2() {
+        return myService.get() + myService2.get();
+    }
 }

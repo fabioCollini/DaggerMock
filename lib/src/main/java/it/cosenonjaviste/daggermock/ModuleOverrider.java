@@ -23,36 +23,32 @@ import org.mockito.stubbing.Answer;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Provider;
 
 import dagger.Provides;
 
-public class MockOverrider {
+public class ModuleOverrider {
 
-    private final Map<ObjectId, Provider> fields;
+    private final OverriddenObjectsMap overriddenObjectsMap;
 
-    public MockOverrider(Object target) {
-        this(target, null);
+    public ModuleOverrider(Object target) {
+        this(new OverriddenObjectsMap());
+        overriddenObjectsMap.init(target);
     }
 
-    public MockOverrider(Object target, Map<ObjectId, Provider> extraObjects) {
-        fields = new HashMap<>();
-        if (extraObjects != null) {
-            fields.putAll(extraObjects);
-        }
-        ReflectUtils.extractFields(target, fields);
+    public ModuleOverrider(OverriddenObjectsMap overriddenObjectsMap) {
+        this.overriddenObjectsMap = overriddenObjectsMap;
     }
 
     public <T> T override(final T module) {
         checkMethodsVisibility(module);
         Answer defaultAnswer = new Answer() {
-            @Override public Object answer(InvocationOnMock invocation) throws Throwable {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
                 Method method = invocation.getMethod();
-                Provider provider = getProvider(method);
+                Provider provider = overriddenObjectsMap.getProvider(method);
                 if (provider != null) {
                     return provider.get();
                 } else {
@@ -64,31 +60,16 @@ public class MockOverrider {
         return (T) Mockito.mock(module.getClass(), defaultAnswer);
     }
 
-    private Provider getProvider(Method method) {
-        Provider provider = fields.get(new ObjectId(method));
-        if (provider == null) {
-            provider = fields.get(new ObjectId(method.getReturnType()));
-        }
-        return provider;
-    }
-
     private <T> void checkMethodsVisibility(T module) {
         Method[] methods = module.getClass().getDeclaredMethods();
-        List<Method> visibilityErrors = new ArrayList<>();
+        List<String> visibilityErrors = new ArrayList<>();
         for (Method method : methods) {
             if (method.isAnnotationPresent(Provides.class)) {
                 if (!Modifier.isPublic(method.getModifiers()) && !Modifier.isProtected(method.getModifiers())) {
-                    visibilityErrors.add(method);
+                    visibilityErrors.add(method.toString());
                 }
             }
         }
-        if (!visibilityErrors.isEmpty()) {
-            String message = "The following methods has to be public or protected:";
-            for (Method visibilityError : visibilityErrors) {
-                message += "\n" + visibilityError;
-            }
-            throw new RuntimeException(message);
-        }
+        ErrorsFormatter.throwExceptionOnErrors("The following methods has to be public or protected", visibilityErrors);
     }
-
 }
