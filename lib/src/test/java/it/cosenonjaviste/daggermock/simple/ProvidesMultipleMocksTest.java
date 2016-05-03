@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 public class ProvidesMultipleMocksTest {
-    @Rule public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
             .providesMock(MyService.class, MyService2.class)
             .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
                 @Override public void setComponent(MyComponent component) {

@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ComponentDependencyTest {
 
     @Rule
-    public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
+    public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
             .addComponentDependency(MyComponent2.class, new MyModule2())
             .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
                 @Override public void setComponent(MyComponent component) {

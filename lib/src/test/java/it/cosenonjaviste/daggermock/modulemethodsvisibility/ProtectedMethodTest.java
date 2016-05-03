@@ -33,7 +33,7 @@ public class ProtectedMethodTest {
 
     private MainService mainService;
 
-    @Rule public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
             .provides(MyService.class, new Provider<MyService>() {
                 @Override public MyService get() {
                     return new MyService();

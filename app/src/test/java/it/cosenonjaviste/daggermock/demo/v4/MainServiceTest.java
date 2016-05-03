@@ -33,14 +33,14 @@ import static org.mockito.Mockito.when;
 
 public class MainServiceTest {
 
-    @Rule public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
             .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
                 @Override public void setComponent(MyComponent component) {
                     mainService = component.mainService();
                 }
             });
 
-//    @Rule public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
+//    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
 //            .set(component -> mainService = component.mainService());
 
     @Mock RestService restService;

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class MainActivityTest {
 
-    @Rule public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
             .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
                 @Override public void setComponent(MyComponent component) {
                     ((App) RuntimeEnvironment.application).setComponent(component);

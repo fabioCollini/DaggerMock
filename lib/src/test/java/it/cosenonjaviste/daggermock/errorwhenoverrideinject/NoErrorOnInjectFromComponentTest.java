@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class NoErrorOnInjectFromComponentTest {
 
-    @Rule public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule());
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
 
     @Mock MyService myService;
 

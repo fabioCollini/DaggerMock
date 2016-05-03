@@ -29,7 +29,7 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NamedTest {
-    @Rule public final DaggerMockRule<MyComponent> mockitoRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
             .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
                 @Override public void setComponent(MyComponent component) {
                     mainService = component.mainService();
