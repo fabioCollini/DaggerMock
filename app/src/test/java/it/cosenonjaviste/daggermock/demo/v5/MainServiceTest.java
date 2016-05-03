@@ -23,6 +23,7 @@ import org.mockito.Mock;
 
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import it.cosenonjaviste.daggermock.InjectFromComponent;
+import it.cosenonjaviste.daggermock.demo.MainActivity;
 import it.cosenonjaviste.daggermock.demo.MainService;
 import it.cosenonjaviste.daggermock.demo.MyComponent;
 import it.cosenonjaviste.daggermock.demo.MyModule;
@@ -40,7 +41,7 @@ public class MainServiceTest {
 
     @Mock MyPrinter myPrinter;
 
-    @InjectFromComponent MainService mainService;
+    @InjectFromComponent(MainActivity.class) MainService mainService;
 
     @Test
     public void testDoSomething() {
