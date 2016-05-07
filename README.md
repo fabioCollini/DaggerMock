@@ -242,6 +242,7 @@ public interface AppComponent {
 }
 ```
 
+Subcomponent support doesn't work on Dagger 2.0, you need to use Dagger version 2.1+.
 A complete example is available [here](https://github.com/fabioCollini/DaggerMock/tree/master/RealWorldApp).
 
 ## JitPack configuration
