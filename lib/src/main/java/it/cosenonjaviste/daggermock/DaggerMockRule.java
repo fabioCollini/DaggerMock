@@ -40,6 +40,7 @@ public class DaggerMockRule<C> implements MethodRule {
     private ComponentSetter<C> componentSetter;
     private List<Object> modules = new ArrayList<>();
     private final Map<ComponentClassWrapper<?>, List<Object>> dependencies = new HashMap<>();
+    private final List<ObjectWrapper<?>> dependenciesWrappers = new ArrayList<>();
     private final OverriddenObjectsMap overriddenObjectsMap = new OverriddenObjectsMap();
 
     public DaggerMockRule(Class<C> componentClass, Object... modules) {
@@ -113,9 +114,8 @@ public class DaggerMockRule<C> implements MethodRule {
             InjectFromComponent annotation = field.getAnnotation(InjectFromComponent.class);
             Class<?>[] annotationValues = annotation.value();
             if (annotationValues.length == 0) {
-                Method m = component.getMethodReturning(field.getType());
-                if (m != null) {
-                    Object obj = component.invokeMethod(m);
+                Object obj = getObjectFromComponentOrDependencies(component, field);
+                if (obj != null) {
                     target.setFieldValue(field, obj);
                 }
             } else {
@@ -130,6 +130,20 @@ public class DaggerMockRule<C> implements MethodRule {
                 target.setFieldValue(field, fieldValue);
             }
         }
+    }
+
+    private Object getObjectFromComponentOrDependencies(ObjectWrapper<C> component, Field field) {
+        Method m = component.getMethodReturning(field.getType());
+        if (m != null) {
+            return component.invokeMethod(m);
+        }
+        for (ObjectWrapper<?> dependencyWrapper : dependenciesWrappers) {
+            m = dependencyWrapper.getMethodReturning(field.getType());
+            if (m != null) {
+                return dependencyWrapper.invokeMethod(m);
+            }
+        }
+        return null;
     }
 
     private void injectObject(ObjectWrapper<C> component, ObjectWrapper<Object> obj) {
@@ -173,6 +187,7 @@ public class DaggerMockRule<C> implements MethodRule {
             ObjectWrapper<Object> componentDependencyBuilder = initComponent(entry.getKey(), entry.getValue(), moduleOverrider);
             Object componentDependency = componentDependencyBuilder.invokeMethod("build");
             componentBuilder = componentBuilder.invokeBuilderSetter(entry.getKey().getWrappedClass(), componentDependency);
+            dependenciesWrappers.add(new ObjectWrapper<>(componentDependency));
         }
         return componentBuilder;
     }
