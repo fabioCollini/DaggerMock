@@ -40,7 +40,8 @@ public class DaggerMockRule<C> implements MethodRule {
     private ComponentSetter<C> componentSetter;
     private List<Object> modules = new ArrayList<>();
     private final Map<ComponentClassWrapper<?>, List<Object>> dependencies = new HashMap<>();
-    private final List<ObjectWrapper<?>> dependenciesWrappers = new ArrayList<>();
+    private final Map<Class<?>, ObjectWrapper<?>> dependenciesWrappers = new HashMap<>();
+    private final Map<Class<?>, ComponentSetter<?>> dependentComponentsSetters = new HashMap<>();
     private final OverriddenObjectsMap overriddenObjectsMap = new OverriddenObjectsMap();
 
     public DaggerMockRule(Class<C> componentClass, Object... modules) {
@@ -50,6 +51,11 @@ public class DaggerMockRule<C> implements MethodRule {
 
     public DaggerMockRule<C> set(ComponentSetter<C> componentSetter) {
         this.componentSetter = componentSetter;
+        return this;
+    }
+
+    public <DC> DaggerMockRule<C> set(Class<DC> dependentComponentClass, ComponentSetter<DC> componentSetter) {
+        dependentComponentsSetters.put(dependentComponentClass, componentSetter);
         return this;
     }
 
@@ -95,9 +101,7 @@ public class DaggerMockRule<C> implements MethodRule {
 
                 component = new ComponentOverrider(moduleOverrider).override(componentClass.getWrappedClass(), component);
 
-                if (componentSetter != null) {
-                    componentSetter.setComponent(component);
-                }
+                invokeSetters(component);
 
                 initInjectFromComponentFields(new ObjectWrapper<>(target), new ObjectWrapper<>(component));
 
@@ -106,6 +110,17 @@ public class DaggerMockRule<C> implements MethodRule {
                 Mockito.validateMockitoUsage();
             }
         };
+    }
+
+    private void invokeSetters(C component) {
+        if (componentSetter != null) {
+            componentSetter.setComponent(component);
+        }
+        for (Map.Entry<Class<?>, ComponentSetter<?>> entry : dependentComponentsSetters.entrySet()) {
+            ObjectWrapper objectWrapper = dependenciesWrappers.get(entry.getKey());
+            ComponentSetter value = entry.getValue();
+            value.setComponent(objectWrapper.getValue());
+        }
     }
 
     private void initInjectFromComponentFields(ObjectWrapper<Object> target, ObjectWrapper<C> component) {
@@ -137,7 +152,7 @@ public class DaggerMockRule<C> implements MethodRule {
         if (m != null) {
             return component.invokeMethod(m);
         }
-        for (ObjectWrapper<?> dependencyWrapper : dependenciesWrappers) {
+        for (ObjectWrapper<?> dependencyWrapper : dependenciesWrappers.values()) {
             m = dependencyWrapper.getMethodReturning(field.getType());
             if (m != null) {
                 return dependencyWrapper.invokeMethod(m);
@@ -186,8 +201,9 @@ public class DaggerMockRule<C> implements MethodRule {
         for (Map.Entry<ComponentClassWrapper<?>, List<Object>> entry : dependencies.entrySet()) {
             ObjectWrapper<Object> componentDependencyBuilder = initComponent(entry.getKey(), entry.getValue(), moduleOverrider);
             Object componentDependency = componentDependencyBuilder.invokeMethod("build");
-            componentBuilder = componentBuilder.invokeBuilderSetter(entry.getKey().getWrappedClass(), componentDependency);
-            dependenciesWrappers.add(new ObjectWrapper<>(componentDependency));
+            Class<?> componentClass = entry.getKey().getWrappedClass();
+            componentBuilder = componentBuilder.invokeBuilderSetter(componentClass, componentDependency);
+            dependenciesWrappers.put(componentClass, new ObjectWrapper<>(componentDependency));
         }
         return componentBuilder;
     }

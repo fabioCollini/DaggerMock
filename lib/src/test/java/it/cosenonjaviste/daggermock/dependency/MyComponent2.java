@@ -1,7 +1,5 @@
 package it.cosenonjaviste.daggermock.dependency;
 
-import javax.inject.Singleton;
-
 import dagger.Component;
 
 @Component(modules = MyModule2.class)
