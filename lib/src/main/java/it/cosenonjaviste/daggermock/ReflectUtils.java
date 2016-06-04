@@ -60,21 +60,6 @@ class ReflectUtils {
         return null;
     }
 
-    public static Object getFieldValue(Object obj, Class<?> fieldClass) {
-        Field[] fields = obj.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            if (field.getType().equals(fieldClass)) {
-                field.setAccessible(true);
-                try {
-                    return field.get(obj);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return null;
-    }
-
     public static Object invokeMethod(Object component, Method m, Object... args) {
         try {
             return m.invoke(component, args);

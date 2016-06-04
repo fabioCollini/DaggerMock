@@ -50,7 +50,26 @@ public class ObjectWrapper<T> {
     }
 
     public Object getFieldValue(Class<?> fieldClass) {
-        return ReflectUtils.getFieldValue(obj, fieldClass);
+        Field field = getField(fieldClass);
+        if (field != null) {
+            try {
+                return field.get(obj);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+    public Field getField(Class<?> fieldClass) {
+        Field[] fields = obj.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getType().equals(fieldClass)) {
+                field.setAccessible(true);
+                return field;
+            }
+        }
+        return null;
     }
 
     public ObjectWrapper<T> invokeBuilderSetter(Class<?> parameterClass, Object parameter) {

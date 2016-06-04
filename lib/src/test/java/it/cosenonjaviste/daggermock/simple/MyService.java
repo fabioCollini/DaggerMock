@@ -20,4 +20,8 @@ public class MyService {
     public String get() {
         return "AAA";
     }
+
+    public String getWithParam(int param) {
+        return Integer.toString(param);
+    }
 }

@@ -38,4 +38,8 @@ public class MainService {
     public String get2() {
         return myService.get() + myService2.get();
     }
+
+    public String getWithParam(int param) {
+        return myService.getWithParam(param);
+    }
 }

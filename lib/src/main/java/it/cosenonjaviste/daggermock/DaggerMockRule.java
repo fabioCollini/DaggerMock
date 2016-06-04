@@ -79,12 +79,20 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
+    public <M> DaggerMockRule<C> providesMock(final Class<M> originalClass, MockInitializer<M> initializer) {
+        overriddenObjectsMap.putMock(originalClass, initializer);
+        return this;
+    }
+
     @Override
     public Statement apply(final Statement base, FrameworkMethod method, final Object target) {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
                 MockitoAnnotations.initMocks(target);
+
+                ObjectWrapper<Object> targetWrapper = new ObjectWrapper<>(target);
+                overriddenObjectsMap.redefineMocksWithInitializer(targetWrapper);
 
                 overriddenObjectsMap.init(target);
                 overriddenObjectsMap.checkOverriddenInjectAnnotatedClass();
@@ -103,7 +111,7 @@ public class DaggerMockRule<C> implements MethodRule {
 
                 invokeSetters(component);
 
-                initInjectFromComponentFields(new ObjectWrapper<>(target), new ObjectWrapper<>(component));
+                initInjectFromComponentFields(targetWrapper, new ObjectWrapper<>(component));
 
                 base.evaluate();
 
@@ -210,5 +218,9 @@ public class DaggerMockRule<C> implements MethodRule {
 
     public interface ComponentSetter<C> {
         void setComponent(C component);
+    }
+
+    public interface MockInitializer<M> {
+        void init(M mock);
     }
 }

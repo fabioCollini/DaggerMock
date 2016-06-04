@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -135,12 +136,55 @@ class OverriddenObjectsMap {
 
     public void putMocks(Class<?>[] originalClasses) {
         for (final Class<?> originalClass : originalClasses) {
-            fields.put(new ObjectId(originalClass), new Provider() {
-                @Override
-                public Object get() {
-                    return Mockito.mock(originalClass);
+            fields.put(new ObjectId(originalClass), new MockProvider<>(originalClass));
+        }
+    }
+
+    public <M> void putMock(Class<M> originalClass, DaggerMockRule.MockInitializer<M> initializer) {
+        Provider provider = fields.get(new ObjectId(originalClass));
+        if (provider instanceof MockProvider) {
+            ((MockProvider) provider).addInitializer(initializer);
+        } else {
+            fields.put(new ObjectId(originalClass), new MockProvider<>(originalClass, initializer));
+        }
+    }
+
+    private static class MockProvider<M> implements Provider {
+        private final Class<M> originalClass;
+        private final List<DaggerMockRule.MockInitializer<M>> initializers = new ArrayList<>();
+
+        public MockProvider(Class<M> originalClass) {
+            this.originalClass = originalClass;
+        }
+
+        public MockProvider(Class<M> originalClass, DaggerMockRule.MockInitializer<M> initializer) {
+            this.originalClass = originalClass;
+            initializers.add(initializer);
+        }
+
+        @Override
+        public Object get() {
+            M mock = Mockito.mock(originalClass);
+            for (DaggerMockRule.MockInitializer<M> initializer : initializers) {
+                initializer.init(mock);
+            }
+            return mock;
+        }
+
+        public void addInitializer(DaggerMockRule.MockInitializer<M> initializer) {
+            initializers.add(initializer);
+        }
+    }
+
+    public void redefineMocksWithInitializer(ObjectWrapper<Object> target) {
+        for (Map.Entry<ObjectId, Provider> entry : fields.entrySet()) {
+            Provider provider = entry.getValue();
+            if (provider instanceof MockProvider && !((MockProvider) provider).initializers.isEmpty()) {
+                Field field = target.getField(entry.getKey().objectClass);
+                if (field != null) {
+                    target.setFieldValue(field, provider.get());
                 }
-            });
+            }
         }
     }
 }
