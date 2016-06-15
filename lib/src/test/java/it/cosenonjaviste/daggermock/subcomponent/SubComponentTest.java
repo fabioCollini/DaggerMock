@@ -27,8 +27,8 @@ public class SubComponentTest {
     @Test
     public void testSubComponentNoDaggerMock() {
         MyComponent component = DaggerMyComponent.builder().build();
-        MainService mainService = component.mySubComponent(new MySubModule()).mainService();
-        assertThat(mainService.getString()).isEqualTo("AAAA12345");
+        MainService service = component.mySubComponent(new MySubModule()).mainService();
+        assertThat(service.getString()).isEqualTo("AAAA12345");
     }
 
     @Test

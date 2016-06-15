@@ -47,7 +47,7 @@ public class InjectFromSubComponentWithModuleWithParameters {
 
         private String s1;
 
-        public MyModule(String s1, Integer ignored) {
+        public MyModule(String s1) {
             this.s1 = s1;
         }
 

@@ -209,9 +209,9 @@ public class DaggerMockRule<C> implements MethodRule {
         for (Map.Entry<ComponentClassWrapper<?>, List<Object>> entry : dependencies.entrySet()) {
             ObjectWrapper<Object> componentDependencyBuilder = initComponent(entry.getKey(), entry.getValue(), moduleOverrider);
             Object componentDependency = componentDependencyBuilder.invokeMethod("build");
-            Class<?> componentClass = entry.getKey().getWrappedClass();
-            componentBuilder = componentBuilder.invokeBuilderSetter(componentClass, componentDependency);
-            dependenciesWrappers.put(componentClass, new ObjectWrapper<>(componentDependency));
+            Class<?> componentClazz = entry.getKey().getWrappedClass();
+            componentBuilder = componentBuilder.invokeBuilderSetter(componentClazz, componentDependency);
+            dependenciesWrappers.put(componentClazz, new ObjectWrapper<>(componentDependency));
         }
         return componentBuilder;
     }
