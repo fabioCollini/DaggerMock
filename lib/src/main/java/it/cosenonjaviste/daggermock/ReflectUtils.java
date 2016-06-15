@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ReflectUtils {
+
+    private ReflectUtils() {}
+
     public static String toCamelCase(String str) {
         return str.substring(0, 1).toLowerCase() + str.substring(1);
     }

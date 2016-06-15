@@ -19,6 +19,9 @@ package it.cosenonjaviste.daggermock;
 import java.util.Collection;
 
 class ErrorsFormatter {
+
+    private ErrorsFormatter() {}
+
     private static String message(String message1, Collection<String> errors, String message2) {
         StringBuilder b = new StringBuilder(message1).append(":");
         for (String error : errors) {
