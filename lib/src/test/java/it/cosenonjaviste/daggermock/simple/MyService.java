@@ -17,8 +17,11 @@
 package it.cosenonjaviste.daggermock.simple;
 
 public class MyService {
+
+    public static final String MSG_AAA = "AAA";
+
     public String get() {
-        return "AAA";
+        return MSG_AAA;
     }
 
     public String getWithParam(int param) {

@@ -49,12 +49,16 @@ public class NamedTest {
 
     @Module
     public static class MyModule {
+
+        public static final String MSG_S1 = "s1";
+        public static final String MSG_S2 = "s2";
+
         @Provides @Named("s1") public String provideS1() {
-            return "s1";
+            return MSG_S1;
         }
 
         @Provides @Named("s2") public String provideS2() {
-            return "s2";
+            return MSG_S2;
         }
     }
 
