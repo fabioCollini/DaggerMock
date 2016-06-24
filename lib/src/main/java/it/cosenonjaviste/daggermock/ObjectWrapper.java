@@ -98,10 +98,14 @@ public class ObjectWrapper<T> {
     }
 
     public static <T> ObjectWrapper<T> newInstance(Class<T> classToInject) {
+        return newInstance(classToInject, "Error instantiating class " + classToInject.getName());
+    }
+
+    public static <T> ObjectWrapper<T> newInstance(Class<T> classToInject, String message) {
         try {
             return new ObjectWrapper<>(classToInject.newInstance());
         } catch (Exception e) {
-            throw new RuntimeException("Error instantiating class " + classToInject.getName(), e);
+            throw new RuntimeException(message, e);
         }
     }
 

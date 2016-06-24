@@ -143,11 +143,16 @@ public class DaggerMockRule<C> implements MethodRule {
                 }
             } else {
                 Class<Object> classToInject = (Class<Object>) annotationValues[0];
-                ObjectWrapper<Object> obj = ObjectWrapper.newInstance(classToInject);
+                ObjectWrapper<Object> obj = ObjectWrapper.newInstance(classToInject,
+                        "Error instantiating class " + classToInject.getName() + " defined as parameter in InjectFromComponent annotation");
                 injectObject(component, obj);
                 for (int i = 1; i < annotationValues.length; i++) {
                     Class<?> c = annotationValues[i];
-                    obj = new ObjectWrapper<>(obj.getFieldValue(c));
+                    ObjectWrapper<Object> fieldValue = new ObjectWrapper<>(obj.getFieldValue(c));
+                    if (fieldValue.getValue() == null) {
+                        throw new RuntimeException(c.getName() + " field not found in class " + obj.getValue().getClass().getName() + ", it's defined as parameter in InjectFromComponent annotation");
+                    }
+                    obj = fieldValue;
                 }
                 Object fieldValue = obj.getFieldValue(field.getType());
                 target.setFieldValue(field, fieldValue);
