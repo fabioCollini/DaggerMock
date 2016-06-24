@@ -64,10 +64,10 @@ public class ModuleOverrider {
         Method[] methods = module.getClass().getDeclaredMethods();
         List<String> visibilityErrors = new ArrayList<>();
         for (Method method : methods) {
-            if (method.isAnnotationPresent(Provides.class)) {
-                if (!Modifier.isPublic(method.getModifiers()) && !Modifier.isProtected(method.getModifiers())) {
-                    visibilityErrors.add(method.toString());
-                }
+            if (method.isAnnotationPresent(Provides.class)
+                    && !Modifier.isPublic(method.getModifiers())
+                    && !Modifier.isProtected(method.getModifiers())) {
+                visibilityErrors.add(method.toString());
             }
         }
         ErrorsFormatter.throwExceptionOnErrors("The following methods has to be public or protected", visibilityErrors);
