@@ -39,7 +39,7 @@ public class DaggerMockRule<C> implements MethodRule {
     private ComponentClassWrapper<C> componentClass;
     private ComponentSetter<C> componentSetter;
     private List<Object> modules = new ArrayList<>();
-    private final Map<ComponentClassWrapper<?>, List<Object>> dependencies = new HashMap<>();
+    private final List<DependentComponentInfo> dependencies = new ArrayList<>();
     private final Map<Class<?>, ObjectWrapper<?>> dependenciesWrappers = new HashMap<>();
     private final Map<Class<?>, ComponentSetter<?>> dependentComponentsSetters = new HashMap<>();
     private final OverriddenObjectsMap overriddenObjectsMap = new OverriddenObjectsMap();
@@ -69,8 +69,12 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
-    public DaggerMockRule<C> addComponentDependency(Class<?> componentClass, Object... modules) {
-        dependencies.put(new ComponentClassWrapper<>(componentClass), Arrays.asList(modules));
+    public DaggerMockRule<C> addComponentDependency(Class<?> childcomponentClass, Object... modules) {
+        return addComponentDependency(componentClass.getWrappedClass(), childcomponentClass, modules);
+    }
+
+    public DaggerMockRule<C> addComponentDependency(Class<?> parentComponentClasses, Class<?> childComponentClasses, Object... modules) {
+        dependencies.add(new DependentComponentInfo(parentComponentClasses, childComponentClasses, Arrays.asList(modules)));
         return this;
     }
 
@@ -103,7 +107,7 @@ public class DaggerMockRule<C> implements MethodRule {
 
                 ObjectWrapper<Object> componentBuilder = initComponent(componentClass, modules, moduleOverrider);
 
-                componentBuilder = initComponentDependencies(componentBuilder, moduleOverrider);
+                componentBuilder = initComponentDependencies(componentClass.getWrappedClass(), componentBuilder, moduleOverrider);
 
                 C component = componentBuilder.invokeMethod("build");
 
@@ -210,14 +214,28 @@ public class DaggerMockRule<C> implements MethodRule {
         return builderWrapper;
     }
 
-    private ObjectWrapper<Object> initComponentDependencies(ObjectWrapper<Object> componentBuilder, ModuleOverrider moduleOverrider) {
-        for (Map.Entry<ComponentClassWrapper<?>, List<Object>> entry : dependencies.entrySet()) {
-            ObjectWrapper<Object> componentDependencyBuilder = initComponent(entry.getKey(), entry.getValue(), moduleOverrider);
-            Object componentDependency = componentDependencyBuilder.invokeMethod("build");
-            Class<?> componentClazz = entry.getKey().getWrappedClass();
-            componentBuilder = componentBuilder.invokeBuilderSetter(componentClazz, componentDependency);
-            dependenciesWrappers.put(componentClazz, new ObjectWrapper<>(componentDependency));
+    private ObjectWrapper<Object> initComponentDependencies(Class<?> componentClass, ObjectWrapper<Object> componentBuilder, ModuleOverrider moduleOverrider) {
+        for (DependentComponentInfo entry : dependencies) {
+            if (entry.parentComponent.getWrappedClass().equals(componentClass)) {
+                ObjectWrapper<Object> componentDependencyBuilder = initComponent(entry.childComponent, entry.modules, moduleOverrider);
+                componentDependencyBuilder = initComponentDependencies(entry.childComponent.getWrappedClass(), componentDependencyBuilder, moduleOverrider);
+                Object componentDependency = componentDependencyBuilder.invokeMethod("build");
+                Class<?> componentClazz = entry.childComponent.getWrappedClass();
+                componentBuilder = componentBuilder.invokeBuilderSetter(componentClazz, componentDependency);
+                dependenciesWrappers.put(componentClazz, new ObjectWrapper<>(componentDependency));
+            }
         }
+
+//        for (DependentComponentInfo entry : dependencies) {
+//            for (ComponentClassWrapper<?> componentClassWrapper : entry.getKey()) {
+//                ObjectWrapper<Object> componentDependencyBuilder = initComponent(componentClassWrapper, entry.getValue(), moduleOverrider);
+//                Object componentDependency = componentDependencyBuilder.invokeMethod("build");
+//                Class<?> componentClazz = componentClassWrapper.getWrappedClass();
+//                componentBuilder = componentBuilder.invokeBuilderSetter(componentClazz, componentDependency);
+//                dependenciesWrappers.put(componentClazz, new ObjectWrapper<>(componentDependency));
+//            }
+//        }
+
         return componentBuilder;
     }
 
