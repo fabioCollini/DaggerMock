@@ -16,21 +16,21 @@
 
 package it.cosenonjaviste.daggermock.realworldapp.main;
 
-import javax.inject.Inject;
-
 import it.cosenonjaviste.daggermock.realworldapp.services.MainService;
 import it.cosenonjaviste.daggermock.realworldapp.services.SnackBarManager;
 
 public class MainPresenter {
 
-    @Inject MainService mainService;
+    private MainService mainService;
 
-    @Inject MainView view;
+    private MainView view;
 
-    @Inject SnackBarManager snackBarManager;
+    private SnackBarManager snackBarManager;
 
-    @Inject
-    public MainPresenter() {
+    public MainPresenter(MainService mainService, MainView view, SnackBarManager snackBarManager) {
+        this.mainService = mainService;
+        this.view = view;
+        this.snackBarManager = snackBarManager;
     }
 
     public void loadData() {

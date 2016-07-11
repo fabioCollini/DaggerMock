@@ -18,6 +18,7 @@ package it.cosenonjaviste.daggermock.realworldapp.main;
 
 import dagger.Module;
 import dagger.Provides;
+import it.cosenonjaviste.daggermock.realworldapp.services.MainService;
 import it.cosenonjaviste.daggermock.realworldapp.services.SnackBarManager;
 
 @Module
@@ -35,7 +36,12 @@ public class MainActivityModule {
     }
 
     @Provides
-    public MainView provideMyView() {
+    public MainView provideMainView() {
         return mainActivity;
+    }
+
+    @Provides
+    public MainPresenter provideMainPresenter(MainService mainService, SnackBarManager snackBarManager) {
+        return new MainPresenter(mainService, mainActivity, snackBarManager);
     }
 }

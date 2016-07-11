@@ -16,4 +16,5 @@
 
 <resources>
     <string name="app_name">DaggerMock</string>
+    <string name="reload">Reload</string>
 </resources>

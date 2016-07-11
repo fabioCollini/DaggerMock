@@ -21,9 +21,10 @@ import android.support.test.rule.ActivityTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import it.cosenonjaviste.daggermock.realworldapp.EspressoDaggerMockRule;
-import it.cosenonjaviste.daggermock.realworldapp.services.RestService;
 import it.cosenonjaviste.daggermock.realworldapp.services.SnackBarManager;
 import it.cosenonjaviste.daggeroverride.R;
 
@@ -32,24 +33,31 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-public class MainActivityTest {
+public class MainActivityMockPresenterTest {
 
     @Rule public EspressoDaggerMockRule rule = new EspressoDaggerMockRule();
 
     @Rule public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, false, false);
 
-    @Mock RestService restService;
+    @Mock MainPresenter presenter;
 
     @Mock SnackBarManager snackBarManager;
 
     @Test
     public void testOnCreate() {
-        when(restService.executeServerCall()).thenReturn(true);
+        final MainActivity activity = activityRule.launchActivity(null);
 
-        activityRule.launchActivity(null);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                activity.showText("Hello world");
+                return null;
+            }
+        }).when(presenter).loadData();
+
         onView(withId(R.id.reload)).perform(click());
 
         onView(withId(R.id.text)).check(matches(withText("Hello world")));
@@ -57,12 +65,19 @@ public class MainActivityTest {
 
     @Test
     public void testErrorOnCreate() {
-        when(restService.executeServerCall()).thenReturn(false);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                snackBarManager.showMessage("Error!");
+                return null;
+            }
+        }).when(presenter).loadData();
 
         activityRule.launchActivity(null);
         onView(withId(R.id.reload)).perform(click());
 
         onView(withId(R.id.text)).check(matches(withText("")));
+
         verify(snackBarManager).showMessage("Error!");
     }
 }

@@ -18,6 +18,7 @@ package it.cosenonjaviste.daggermock.realworldapp.main;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -41,7 +42,12 @@ public class MainActivity extends AppCompatActivity implements MainView {
         setContentView(R.layout.main);
         textView = (TextView) findViewById(R.id.text);
 
-        presenter.loadData();
+        findViewById(R.id.reload).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.loadData();
+            }
+        });
     }
 
     @Override
