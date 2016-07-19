@@ -3,7 +3,11 @@ package it.cosenonjaviste.daggermock;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
+
+import javax.inject.Provider;
 
 /**
  * Created by fabiocollini on 20/04/16.
@@ -56,6 +60,35 @@ public class ObjectWrapper<T> {
                 return field.get(obj);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+    public Object getProviderFieldValue(Class<?> fieldClass) {
+        Field field = getProviderField(fieldClass);
+        if (field != null) {
+            try {
+                Provider<?> provider = (Provider<?>) field.get(obj);
+                if (provider != null) {
+                    return provider.get();
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+    public Field getProviderField(Class<?> fieldClass) {
+        Field[] fields = obj.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getType().equals(Provider.class) && field.getGenericType() instanceof ParameterizedType) {
+                Type[] actualTypeArguments = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+                if (actualTypeArguments.length == 1 && actualTypeArguments[0].equals(fieldClass)) {
+                    field.setAccessible(true);
+                    return field;
+                }
             }
         }
         return null;
