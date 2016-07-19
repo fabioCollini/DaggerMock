@@ -94,6 +94,17 @@ public class ObjectWrapper<T> {
         return null;
     }
 
+    public Object getFieldOrProviderValue(Class<?> c) {
+        Object fieldValue = getFieldValue(c);
+        if (fieldValue == null) {
+            fieldValue = getProviderFieldValue(c);
+            if (fieldValue == null) {
+                throw new RuntimeException(c.getName() + " field not found in class " + getValue().getClass().getName() + ", it's defined as parameter in InjectFromComponent annotation");
+            }
+        }
+        return fieldValue;
+    }
+
     public Field getField(Class<?> fieldClass) {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
