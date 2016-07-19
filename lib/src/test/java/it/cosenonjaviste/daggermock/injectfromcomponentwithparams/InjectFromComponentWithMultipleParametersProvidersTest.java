@@ -32,11 +32,15 @@ public class InjectFromComponentWithMultipleParametersProvidersTest {
 
     String s1 = "test1";
 
+    @InjectFromComponent(MyActivityWithProvider.class)
+    MainService mainService;
+
     @InjectFromComponent({MyActivityWithProvider.class, MainService.class, Service1.class, Service2.class})
     Service3 service3;
 
     @Test
     public void testInjectFromComponentWithMultipleParameters() {
+        assertThat(mainService).isNotNull();
         assertThat(service3).isNotNull();
         assertThat(service3.get()).isEqualTo("test1");
     }
