@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
-
 import javax.inject.Provider;
 
 /**
@@ -14,9 +13,16 @@ import javax.inject.Provider;
  */
 public class ObjectWrapper<T> {
     private T obj;
+    private Class<T> valueClass;
 
     public ObjectWrapper(T obj) {
         this.obj = obj;
+        valueClass = (Class<T>) obj.getClass();
+    }
+
+    public ObjectWrapper(T obj, Class<T> valueClass) {
+        this.obj = obj;
+        this.valueClass = valueClass;
     }
 
     public Method getMethodReturning(Class<?> type) {
@@ -51,6 +57,10 @@ public class ObjectWrapper<T> {
 
     public T getValue() {
         return obj;
+    }
+
+    public Class<? super T> getValueClass() {
+        return valueClass;
     }
 
     public Object getFieldValue(Class<?> fieldClass) {
@@ -99,7 +109,7 @@ public class ObjectWrapper<T> {
         if (fieldValue == null) {
             fieldValue = getProviderFieldValue(c);
             if (fieldValue == null) {
-                throw new RuntimeException(c.getName() + " field not found in class " + getValue().getClass().getName() + ", it's defined as parameter in InjectFromComponent annotation");
+                throw new RuntimeException(c.getName() + " field not found in class " + getValueClass().getName() + ", it's defined as parameter in InjectFromComponent annotation");
             }
         }
         return fieldValue;

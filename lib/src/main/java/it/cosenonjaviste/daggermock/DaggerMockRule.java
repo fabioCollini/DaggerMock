@@ -16,12 +16,7 @@
 
 package it.cosenonjaviste.daggermock;
 
-import org.junit.rules.MethodRule;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.Statement;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
+import it.cosenonjaviste.daggermock.ComponentClassWrapper.SubComponentMethod;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -30,10 +25,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Provider;
-
-import it.cosenonjaviste.daggermock.ComponentClassWrapper.SubComponentMethod;
+import org.junit.rules.MethodRule;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 public class DaggerMockRule<C> implements MethodRule {
     private ComponentClassWrapper<C> componentClass;
@@ -115,7 +112,7 @@ public class DaggerMockRule<C> implements MethodRule {
 
                 invokeSetters(component);
 
-                initInjectFromComponentFields(targetWrapper, new ObjectWrapper<>(component));
+                initInjectFromComponentFields(targetWrapper, new ObjectWrapper<>(component, componentClass.getWrappedClass()));
 
                 base.evaluate();
 
@@ -182,8 +179,8 @@ public class DaggerMockRule<C> implements MethodRule {
         } else {
             boolean injected = injectObjectUsingSubComponents(component, obj);
             if (!injected) {
-                throw new RuntimeException("Inject method for class " + obj.getValue().getClass() +
-                        " not found in component " + component.getValue().getClass() + " or in subComponents");
+                throw new RuntimeException("Inject method for class " + obj.getValueClass().getName() +
+                        " not found in component " + component.getValueClass().getName() + " or in subComponents");
             }
         }
     }
@@ -222,17 +219,6 @@ public class DaggerMockRule<C> implements MethodRule {
                 dependenciesWrappers.put(componentClazz, new ObjectWrapper<>(componentDependency));
             }
         }
-
-//        for (DependentComponentInfo entry : dependencies) {
-//            for (ComponentClassWrapper<?> componentClassWrapper : entry.getKey()) {
-//                ObjectWrapper<Object> componentDependencyBuilder = initComponent(componentClassWrapper, entry.getValue(), moduleOverrider);
-//                Object componentDependency = componentDependencyBuilder.invokeMethod("build");
-//                Class<?> componentClazz = componentClassWrapper.getWrappedClass();
-//                componentBuilder = componentBuilder.invokeBuilderSetter(componentClazz, componentDependency);
-//                dependenciesWrappers.put(componentClazz, new ObjectWrapper<>(componentDependency));
-//            }
-//        }
-
         return componentBuilder;
     }
 
