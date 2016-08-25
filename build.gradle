@@ -33,7 +33,7 @@ allprojects {
         jcenter()
     }
     configurations.all {
-        resolutionStrategy.force 'com.android.support:support-annotations:23.3.0'
+        resolutionStrategy.force 'com.android.support:support-annotations:24.2.0'
     }
 }
 
