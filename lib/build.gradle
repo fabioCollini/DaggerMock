@@ -33,5 +33,5 @@ dependencies {
     testCompile 'com.google.dagger:dagger:2.2'
     testCompile 'org.glassfish:javax.annotation:10.0-b28'
     testCompile 'com.google.dagger:dagger-compiler:2.2'
-    testCompile 'org.assertj:assertj-core:2.4.0'
+    testCompile 'org.assertj:assertj-core:2.5.0'
 }
