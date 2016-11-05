@@ -54,12 +54,12 @@ android {
 dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
-    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
 
-    compile 'com.google.dagger:dagger:2.6.1'
+    compile "com.google.dagger:dagger:$DAGGER_VERSION"
     compile 'javax.annotation:jsr250-api:1.0'
-    apt 'com.google.dagger:dagger-compiler:2.6.1'
-    testCompile 'com.google.dagger:dagger-compiler:2.6.1'
+    apt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+    testCompile "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
     testCompile project(':lib')
     androidTestCompile project(':lib')
@@ -67,14 +67,14 @@ dependencies {
     testCompile "org.robolectric:robolectric:3.0"
     testCompile 'org.assertj:assertj-core:2.5.0'
 
-    androidTestApt 'com.google.dagger:dagger-compiler:2.6.1'
+    androidTestApt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile('com.google.dexmaker:dexmaker-mockito:1.2') {
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
     androidTestCompile 'org.mockito:mockito-core:1.10.19'
-    androidTestCompile 'com.android.support.test:runner:0.4'
-    androidTestCompile 'com.android.support.test:rules:0.4'
+    androidTestCompile "com.android.support.test:runner:$RUNNER_VERSION"
+    androidTestCompile "com.android.support.test:rules:$RUNNER_VERSION"
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.1') {
         exclude group: 'javax.inject', module: 'javax.inject'
         exclude group: 'com.squareup', module: 'javawriter'
