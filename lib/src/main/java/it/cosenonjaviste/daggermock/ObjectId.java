@@ -16,29 +16,55 @@
 
 package it.cosenonjaviste.daggermock;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
 import javax.inject.Named;
+import javax.inject.Qualifier;
 
 class ObjectId {
     public final Class objectClass;
 
     public final String name;
 
+    public final Class<?> qualifierAnnotation;
+
     public ObjectId(Class objectClass) {
         this.objectClass = objectClass;
         name = null;
+        qualifierAnnotation = null;
     }
 
     public ObjectId(Method method) {
-        this.objectClass = method.getReturnType();
-        this.name = extractName(method.getAnnotation(Named.class));
+        objectClass = method.getReturnType();
+        name = extractName(method.getAnnotation(Named.class));
+        qualifierAnnotation = extractQualifierAnnotation(method.getAnnotations());
     }
 
     public ObjectId(Field field) {
-        this.objectClass = field.getType();
-        this.name = extractName(field.getAnnotation(Named.class));
+        objectClass = field.getType();
+        name = extractName(field.getAnnotation(Named.class));
+        qualifierAnnotation = extractQualifierAnnotation(field.getAnnotations());
+    }
+
+    private Class<?> extractQualifierAnnotation(Annotation[] annotations) {
+        for (Annotation annotation : annotations) {
+            Class<? extends Annotation> annotationType = annotation.annotationType();
+            if (isQualifier(annotationType)) {
+                return annotationType;
+            }
+        }
+        return null;
+    }
+
+    private boolean isQualifier(Class<? extends Annotation> annotationType) {
+        Annotation[] annotations = annotationType.getAnnotations();
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().equals(Qualifier.class)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String extractName(Named annotation) {
@@ -56,13 +82,14 @@ class ObjectId {
         ObjectId objectId = (ObjectId) o;
 
         if (!objectClass.equals(objectId.objectClass)) return false;
-        return name != null ? name.equals(objectId.name) : objectId.name == null;
-
+        if (name != null ? !name.equals(objectId.name) : objectId.name != null) return false;
+        return qualifierAnnotation != null ? qualifierAnnotation.equals(objectId.qualifierAnnotation) : objectId.qualifierAnnotation == null;
     }
 
     @Override public int hashCode() {
         int result = objectClass.hashCode();
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (qualifierAnnotation != null ? qualifierAnnotation.hashCode() : 0);
         return result;
     }
 }

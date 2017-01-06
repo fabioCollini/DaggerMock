@@ -24,10 +24,12 @@ public class MainService {
 
     @Inject @Named("s2") String s2;
 
+    @Inject @Named("s3") String s3;
+
     @Inject public MainService() {
     }
 
     public String get() {
-        return s1 + s2;
+        return s1 + s2 + s3;
     }
 }
