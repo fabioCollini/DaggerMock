@@ -18,14 +18,9 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    }
 }
 
 apply plugin: 'com.android.application'
-
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 24
@@ -58,7 +53,7 @@ dependencies {
 
     compile "com.google.dagger:dagger:$DAGGER_VERSION"
     compile 'javax.annotation:jsr250-api:1.0'
-    apt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+    annotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     testCompile "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
     testCompile project(':lib')
@@ -67,7 +62,6 @@ dependencies {
     testCompile "org.robolectric:robolectric:3.0"
     testCompile 'org.assertj:assertj-core:2.5.0'
 
-    androidTestApt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile('com.google.dexmaker:dexmaker-mockito:1.2') {
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
