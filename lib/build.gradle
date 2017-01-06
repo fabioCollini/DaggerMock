@@ -35,3 +35,18 @@ dependencies {
     testCompile "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     testCompile 'org.assertj:assertj-core:2.5.0'
 }
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
