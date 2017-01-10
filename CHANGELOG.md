@@ -1,3 +1,7 @@
+#### 0.6.3
+ - Qualifier annotations support
+ - Added sources jar in distribution
+
 #### 0.6.2
 - Improved nested dependent component support (thanks [ChrisZou](https://github.com/ChrisZou)! for the report)
 - Support for Provider fields in InjectFromComponent definition

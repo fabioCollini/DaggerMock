@@ -259,9 +259,9 @@ and the dependency in the build.gradle of the module:
 
 ```gradle
 dependencies {
-    testCompile 'com.github.fabioCollini:DaggerMock:0.6.2'
+    testCompile 'com.github.fabioCollini:DaggerMock:0.6.3'
     //and/or
-    androidTestCompile 'com.github.fabioCollini:DaggerMock:0.6.2'
+    androidTestCompile 'com.github.fabioCollini:DaggerMock:0.6.3'
 }
 ```
 
