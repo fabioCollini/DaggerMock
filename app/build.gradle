@@ -63,14 +63,11 @@ dependencies {
     testCompile "org.robolectric:robolectric:3.0"
     testCompile 'org.assertj:assertj-core:2.5.0'
 
-    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
-    androidTestCompile('com.google.dexmaker:dexmaker-mockito:1.2') {
-        exclude group: 'org.hamcrest', module: 'hamcrest-core'
-    }
     androidTestCompile "org.mockito:mockito-core:$MOCKITO_VERSION"
+    androidTestCompile "org.mockito:mockito-android:$MOCKITO_VERSION"
     androidTestCompile "com.android.support.test:runner:$RUNNER_VERSION"
     androidTestCompile "com.android.support.test:rules:$RUNNER_VERSION"
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.1') {
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2') {
         exclude group: 'javax.inject', module: 'javax.inject'
         exclude group: 'com.squareup', module: 'javawriter'
     }
