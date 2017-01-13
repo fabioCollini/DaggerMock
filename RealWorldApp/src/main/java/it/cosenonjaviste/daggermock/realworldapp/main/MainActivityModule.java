@@ -41,7 +41,7 @@ public class MainActivityModule {
     }
 
     @Provides
-    public MainPresenter provideMainPresenter(MainService mainService, SnackBarManager snackBarManager) {
-        return new MainPresenter(mainService, mainActivity, snackBarManager);
+    public MainPresenter provideMainPresenter(MainService mainService, MainView view, SnackBarManager snackBarManager) {
+        return new MainPresenter(mainService, view, snackBarManager);
     }
 }
