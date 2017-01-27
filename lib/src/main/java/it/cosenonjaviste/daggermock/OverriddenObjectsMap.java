@@ -16,21 +16,20 @@
 
 package it.cosenonjaviste.daggermock;
 
-import org.junit.Rule;
-import org.mockito.Mockito;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.inject.Inject;
 import javax.inject.Provider;
+import org.junit.Rule;
+import org.mockito.Mockito;
 
 import static it.cosenonjaviste.daggermock.ComponentClassWrapper.SubComponentMethod;
 
@@ -41,19 +40,21 @@ class OverriddenObjectsMap {
         Field[] targetFields = target.getClass().getDeclaredFields();
         for (Field field : targetFields) {
             if (field.getAnnotation(Rule.class) == null) {
-                field.setAccessible(true);
-                try {
-                    final Object value = field.get(target);
-                    if (value != null) {
-                        fields.put(new ObjectId(field), new Provider() {
-                            @Override
-                            public Object get() {
-                                return value;
-                            }
-                        });
+                if (!Modifier.isStatic(field.getModifiers())) {
+                    field.setAccessible(true);
+                    try {
+                        final Object value = field.get(target);
+                        if (value != null) {
+                            fields.put(new ObjectId(field), new Provider() {
+                                @Override
+                                public Object get() {
+                                    return value;
+                                }
+                            });
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("Error accessing field " + field, e);
                     }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Error accessing field " + field, e);
                 }
             }
         }
