@@ -106,11 +106,7 @@ class OverriddenObjectsMap {
     }
 
     public Provider getProvider(Method method) {
-        Provider provider = fields.get(new ObjectId(method));
-        if (provider == null) {
-            provider = fields.get(new ObjectId(method.getReturnType()));
-        }
-        return provider;
+        return fields.get(new ObjectId(method));
     }
 
     public boolean containsField(Class<?> type) {

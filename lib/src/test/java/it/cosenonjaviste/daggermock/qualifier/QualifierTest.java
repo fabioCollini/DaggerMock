@@ -43,7 +43,7 @@ public class QualifierTest {
 
     @Test
     public void testNamed() {
-        assertThat(mainService.get()).isEqualTo("test1test2test3");
+        assertThat(mainService.get()).isEqualTo("test1test2s3");
     }
 
     @Module
