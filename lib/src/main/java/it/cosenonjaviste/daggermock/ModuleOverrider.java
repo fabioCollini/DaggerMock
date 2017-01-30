@@ -16,18 +16,18 @@
 
 package it.cosenonjaviste.daggermock;
 
+import dagger.Provides;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Provider;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Provider;
-
-import dagger.Provides;
+import static java.lang.reflect.Modifier.isFinal;
+import static java.lang.reflect.Modifier.isProtected;
+import static java.lang.reflect.Modifier.isPublic;
 
 public class ModuleOverrider {
 
@@ -63,13 +63,18 @@ public class ModuleOverrider {
     private <T> void checkMethodsVisibility(T module) {
         Method[] methods = module.getClass().getDeclaredMethods();
         List<String> visibilityErrors = new ArrayList<>();
+        List<String> finalErrors = new ArrayList<>();
         for (Method method : methods) {
-            if (method.isAnnotationPresent(Provides.class)
-                    && !Modifier.isPublic(method.getModifiers())
-                    && !Modifier.isProtected(method.getModifiers())) {
-                visibilityErrors.add(method.toString());
+            if (method.isAnnotationPresent(Provides.class)) {
+                if (!isPublic(method.getModifiers()) && !isProtected(method.getModifiers())) {
+                    visibilityErrors.add(method.toString());
+                }
+                if (isFinal(method.getModifiers())) {
+                    finalErrors.add(method.toString());
+                }
             }
         }
-        ErrorsFormatter.throwExceptionOnErrors("The following methods has to be public or protected", visibilityErrors);
+        ErrorsFormatter.throwExceptionOnErrors("The following methods must be declared public or protected", visibilityErrors);
+        ErrorsFormatter.throwExceptionOnErrors("The following methods must be non final", finalErrors);
     }
 }

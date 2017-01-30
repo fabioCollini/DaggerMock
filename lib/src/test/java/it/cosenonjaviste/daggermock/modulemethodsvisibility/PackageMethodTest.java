@@ -16,14 +16,12 @@
 
 package it.cosenonjaviste.daggermock.modulemethodsvisibility;
 
-import org.junit.Test;
-
-import javax.inject.Singleton;
-
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
+import javax.inject.Singleton;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -37,7 +35,7 @@ public class PackageMethodTest {
             rule.apply(null, null, this).evaluate();
             fail();
         } catch (RuntimeException e) {
-            assertThat(e.getMessage()).isEqualTo("The following methods has to be public or protected:\n" +
+            assertThat(e.getMessage()).isEqualTo("The following methods must be declared public or protected:\n" +
                     "it.cosenonjaviste.daggermock.modulemethodsvisibility.MyService it.cosenonjaviste.daggermock.modulemethodsvisibility.PackageMethodTest$MyModule.provideMyService()");
         }
     }
