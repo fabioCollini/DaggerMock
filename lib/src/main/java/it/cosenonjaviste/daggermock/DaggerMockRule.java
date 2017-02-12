@@ -85,6 +85,14 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
+    public void initMocks(Object target) {
+        MockitoAnnotations.initMocks(target);
+
+        setupComponent(target);
+
+        Mockito.validateMockitoUsage();
+    }
+
     @Override
     public Statement apply(final Statement base, FrameworkMethod method, final Object target) {
         return new Statement() {
@@ -92,33 +100,37 @@ public class DaggerMockRule<C> implements MethodRule {
             public void evaluate() throws Throwable {
                 MockitoAnnotations.initMocks(target);
 
-                ObjectWrapper<Object> targetWrapper = new ObjectWrapper<>(target);
-                overriddenObjectsMap.redefineMocksWithInitializer(targetWrapper);
-
-                overriddenObjectsMap.init(target);
-                overriddenObjectsMap.checkOverriddenInjectAnnotatedClass();
-
-                ModuleOverrider moduleOverrider = new ModuleOverrider(overriddenObjectsMap);
-
-                overriddenObjectsMap.checkOverridesInSubComponentsWithNoParameters(componentClass);
-
-                ObjectWrapper<Object> componentBuilder = initComponent(componentClass, modules, moduleOverrider);
-
-                componentBuilder = initComponentDependencies(componentClass.getWrappedClass(), componentBuilder, moduleOverrider);
-
-                C component = componentBuilder.invokeMethod("build");
-
-                component = new ComponentOverrider(moduleOverrider).override(componentClass.getWrappedClass(), component);
-
-                invokeSetters(component);
-
-                initInjectFromComponentFields(targetWrapper, new ObjectWrapper<>(component, componentClass.getWrappedClass()));
+                setupComponent(target);
 
                 base.evaluate();
 
                 Mockito.validateMockitoUsage();
             }
         };
+    }
+
+    private void setupComponent(Object target) {
+        ObjectWrapper<Object> targetWrapper = new ObjectWrapper<>(target);
+        overriddenObjectsMap.redefineMocksWithInitializer(targetWrapper);
+
+        overriddenObjectsMap.init(target);
+        overriddenObjectsMap.checkOverriddenInjectAnnotatedClass();
+
+        ModuleOverrider moduleOverrider = new ModuleOverrider(overriddenObjectsMap);
+
+        overriddenObjectsMap.checkOverridesInSubComponentsWithNoParameters(componentClass);
+
+        ObjectWrapper<Object> componentBuilder = initComponent(componentClass, modules, moduleOverrider);
+
+        componentBuilder = initComponentDependencies(componentClass.getWrappedClass(), componentBuilder, moduleOverrider);
+
+        C component = componentBuilder.invokeMethod("build");
+
+        component = new ComponentOverrider(moduleOverrider).override(componentClass.getWrappedClass(), component);
+
+        invokeSetters(component);
+
+        initInjectFromComponentFields(targetWrapper, new ObjectWrapper<>(component, componentClass.getWrappedClass()));
     }
 
     private void invokeSetters(C component) {
