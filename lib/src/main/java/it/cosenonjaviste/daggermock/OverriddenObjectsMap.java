@@ -37,7 +37,15 @@ class OverriddenObjectsMap {
     private final Map<ObjectId, Provider> fields = new HashMap<>();
 
     public void init(Object target) {
-        Field[] targetFields = target.getClass().getDeclaredFields();
+        Class<?> targetClass = target.getClass();
+        while (!targetClass.equals(Object.class)) {
+            initClassFields(target, targetClass);
+            targetClass = targetClass.getSuperclass();
+        }
+    }
+
+    private void initClassFields(Object target, Class<?> targetClass) {
+        Field[] targetFields = targetClass.getDeclaredFields();
         for (Field field : targetFields) {
             if (field.getAnnotation(Rule.class) == null) {
                 if (!Modifier.isStatic(field.getModifiers())) {
