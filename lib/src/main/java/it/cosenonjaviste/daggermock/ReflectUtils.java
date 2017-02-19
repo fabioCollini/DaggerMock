@@ -24,7 +24,8 @@ import java.util.List;
 
 class ReflectUtils {
 
-    private ReflectUtils() {}
+    private ReflectUtils() {
+    }
 
     public static String toCamelCase(String str) {
         return str.substring(0, 1).toLowerCase() + str.substring(1);
@@ -32,12 +33,16 @@ class ReflectUtils {
 
     public static List<Field> extractAnnotatedFields(Object target, Class<? extends Annotation> annotationClass) {
         List<Field> ret = new ArrayList<>();
-        Field[] fields = target.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            if (field.isAnnotationPresent(annotationClass)) {
-                ret.add(field);
+        Class<?> targetClass = target.getClass();
+        while (!targetClass.equals(Object.class)) {
+            Field[] fields = targetClass.getDeclaredFields();
+            for (Field field : fields) {
+                field.setAccessible(true);
+                if (field.isAnnotationPresent(annotationClass)) {
+                    ret.add(field);
+                }
             }
+            targetClass = targetClass.getSuperclass();
         }
         return ret;
     }

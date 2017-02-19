@@ -16,8 +16,11 @@
 
 package it.cosenonjaviste.daggermock.simple;
 
+import it.cosenonjaviste.daggermock.InjectFromComponent;
 import org.mockito.Mock;
 
 public class BaseTest {
     @Mock MyService myService;
+
+    @InjectFromComponent MainService mainService;
 }

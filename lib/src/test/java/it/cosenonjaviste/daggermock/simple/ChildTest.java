@@ -23,14 +23,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ChildTest extends BaseTest {
-    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
-            .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
-                @Override public void setComponent(MyComponent component) {
-                    mainService = component.mainService();
-                }
-            });
-
-    private MainService mainService;
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
 
     @Test
     public void testConstructorArgs() {
