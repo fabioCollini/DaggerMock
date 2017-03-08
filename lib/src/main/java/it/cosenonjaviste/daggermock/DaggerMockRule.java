@@ -161,10 +161,10 @@ public class DaggerMockRule<C> implements MethodRule {
                 injectObject(component, obj);
                 for (int i = 1; i < annotationValues.length; i++) {
                     Class<?> c = annotationValues[i];
-                    Object fieldValue = obj.getFieldOrProviderValue(c);
+                    Object fieldValue = obj.getFieldOrProviderOrLazyValue(c);
                     obj = new ObjectWrapper<>(fieldValue);
                 }
-                Object fieldValue = obj.getFieldOrProviderValue(field.getType());
+                Object fieldValue = obj.getFieldOrProviderOrLazyValue(field.getType());
                 target.setFieldValue(field, fieldValue);
             }
         }

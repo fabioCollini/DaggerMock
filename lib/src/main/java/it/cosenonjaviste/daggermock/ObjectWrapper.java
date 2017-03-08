@@ -16,6 +16,7 @@
 
 package it.cosenonjaviste.daggermock;
 
+import dagger.Lazy;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -89,7 +90,7 @@ public class ObjectWrapper<T> {
     }
 
     public Object getProviderFieldValue(Class<?> fieldClass) {
-        Field field = getProviderField(fieldClass);
+        Field field = getWrapperField(fieldClass, Provider.class);
         if (field != null) {
             try {
                 Provider<?> provider = (Provider<?>) field.get(obj);
@@ -103,10 +104,25 @@ public class ObjectWrapper<T> {
         return null;
     }
 
-    public Field getProviderField(Class<?> fieldClass) {
+    public Object getLazyFieldValue(Class<?> fieldClass) {
+        Field field = getWrapperField(fieldClass, Lazy.class);
+        if (field != null) {
+            try {
+                Lazy<?> lazy = (Lazy<?>) field.get(obj);
+                if (lazy != null) {
+                    return lazy.get();
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+    public Field getWrapperField(Class<?> fieldClass, Class<?> wrapperClass) {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
-            if (field.getType().equals(Provider.class) && field.getGenericType() instanceof ParameterizedType) {
+            if (field.getType().equals(wrapperClass) && field.getGenericType() instanceof ParameterizedType) {
                 Type[] actualTypeArguments = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
                 if (actualTypeArguments.length == 1 && actualTypeArguments[0].equals(fieldClass)) {
                     field.setAccessible(true);
@@ -117,12 +133,16 @@ public class ObjectWrapper<T> {
         return null;
     }
 
-    public Object getFieldOrProviderValue(Class<?> c) {
+    public Object getFieldOrProviderOrLazyValue(Class<?> c) {
         Object fieldValue = getFieldValue(c);
         if (fieldValue == null) {
             fieldValue = getProviderFieldValue(c);
             if (fieldValue == null) {
-                throw new RuntimeException(c.getName() + " field not found in class " + getValueClass().getName() + ", it's defined as parameter in InjectFromComponent annotation");
+                fieldValue = getLazyFieldValue(c);
+                if (fieldValue == null) {
+                    throw new RuntimeException(c.getName() + " field not found in class " + getValueClass().getName() +
+                            ", it's defined as parameter in InjectFromComponent annotation");
+                }
             }
         }
         return fieldValue;
