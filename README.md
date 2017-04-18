@@ -128,6 +128,8 @@ public class MainActivityTest {
 }
 ```
 
+DaggerMock is used in the [Just Another Android App](https://github.com/athkalia/Just-Another-Android-App) project, you can see an example of a robolectric test [here](https://github.com/athkalia/Just-Another-Android-App/blob/develop/app/src/unitTests/java/com/example/features/dashboard/view/MainActivityTest.java).
+
 ## InjectFromComponent annotation
 
 In the first example we have used a ComponentSetter subclass to retrieve an object from the component: 
