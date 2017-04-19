@@ -154,6 +154,17 @@ class OverriddenObjectsMap {
         }
     }
 
+    public Object getValueOfClass(Class<?> type) {
+        Set<Map.Entry<ObjectId, Provider>> entries = fields.entrySet();
+        for (Map.Entry<ObjectId, Provider> entry : entries) {
+            if (entry.getKey().objectClass.equals(type)) {
+                return entry.getValue().get();
+            }
+        }
+
+        return null;
+    }
+
     private static class MockProvider<M> implements Provider {
         private final Class<M> originalClass;
         private final List<DaggerMockRule.MockInitializer<M>> initializers = new ArrayList<>();

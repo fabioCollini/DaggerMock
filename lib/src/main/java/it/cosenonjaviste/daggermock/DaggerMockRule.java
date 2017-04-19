@@ -130,7 +130,7 @@ public class DaggerMockRule<C> implements MethodRule {
 
         invokeSetters(component);
 
-        initInjectFromComponentFields(targetWrapper, new ObjectWrapper<>(component, componentClass.getWrappedClass()));
+        initInjectFromComponentFields(targetWrapper, new ObjectWrapper<>(component, componentClass.getWrappedClass()), moduleOverrider);
     }
 
     private void invokeSetters(C component) {
@@ -144,7 +144,7 @@ public class DaggerMockRule<C> implements MethodRule {
         }
     }
 
-    private void initInjectFromComponentFields(ObjectWrapper<Object> target, ObjectWrapper<C> component) {
+    private void initInjectFromComponentFields(ObjectWrapper<Object> target, ObjectWrapper<C> component, ModuleOverrider moduleOverrider) {
         List<Field> fields = target.extractAnnotatedFields(InjectFromComponent.class);
         for (Field field : fields) {
             InjectFromComponent annotation = field.getAnnotation(InjectFromComponent.class);
@@ -158,7 +158,7 @@ public class DaggerMockRule<C> implements MethodRule {
                 Class<Object> classToInject = (Class<Object>) annotationValues[0];
                 ObjectWrapper<Object> obj = ObjectWrapper.newInstance(classToInject,
                         "Error instantiating class " + classToInject.getName() + " defined as parameter in InjectFromComponent annotation");
-                injectObject(component, obj);
+                injectObject(component, obj, moduleOverrider);
                 for (int i = 1; i < annotationValues.length; i++) {
                     Class<?> c = annotationValues[i];
                     Object fieldValue = obj.getFieldOrProviderOrLazyValue(c);
@@ -184,12 +184,12 @@ public class DaggerMockRule<C> implements MethodRule {
         return null;
     }
 
-    private void injectObject(ObjectWrapper<C> component, ObjectWrapper<Object> obj) {
+    private void injectObject(ObjectWrapper<C> component, ObjectWrapper<Object> obj, ModuleOverrider moduleOverrider) {
         Method injectMethod = component.getMethodWithParameter(obj.getValue().getClass());
         if (injectMethod != null) {
             component.invokeMethod(injectMethod, obj.getValue());
         } else {
-            boolean injected = injectObjectUsingSubComponents(component, obj);
+            boolean injected = injectObjectUsingSubComponents(component, obj, moduleOverrider);
             if (!injected) {
                 throw new RuntimeException("Inject method for class " + obj.getValueClass().getName() +
                         " not found in component " + component.getValueClass().getName() + " or in subComponents");
@@ -197,13 +197,13 @@ public class DaggerMockRule<C> implements MethodRule {
         }
     }
 
-    private boolean injectObjectUsingSubComponents(ObjectWrapper<C> component, ObjectWrapper<Object> obj) {
+    private boolean injectObjectUsingSubComponents(ObjectWrapper<C> component, ObjectWrapper<Object> obj, ModuleOverrider moduleOverrider) {
         ComponentClassWrapper<?> componentClassWrapper = new ComponentClassWrapper<>(component.getValue().getClass());
         List<SubComponentMethod<?>> subComponentMethods = componentClassWrapper.getSubComponentMethods();
         for (SubComponentMethod<?> subComponentMethod : subComponentMethods) {
             Method injectMethod = subComponentMethod.subComponentClassWrapper.getMethodWithParameter(obj.getValue().getClass());
             if (injectMethod != null) {
-                ObjectWrapper<?> subComponent = subComponentMethod.createSubComponent(component);
+                ObjectWrapper<?> subComponent = subComponentMethod.createSubComponent(component, moduleOverrider);
                 subComponent.invokeMethod(injectMethod, obj.getValue());
                 return true;
             }

@@ -77,4 +77,8 @@ public class ModuleOverrider {
         ErrorsFormatter.throwExceptionOnErrors("The following methods must be declared public or protected", visibilityErrors);
         ErrorsFormatter.throwExceptionOnErrors("The following methods must be non final", finalErrors);
     }
+
+    public Object getValueOfClass(Class<?> type) {
+        return overriddenObjectsMap.getValueOfClass(type);
+    }
 }

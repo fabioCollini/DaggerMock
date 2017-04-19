@@ -95,7 +95,7 @@ public class ComponentClassWrapper<T> {
             return false;
         }
 
-        public ObjectWrapper<?> createSubComponent(ObjectWrapper<?> component) {
+        public ObjectWrapper<?> createSubComponent(ObjectWrapper<?> component, ModuleOverrider moduleOverrider) {
             Parameter[] parameters = method.getParameters();
             if (parameters.length == 0) {
                 try {
@@ -104,7 +104,7 @@ public class ComponentClassWrapper<T> {
                     throw new RuntimeException("Error invoking method " + method + " on component " + component, e);
                 }
             } else {
-                Object[] args = instantiateModules(parameters);
+                Object[] args = instantiateModules(parameters, moduleOverrider);
                 try {
                     return new ObjectWrapper<>(method.invoke(component.getValue(), args));
                 } catch (Exception e) {
@@ -114,24 +114,30 @@ public class ComponentClassWrapper<T> {
         }
     }
 
-    private static Object[] instantiateModules(Parameter[] parameters) {
+    private static Object[] instantiateModules(Parameter[] parameters, ModuleOverrider moduleOverrider) {
         Object[] args = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             Parameter p = parameters[i];
             Class<?> moduleClass = p.getType();
-            args[i] = instantiateModule(moduleClass);
+            args[i] = instantiateModule(moduleClass, moduleOverrider);
         }
         return args;
     }
 
-    private static Object instantiateModule(Class<?> moduleClass) {
+    private static Object instantiateModule(Class<?> moduleClass, ModuleOverrider moduleOverrider) {
         try {
             Constructor<?>[] constructors = moduleClass.getConstructors();
             if (constructors.length == 0) {
                 return moduleClass.newInstance();
             } else {
-                // instantiate the module passing null arguments to constructor
-                Object[] args = new Object[constructors[0].getParameters().length];
+                // instantiate the module passing null or a test field to constructor
+                Parameter[] parameters = constructors[0].getParameters();
+                Object[] args = new Object[parameters.length];
+                for (int i = 0; i < parameters.length; i++) {
+                    Parameter parameter = parameters[i];
+                    Class<?> type = parameter.getType();
+                    args[i] = moduleOverrider.getValueOfClass(type);
+                }
                 return constructors[0].newInstance(args);
             }
         } catch (Exception e) {
