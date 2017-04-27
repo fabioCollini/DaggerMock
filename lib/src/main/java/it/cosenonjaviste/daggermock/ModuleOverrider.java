@@ -17,7 +17,10 @@
 package it.cosenonjaviste.daggermock;
 
 import dagger.Provides;
+
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Provider;
@@ -80,5 +83,36 @@ public class ModuleOverrider {
 
     public Object getValueOfClass(Class<?> type) {
         return overriddenObjectsMap.getValueOfClass(type);
+    }
+
+    public Object[] instantiateModules(Parameter[] parameters) {
+        Object[] args = new Object[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter p = parameters[i];
+            Class<?> moduleClass = p.getType();
+            args[i] = instantiateModule(moduleClass);
+        }
+        return args;
+    }
+
+    public Object instantiateModule(Class<?> moduleClass) {
+        try {
+            Constructor<?>[] constructors = moduleClass.getConstructors();
+            if (constructors.length == 0) {
+                return moduleClass.newInstance();
+            } else {
+                // instantiate the module passing null or a test field to constructor
+                Parameter[] parameters = constructors[0].getParameters();
+                Object[] args = new Object[parameters.length];
+                for (int i = 0; i < parameters.length; i++) {
+                    Parameter parameter = parameters[i];
+                    Class<?> type = parameter.getType();
+                    args[i] = getValueOfClass(type);
+                }
+                return constructors[0].newInstance(args);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error instantiating module " + moduleClass, e);
+        }
     }
 }

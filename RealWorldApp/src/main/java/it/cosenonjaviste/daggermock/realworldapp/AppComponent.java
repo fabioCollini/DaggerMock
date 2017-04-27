@@ -20,10 +20,9 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import it.cosenonjaviste.daggermock.realworldapp.main.MainActivityComponent;
-import it.cosenonjaviste.daggermock.realworldapp.main.MainActivityModule;
 
 @Singleton
 @Component(modules = AppModule.class)
 public interface AppComponent {
-    MainActivityComponent activityComponent(MainActivityModule module);
+    MainActivityComponent.Builder mainActivityComponentBuilder();
 }

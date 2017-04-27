@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         super.onCreate(savedInstanceState);
 
         App app = (App) getApplication();
-        app.getComponent().activityComponent(new MainActivityModule(this)).inject(this);
+        app.getComponent().mainActivityComponentBuilder().mainActivityModule(new MainActivityModule(this)).build().inject(this);
 
         setContentView(R.layout.main);
         textView = (TextView) findViewById(R.id.text);

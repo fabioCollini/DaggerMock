@@ -22,6 +22,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.Subcomponent;
+
 class ReflectUtils {
 
     private ReflectUtils() {
@@ -57,6 +59,17 @@ class ReflectUtils {
         return null;
     }
 
+    public static List<Method> getAllMethodsReturning(Class<?> declaringClass, Class<?> returnClass) {
+        List<Method> ret = new ArrayList<>();
+        Method[] methods = declaringClass.getMethods();
+        for (Method method : methods) {
+            if (method.getReturnType().equals(returnClass)) {
+                ret.add(method);
+            }
+        }
+        return ret;
+    }
+
     public static Method getMethodWithParameter(Class<?> declaringClass, Class<?> parameterClass) {
         Method[] methods = declaringClass.getMethods();
         for (Method method : methods) {
@@ -82,5 +95,14 @@ class ReflectUtils {
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Error setting field " + field, e);
         }
+    }
+
+    public static boolean isSubComponentBuilder(Class<?> returnType) {
+        // Subcomponent.Builder hasn't retention RUNTIME, check if it's an interface defined in a SubComponent annotated class
+        return returnType.isInterface() && returnType.isMemberClass() && returnType.getDeclaringClass() != null && isSubComponent(returnType.getDeclaringClass());
+    }
+
+    public static boolean isSubComponent(Class<?> returnType) {
+        return returnType.getAnnotation(Subcomponent.class) != null;
     }
 }

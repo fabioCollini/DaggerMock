@@ -16,14 +16,16 @@
 
 package it.cosenonjaviste.daggermock;
 
-import dagger.Lazy;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+
 import javax.inject.Provider;
+
+import dagger.Lazy;
 
 public class ObjectWrapper<T> {
     private T obj;
@@ -41,6 +43,10 @@ public class ObjectWrapper<T> {
 
     public Method getMethodReturning(Class<?> type) {
         return ReflectUtils.getMethodReturning(obj.getClass(), type);
+    }
+
+    public List<Method> getAllMethodsReturning(Class<?> type) {
+        return ReflectUtils.getAllMethodsReturning(obj.getClass(), type);
     }
 
     public <C> C invokeMethod(String methodName) {

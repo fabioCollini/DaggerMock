@@ -16,7 +16,12 @@
 
 package it.cosenonjaviste.daggermock;
 
-import it.cosenonjaviste.daggermock.ComponentClassWrapper.SubComponentMethod;
+import org.junit.rules.MethodRule;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,12 +30,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.inject.Provider;
-import org.junit.rules.MethodRule;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.Statement;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 public class DaggerMockRule<C> implements MethodRule {
     private ComponentClassWrapper<C> componentClass;
@@ -201,6 +202,15 @@ public class DaggerMockRule<C> implements MethodRule {
         ComponentClassWrapper<?> componentClassWrapper = new ComponentClassWrapper<>(component.getValue().getClass());
         List<SubComponentMethod<?>> subComponentMethods = componentClassWrapper.getSubComponentMethods();
         for (SubComponentMethod<?> subComponentMethod : subComponentMethods) {
+            Method injectMethod = subComponentMethod.subComponentClassWrapper.getMethodWithParameter(obj.getValue().getClass());
+            if (injectMethod != null) {
+                ObjectWrapper<?> subComponent = subComponentMethod.createSubComponent(component, moduleOverrider);
+                subComponent.invokeMethod(injectMethod, obj.getValue());
+                return true;
+            }
+        }
+        List<SubComponentBuilderMethod<?>> subComponentBuilderMethods = componentClassWrapper.getSubComponentBuilderMethods();
+        for (SubComponentBuilderMethod<?> subComponentMethod : subComponentBuilderMethods) {
             Method injectMethod = subComponentMethod.subComponentClassWrapper.getMethodWithParameter(obj.getValue().getClass());
             if (injectMethod != null) {
                 ObjectWrapper<?> subComponent = subComponentMethod.createSubComponent(component, moduleOverrider);

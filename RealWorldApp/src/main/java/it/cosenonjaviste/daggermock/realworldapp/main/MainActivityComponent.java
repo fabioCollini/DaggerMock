@@ -21,4 +21,11 @@ import dagger.Subcomponent;
 @Subcomponent(modules = MainActivityModule.class)
 public interface MainActivityComponent {
     void inject(MainActivity mainActivity);
+
+    @Subcomponent.Builder
+    interface Builder {
+        Builder mainActivityModule(MainActivityModule module);
+
+        MainActivityComponent build();
+    }
 }
