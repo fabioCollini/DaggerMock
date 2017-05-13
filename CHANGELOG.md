@@ -1,3 +1,8 @@
+#### 0.6.5
+ - Support for @Subcomponent.Builder
+ - Support for inheritance in test classes with InjectFromComponent annotation
+ - Support for lazy fields in InjectFromComponent annotation
+
 #### 0.6.4
  - Fix to ignore static fields of test classes
  - Removed fallback on not annotated fields to avoid problems with Named annotation
