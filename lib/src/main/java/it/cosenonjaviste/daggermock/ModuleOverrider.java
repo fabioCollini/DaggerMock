@@ -31,6 +31,7 @@ import org.mockito.stubbing.Answer;
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isProtected;
 import static java.lang.reflect.Modifier.isPublic;
+import static java.lang.reflect.Modifier.isStatic;
 
 public class ModuleOverrider {
 
@@ -67,6 +68,7 @@ public class ModuleOverrider {
         Method[] methods = module.getClass().getDeclaredMethods();
         List<String> visibilityErrors = new ArrayList<>();
         List<String> finalErrors = new ArrayList<>();
+        List<String> staticErrors = new ArrayList<>();
         for (Method method : methods) {
             if (method.isAnnotationPresent(Provides.class)) {
                 if (!isPublic(method.getModifiers()) && !isProtected(method.getModifiers())) {
@@ -75,10 +77,14 @@ public class ModuleOverrider {
                 if (isFinal(method.getModifiers())) {
                     finalErrors.add(method.toString());
                 }
+                if (isStatic(method.getModifiers()) && overriddenObjectsMap.getProvider(method) != null) {
+                    staticErrors.add(method.toString());
+                }
             }
         }
         ErrorsFormatter.throwExceptionOnErrors("The following methods must be declared public or protected", visibilityErrors);
         ErrorsFormatter.throwExceptionOnErrors("The following methods must be non final", finalErrors);
+        ErrorsFormatter.throwExceptionOnErrors("The following methods must be non static", staticErrors);
     }
 
     public Object getValueOfClass(Class<?> type) {
