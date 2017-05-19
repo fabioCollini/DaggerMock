@@ -1,3 +1,7 @@
+#### 0.6.6
+ - Added check to show clear error message when trying to mock static @Provides methods
+ (thanks [mikovali](https://github.com/mikovali))
+
 #### 0.6.5
  - Support for @Subcomponent.Builder
  - Support for inheritance in test classes with InjectFromComponent annotation
@@ -8,7 +12,7 @@
  - Removed fallback on not annotated fields to avoid problems with Named annotation
  - Added check to throw exceptions on module final methods
  - Exposed init method to not depend on Test annotation to use DaggerMock with frameworks like Cucumber
- (thanks [danielocampo2](https://github.com/danielocampo2)!)
+ (thanks [danielocampo2](https://github.com/danielocampo2))
  - Support for inheritance in test classes
 
 #### 0.6.3
