@@ -64,6 +64,7 @@ public class TestModule extends MyModule {
 
 DaggerMock can't override Dagger objects that are defined using `Inject` annotation, since version 0.6
  you get a runtime error if the test contains a field of a class that is not defined in a module. 
+All the modules containing objects that are going to be replaced must be provided in the `DaggerMockRule` constructor.
 
 ## Espresso support
 
