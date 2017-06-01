@@ -16,17 +16,22 @@
 
 package it.cosenonjaviste.daggermock;
 
-import dagger.Provides;
+import org.mockito.Mockito;
+import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.internal.creation.bytebuddy.ByteBuddyMockMaker;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.plugins.MockMaker;
+import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Provider;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+
+import dagger.Provides;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isProtected;
