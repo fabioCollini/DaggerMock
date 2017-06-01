@@ -36,7 +36,8 @@ public class FinalMethodTest {
             fail();
         } catch (RuntimeException e) {
             assertThat(e.getMessage()).isEqualTo("The following methods must be non final:\n" +
-                    "public final it.cosenonjaviste.daggermock.modulemethodsvisibility.MyService it.cosenonjaviste.daggermock.modulemethodsvisibility.FinalMethodTest$MyModule.provideMyService()");
+                    "public final it.cosenonjaviste.daggermock.modulemethodsvisibility.MyService it.cosenonjaviste.daggermock.modulemethodsvisibility.FinalMethodTest$MyModule.provideMyService()\n" +
+                    " or using MockMaker plugin");
         }
     }
 

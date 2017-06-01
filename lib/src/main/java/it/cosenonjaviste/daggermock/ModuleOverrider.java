@@ -74,17 +74,34 @@ public class ModuleOverrider {
                 if (!isPublic(method.getModifiers()) && !isProtected(method.getModifiers())) {
                     visibilityErrors.add(method.toString());
                 }
-                if (isFinal(method.getModifiers())) {
-                    finalErrors.add(method.toString());
-                }
                 if (isStatic(method.getModifiers()) && overriddenObjectsMap.getProvider(method) != null) {
                     staticErrors.add(method.toString());
+                }
+                if (!isUsedMockMaker()) {
+                    if (isFinal(method.getModifiers())) {
+                        finalErrors.add(method.toString());
+                    }
                 }
             }
         }
         ErrorsFormatter.throwExceptionOnErrors("The following methods must be declared public or protected", visibilityErrors);
-        ErrorsFormatter.throwExceptionOnErrors("The following methods must be non final", finalErrors);
+        ErrorsFormatter.throwExceptionOnErrors("The following methods must be non final", finalErrors, " or using MockMaker plugin");
         ErrorsFormatter.throwExceptionOnErrors("The following methods must be non static", staticErrors);
+    }
+
+    private Boolean isUsedMockMaker() {
+        if (!isMockitoVersion2()) return false;
+        MockMaker mockMaker = Plugins.getMockMaker();
+        return !(mockMaker instanceof ByteBuddyMockMaker);
+    }
+
+    private Boolean isMockitoVersion2() {
+        try {
+            Class.forName("org.mockito.internal.creation.bytebuddy.ByteBuddyMockMaker");
+            return true;
+        } catch (ClassNotFoundException e) {
+        }
+        return false;
     }
 
     public Object getValueOfClass(Class<?> type) {
