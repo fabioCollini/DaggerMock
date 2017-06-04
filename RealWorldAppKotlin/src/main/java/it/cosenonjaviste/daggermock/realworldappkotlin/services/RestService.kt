@@ -19,9 +19,9 @@ package it.cosenonjaviste.daggermock.realworldappkotlin.services
 import it.cosenonjaviste.daggermock.realworldappkotlin.App
 import java.util.*
 
-open class RestService(private val app: App) {
+class RestService(private val app: App) {
 
-    open fun executeServerCall(): Boolean {
+    fun executeServerCall(): Boolean {
         return Random().nextBoolean()
     }
 }

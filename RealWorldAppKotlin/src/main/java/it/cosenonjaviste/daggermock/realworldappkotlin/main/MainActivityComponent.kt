@@ -19,7 +19,7 @@ package it.cosenonjaviste.daggermock.realworldappkotlin.main
 import dagger.Subcomponent
 
 @Subcomponent(modules = arrayOf(MainActivityModule::class))
-open interface MainActivityComponent {
+interface MainActivityComponent {
     fun inject(mainActivity: MainActivity)
 
     @Subcomponent.Builder

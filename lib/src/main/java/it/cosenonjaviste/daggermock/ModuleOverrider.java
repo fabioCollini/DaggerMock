@@ -16,17 +16,22 @@
 
 package it.cosenonjaviste.daggermock;
 
-import dagger.Provides;
+import org.mockito.Mockito;
+import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.internal.creation.bytebuddy.ByteBuddyMockMaker;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.plugins.MockMaker;
+import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Provider;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+
+import dagger.Provides;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isProtected;
@@ -74,17 +79,34 @@ public class ModuleOverrider {
                 if (!isPublic(method.getModifiers()) && !isProtected(method.getModifiers())) {
                     visibilityErrors.add(method.toString());
                 }
-                if (isFinal(method.getModifiers())) {
-                    finalErrors.add(method.toString());
-                }
                 if (isStatic(method.getModifiers()) && overriddenObjectsMap.getProvider(method) != null) {
                     staticErrors.add(method.toString());
+                }
+                if (!isUsedMockMaker()) {
+                    if (isFinal(method.getModifiers())) {
+                        finalErrors.add(method.toString());
+                    }
                 }
             }
         }
         ErrorsFormatter.throwExceptionOnErrors("The following methods must be declared public or protected", visibilityErrors);
-        ErrorsFormatter.throwExceptionOnErrors("The following methods must be non final", finalErrors);
+        ErrorsFormatter.throwExceptionOnErrors("The following methods must be non final", finalErrors, " or using MockMaker plugin");
         ErrorsFormatter.throwExceptionOnErrors("The following methods must be non static", staticErrors);
+    }
+
+    private Boolean isUsedMockMaker() {
+        if (!isMockitoVersion2()) return false;
+        MockMaker mockMaker = Plugins.getMockMaker();
+        return !(mockMaker instanceof ByteBuddyMockMaker);
+    }
+
+    private Boolean isMockitoVersion2() {
+        try {
+            Class.forName("org.mockito.internal.creation.bytebuddy.ByteBuddyMockMaker");
+            return true;
+        } catch (ClassNotFoundException e) {
+        }
+        return false;
     }
 
     public Object getValueOfClass(Class<?> type) {

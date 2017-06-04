@@ -22,11 +22,11 @@ import it.cosenonjaviste.daggermock.realworldappkotlin.services.RestService
 import javax.inject.Singleton
 
 @Module
-open class AppModule(private val app: App) {
+class AppModule(private val app: App) {
 
     @Provides
     @Singleton
-    open fun provideRestService(): RestService {
+    fun provideRestService(): RestService {
         return RestService(app)
     }
 }

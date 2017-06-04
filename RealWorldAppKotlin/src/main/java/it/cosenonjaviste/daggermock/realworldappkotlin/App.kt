@@ -19,7 +19,7 @@ package it.cosenonjaviste.daggermock.realworldappkotlin
 import android.app.Application
 import android.support.annotation.VisibleForTesting
 
-open class App : Application() {
+class App : Application() {
     @set:VisibleForTesting
     lateinit var component: AppComponent
 

@@ -23,7 +23,7 @@ import it.cosenonjaviste.daggermock.realworldappkotlin.App
 import it.cosenonjaviste.daggeroverride.R
 import javax.inject.Inject
 
-open class MainActivity : AppCompatActivity(), MainView {
+class MainActivity : AppCompatActivity(), MainView {
 
     @Inject lateinit var presenter: MainPresenter
 

@@ -19,9 +19,9 @@ package it.cosenonjaviste.daggermock.realworldappkotlin.services
 import android.app.Activity
 import android.support.design.widget.Snackbar
 
-open class SnackBarManager(private val activity: Activity) {
+class SnackBarManager(private val activity: Activity) {
 
-    open fun showMessage(message: String) {
+    fun showMessage(message: String) {
         Snackbar.make(activity.findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
     }
 }

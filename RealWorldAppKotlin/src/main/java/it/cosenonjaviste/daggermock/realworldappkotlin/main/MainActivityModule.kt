@@ -22,20 +22,20 @@ import it.cosenonjaviste.daggermock.realworldappkotlin.services.MainService
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.SnackBarManager
 
 @Module
-open class MainActivityModule(private val mainActivity: MainActivity) {
+class MainActivityModule(private val mainActivity: MainActivity) {
 
     @Provides
-    open fun provideSnackBarManager(): SnackBarManager {
+    fun provideSnackBarManager(): SnackBarManager {
         return SnackBarManager(mainActivity)
     }
 
     @Provides
-    open fun provideMainView(): MainView {
+    fun provideMainView(): MainView {
         return mainActivity
     }
 
     @Provides
-    open fun provideMainPresenter(mainService: MainService, view: MainView, snackBarManager: SnackBarManager): MainPresenter {
+    fun provideMainPresenter(mainService: MainService, view: MainView, snackBarManager: SnackBarManager): MainPresenter {
         return MainPresenter(mainService, view, snackBarManager)
     }
 }

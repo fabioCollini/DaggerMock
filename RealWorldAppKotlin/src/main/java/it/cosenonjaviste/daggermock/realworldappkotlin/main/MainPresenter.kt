@@ -19,9 +19,9 @@ package it.cosenonjaviste.daggermock.realworldappkotlin.main
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.MainService
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.SnackBarManager
 
-open class MainPresenter(private val mainService: MainService, private val view: MainView, private val snackBarManager: SnackBarManager) {
+class MainPresenter(private val mainService: MainService, private val view: MainView, private val snackBarManager: SnackBarManager) {
 
-    open fun loadData() {
+    fun loadData() {
         try {
             val s = mainService.doSomething()
             view.showText(s)
