@@ -29,11 +29,11 @@ android {
 
     defaultConfig {
         applicationId "it.cosenonjaviste.daggermock.realworldappkotlin"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'com.github.tmurakami.dexopener.DexOpenerAndroidJUnitRunner'
     }
     buildTypes {
         release {
@@ -67,6 +67,9 @@ dependencies {
     testCompile "org.robolectric:robolectric:3.0"
     testCompile 'org.assertj:assertj-core:2.5.0'
 
+    androidTestCompile "org.mockito:mockito-android:$MOCKITO_VERSION"
+
+    androidTestCompile 'com.github.tmurakami:dexopener:0.9.8'
     androidTestCompile "org.mockito:mockito-core:$MOCKITO_VERSION"
     androidTestCompile "org.mockito:mockito-android:$MOCKITO_VERSION"
     androidTestCompile "com.android.support.test:runner:$RUNNER_VERSION"
