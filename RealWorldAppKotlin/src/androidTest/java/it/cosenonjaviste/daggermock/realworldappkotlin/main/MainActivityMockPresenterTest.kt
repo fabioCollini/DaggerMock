@@ -58,7 +58,7 @@ class MainActivityMockPresenterTest {
     @Test
     fun testErrorOnCreate() {
         doAnswer {
-            snackBarManager!!.showMessage("Error!")
+            snackBarManager.showMessage("Error!")
             null
         }.`when`<MainPresenter>(presenter).loadData()
 
@@ -67,6 +67,6 @@ class MainActivityMockPresenterTest {
 
         onView(withId(R.id.text)).check(matches(withText("")))
 
-        verify<SnackBarManager>(snackBarManager).showMessage("Error!")
+        verify(snackBarManager).showMessage("Error!")
     }
 }
