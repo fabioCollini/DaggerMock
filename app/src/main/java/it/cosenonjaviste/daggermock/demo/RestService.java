@@ -17,7 +17,10 @@
 package it.cosenonjaviste.daggermock.demo;
 
 public class RestService {
+
+    public static final String MSG_HELLO_WORLD = "Hello world";
+
     public String getSomething() {
-        return "Hello world";
+        return MSG_HELLO_WORLD;
     }
 }

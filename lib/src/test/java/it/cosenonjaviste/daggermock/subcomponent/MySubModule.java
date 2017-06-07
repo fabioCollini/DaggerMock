@@ -5,6 +5,7 @@ import dagger.Provides;
 
 @Module
 public class MySubModule {
+    public static final int CONST_MY_INT = 12345;
 
 //    private String param;
 //
@@ -14,6 +15,6 @@ public class MySubModule {
 
     @Provides
     public Integer provideMyInteger() {
-        return 12345;
+        return CONST_MY_INT;
     }
 }

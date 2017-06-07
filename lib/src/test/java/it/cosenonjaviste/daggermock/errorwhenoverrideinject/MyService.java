@@ -17,7 +17,10 @@
 package it.cosenonjaviste.daggermock.errorwhenoverrideinject;
 
 public class MyService {
+
+    public static final String MSG_AAA = "AAA";
+
     public String get() {
-        return "AAA";
+        return MSG_AAA;
     }
 }

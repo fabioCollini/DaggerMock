@@ -6,8 +6,10 @@ import dagger.Provides;
 @Module
 public class MySubModule2 {
 
+    public static final long CONST_MY_LONG = 12345678L;
+
     @Provides
     public Long provideMyLong() {
-        return 12345678L;
+        return CONST_MY_LONG;
     }
 }

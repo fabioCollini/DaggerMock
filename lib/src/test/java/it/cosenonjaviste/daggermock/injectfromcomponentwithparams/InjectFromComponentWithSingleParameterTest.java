@@ -43,9 +43,12 @@ public class InjectFromComponentWithSingleParameterTest {
 
     @Module
     public static class MyModule {
+
+        public static final String MSG_S1 = "s1";
+
         @Provides
         public String provideS1() {
-            return "s1";
+            return MSG_S1;
         }
     }
 

@@ -20,11 +20,13 @@ import javax.inject.Inject;
 
 public class MyService2 {
 
+    public static final String MSG_BBB = "BBB";
+
     @Inject
     public MyService2() {
     }
 
     public String get() {
-        return "BBB";
+        return MSG_BBB;
     }
 }

@@ -21,7 +21,10 @@ import dagger.Provides;
 
 @Module
 public class MyModule {
+
+    public static final String MSG_AAAA = "AAAA";
+
     @Provides public String provideMyString() {
-        return "AAAA";
+        return MSG_AAAA;
     }
 }

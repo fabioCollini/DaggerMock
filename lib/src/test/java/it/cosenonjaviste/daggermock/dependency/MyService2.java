@@ -17,7 +17,10 @@
 package it.cosenonjaviste.daggermock.dependency;
 
 public class MyService2 {
+
+    public static final String MSG_AAA = "AAA";
+
     public String get() {
-        return "AAA";
+        return MSG_AAA;
     }
 }
