@@ -1,3 +1,9 @@
+#### 0.7.0
+ - Improved Kotlin support (thanks [lenguyenthanh](https://github.com/lenguyenthanh) for the pull request)
+ - New Kotlin examples using [mock-maker](http://hadihariri.com/2016/10/04/Mocking-Kotlin-With-Mockito/)/
+ [dexopener](https://github.com/tmurakami/dexopener) and
+ [kotlin-allopen](https://kotlinlang.org/docs/reference/compiler-plugins.html#all-open-compiler-plugin)
+
 #### 0.6.6
  - Added check to show clear error message when trying to mock static @Provides methods
  (thanks [mikovali](https://github.com/mikovali))
