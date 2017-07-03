@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-include ':app', ':lib', 'RealWorldApp', 'RealWorldAppKotlin'
+include ':app', ':lib', 'RealWorldApp', 'RealWorldAppKotlin', 'RealWorldAppKotlinAllOpen'
