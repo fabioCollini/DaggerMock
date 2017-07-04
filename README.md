@@ -11,7 +11,7 @@ More info about testing using Dagger 2 and Mockito are available in this
 Overriding an object managed by Dagger 2 is not easy, you need to define a TestModule and, if you want
 to inject your test object, a TestComponent.
 
-Using a `DaggerMockRule` it's possible to override easily the objects defined in a Dagger module:
+Using a `DaggerMockRule` it's possible to override easily (in Java or Kotlin) the objects defined in a Dagger module:
 
 ```java
 public class MainServiceTest {
@@ -247,6 +247,17 @@ public interface AppComponent {
 
 Subcomponent support doesn't work on Dagger 2.0, you need to use Dagger version 2.1+.
 A complete example is available [here](https://github.com/fabioCollini/DaggerMock/tree/master/RealWorldApp).
+
+## Kotlin support
+
+DaggerMock can be used in both Java and Kotlin projects. Kotlin classes are final by default, you need to
+ _open_ them to create mocks using Mockito (and to use DaggerMock). There are three ways to solve this problem:
+
+ - define classes as `open`: the big drawback is that classes are open also in production code
+ - use [mock-maker](http://hadihariri.com/2016/10/04/Mocking-Kotlin-With-Mockito/) and [dexopener](https://github.com/tmurakami/dexopener):
+ a demo is available in [RealWorldAppKotlin](https://github.com/fabioCollini/DaggerMock/tree/master/RealWorldAppKotlin) module
+ - use [kotlin-allopen](https://kotlinlang.org/docs/reference/compiler-plugins.html#all-open-compiler-plugin):
+ a demo is available in [RealWorldAppKotlinAllOpen](https://github.com/fabioCollini/DaggerMock/tree/master/RealWorldAppKotlinAllOpen) module
 
 ## JitPack configuration
 
