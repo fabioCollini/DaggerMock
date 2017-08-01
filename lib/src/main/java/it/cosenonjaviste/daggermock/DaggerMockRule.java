@@ -36,6 +36,7 @@ import javax.inject.Provider;
 public class DaggerMockRule<C> implements MethodRule {
     private ComponentClassWrapper<C> componentClass;
     private ComponentSetter<C> componentSetter;
+    private BuilderCustomizer customizer;
     private List<Object> modules = new ArrayList<>();
     private final List<DependentComponentInfo> dependencies = new ArrayList<>();
     private final Map<Class<?>, ObjectWrapper<?>> dependenciesWrappers = new HashMap<>();
@@ -54,6 +55,11 @@ public class DaggerMockRule<C> implements MethodRule {
 
     public <DC> DaggerMockRule<C> set(Class<DC> dependentComponentClass, ComponentSetter<DC> componentSetter) {
         dependentComponentsSetters.put(dependentComponentClass, componentSetter);
+        return this;
+    }
+
+    public <B> DaggerMockRule<C> customizeBuilder(BuilderCustomizer<B> customizer) {
+        this.customizer = customizer;
         return this;
     }
 
@@ -124,6 +130,10 @@ public class DaggerMockRule<C> implements MethodRule {
         ObjectWrapper<Object> componentBuilder = initComponent(componentClass, modules, moduleOverrider);
 
         componentBuilder = initComponentDependencies(componentClass.getWrappedClass(), componentBuilder, moduleOverrider);
+
+        if (customizer != null) {
+            componentBuilder = new ObjectWrapper<>(customizer.customize(componentBuilder.getValue()));
+        }
 
         C component = componentBuilder.invokeMethod("build");
 
@@ -246,6 +256,10 @@ public class DaggerMockRule<C> implements MethodRule {
 
     public interface ComponentSetter<C> {
         void setComponent(C component);
+    }
+
+    public interface BuilderCustomizer<B> {
+        B customize(B builder);
     }
 
     public interface MockInitializer<M> {
