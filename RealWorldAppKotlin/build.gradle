@@ -54,6 +54,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile "org.mockito:mockito-core:$MOCKITO_VERSION"
     testCompile "org.mockito:mockito-inline:$MOCKITO_VERSION"
+    testCompile('com.nhaarman:mockito-kotlin-kt1.1:1.5.0') {
+        exclude group: 'org.jetbrains.kotlin'
+    }
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
 
@@ -72,6 +75,9 @@ dependencies {
 
     androidTestCompile 'com.github.tmurakami:dexopener:0.10.3'
     androidTestCompile "org.mockito:mockito-android:$MOCKITO_VERSION"
+    androidTestCompile('com.nhaarman:mockito-kotlin-kt1.1:1.5.0') {
+        exclude group: 'org.jetbrains.kotlin'
+    }
     androidTestCompile "com.android.support.test:runner:$RUNNER_VERSION"
     androidTestCompile "com.android.support.test:rules:$RUNNER_VERSION"
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2') {

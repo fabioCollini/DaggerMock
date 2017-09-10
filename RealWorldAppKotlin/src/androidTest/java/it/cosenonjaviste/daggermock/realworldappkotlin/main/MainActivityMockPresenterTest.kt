@@ -22,12 +22,12 @@ import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.rule.ActivityTestRule
+import com.nhaarman.mockito_kotlin.mock
 import it.cosenonjaviste.daggermock.realworldappkotlin.espressoDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.SnackBarManager
 import it.cosenonjaviste.daggeroverride.R
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
 
@@ -37,9 +37,9 @@ class MainActivityMockPresenterTest {
 
     @get:Rule val activityRule = ActivityTestRule(MainActivity::class.java, false, false)
 
-    @Mock lateinit var presenter: MainPresenter
+    val presenter: MainPresenter = mock()
 
-    @Mock lateinit var snackBarManager: SnackBarManager
+    val snackBarManager: SnackBarManager = mock()
 
     @Test
     fun testOnCreate() {

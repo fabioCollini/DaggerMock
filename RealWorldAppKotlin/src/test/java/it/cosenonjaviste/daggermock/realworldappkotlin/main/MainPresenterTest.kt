@@ -16,26 +16,25 @@
 
 package it.cosenonjaviste.daggermock.realworldappkotlin.main
 
+import com.nhaarman.mockito_kotlin.*
 import it.cosenonjaviste.daggermock.InjectFromComponent
 import it.cosenonjaviste.daggermock.realworldappkotlin.jUnitDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.RestService
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.SnackBarManager
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentMatchers
-import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.ArgumentMatchers.anyString
 
 class MainPresenterTest {
     @get:Rule val rule = jUnitDaggerMockRule()
 
-    @Mock lateinit internal var restService: RestService
+    val restService: RestService = mock()
 
-    @Mock lateinit internal var activity: MainActivity
+    val activity: MainActivity = mock()
 
-    @Mock lateinit internal var view: MainView
+    val view: MainView = mock()
 
-    @Mock lateinit internal var snackBarManager: SnackBarManager
+    val snackBarManager: SnackBarManager = mock()
 
     @InjectFromComponent(MainActivity::class)
     lateinit internal var presenter: MainPresenter
@@ -52,11 +51,11 @@ class MainPresenterTest {
 
     @Test
     fun testErrorOnLoadData() {
-        `when`(restService.executeServerCall()).thenReturn(false)
+        whenever(restService.executeServerCall()).thenReturn(false)
 
         presenter.loadData()
 
-        verify(view, never()).showText(ArgumentMatchers.anyString())
+        verify(view, never()).showText(anyString())
         verify(snackBarManager).showMessage("Error!")
     }
 }

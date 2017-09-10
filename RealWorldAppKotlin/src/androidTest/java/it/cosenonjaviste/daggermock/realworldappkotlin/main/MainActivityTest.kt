@@ -22,14 +22,14 @@ import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.rule.ActivityTestRule
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.whenever
 import it.cosenonjaviste.daggermock.realworldappkotlin.espressoDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.RestService
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.SnackBarManager
 import it.cosenonjaviste.daggeroverride.R
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
 
 class MainActivityTest {
@@ -38,13 +38,13 @@ class MainActivityTest {
 
     @get:Rule val activityRule = ActivityTestRule(MainActivity::class.java, false, false)
 
-    @Mock lateinit var restService: RestService
+    val restService: RestService = mock()
 
-    @Mock lateinit var snackBarManager: SnackBarManager
+    val snackBarManager: SnackBarManager = mock()
 
     @Test
     fun testOnCreate() {
-        `when`(restService.executeServerCall()).thenReturn(true)
+        whenever(restService.executeServerCall()).thenReturn(true)
 
         activityRule.launchActivity(null)
         onView(withId(R.id.reload)).perform(click())
@@ -54,12 +54,12 @@ class MainActivityTest {
 
     @Test
     fun testErrorOnCreate() {
-        `when`(restService.executeServerCall()).thenReturn(false)
+        whenever(restService.executeServerCall()).thenReturn(false)
 
         activityRule.launchActivity(null)
         onView(withId(R.id.reload)).perform(click())
 
         onView(withId(R.id.text)).check(matches(withText("")))
-        verify<SnackBarManager>(snackBarManager).showMessage("Error!")
+        verify(snackBarManager).showMessage("Error!")
     }
 }

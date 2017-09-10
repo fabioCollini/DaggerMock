@@ -16,6 +16,8 @@
 
 package it.cosenonjaviste.daggermock.realworldappkotlin.services
 
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.whenever
 import it.cosenonjaviste.daggermock.InjectFromComponent
 import it.cosenonjaviste.daggermock.realworldappkotlin.jUnitDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.main.MainActivity
@@ -23,24 +25,22 @@ import it.cosenonjaviste.daggermock.realworldappkotlin.main.MainPresenter
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
 
 class MainServiceTest {
     @get:Rule val rule = jUnitDaggerMockRule()
 
-    @Mock lateinit var restService: RestService
+    val restService: RestService = mock()
 
-    @Mock lateinit var mainActivity: MainActivity
+    val mainActivity: MainActivity = mock()
 
-    @Mock lateinit var snackBarManager: SnackBarManager
+    val snackBarManager: SnackBarManager = mock()
 
     @InjectFromComponent(MainActivity::class, MainPresenter::class)
     lateinit var mainService: MainService
 
     @Test
     fun testDoSomething() {
-        `when`(restService.executeServerCall()).thenReturn(true)
+        whenever(restService.executeServerCall()).thenReturn(true)
 
         val s = mainService.doSomething()
 
@@ -49,7 +49,7 @@ class MainServiceTest {
 
     @Test(expected = RuntimeException::class)
     fun testErrorOnDoSomething() {
-        `when`(restService.executeServerCall()).thenReturn(false)
+        whenever(restService.executeServerCall()).thenReturn(false)
 
         mainService.doSomething()
     }
