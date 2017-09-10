@@ -16,12 +16,10 @@
 
 package it.cosenonjaviste.daggermock.realworldappkotlin
 
-import it.cosenonjaviste.daggermock.DaggerMockRule
+import it.cosenonjaviste.daggermock.DaggerMock
 import it.cosenonjaviste.daggermock.realworldappkotlin.main.MainView
 import org.mockito.Mockito
 
-class JUnitDaggerMockRule : DaggerMockRule<AppComponent>(AppComponent::class.java, AppModule(Mockito.mock(App::class.java))) {
-    init {
-        providesMock(MainView::class.java)
-    }
+fun jUnitDaggerMockRule() = DaggerMock.rule<AppComponent>(AppModule(Mockito.mock(App::class.java))) {
+    providesMock<MainView>()
 }

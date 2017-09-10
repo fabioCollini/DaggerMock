@@ -22,7 +22,7 @@ import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
 import android.support.test.rule.ActivityTestRule
-import it.cosenonjaviste.daggermock.realworldappkotlin.EspressoDaggerMockRule
+import it.cosenonjaviste.daggermock.realworldappkotlin.espressoDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.RestService
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.SnackBarManager
 import it.cosenonjaviste.daggeroverride.R
@@ -34,7 +34,7 @@ import org.mockito.Mockito.verify
 
 class MainActivityTest {
 
-    @get:Rule val rule = EspressoDaggerMockRule()
+    @get:Rule val rule = espressoDaggerMockRule()
 
     @get:Rule val activityRule = ActivityTestRule(MainActivity::class.java, false, false)
 

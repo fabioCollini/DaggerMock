@@ -17,7 +17,7 @@
 package it.cosenonjaviste.daggermock.realworldappkotlin.services
 
 import it.cosenonjaviste.daggermock.InjectFromComponent
-import it.cosenonjaviste.daggermock.realworldappkotlin.JUnitDaggerMockRule
+import it.cosenonjaviste.daggermock.realworldappkotlin.jUnitDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.main.MainActivity
 import it.cosenonjaviste.daggermock.realworldappkotlin.main.MainPresenter
 import org.assertj.core.api.Java6Assertions.assertThat
@@ -27,7 +27,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 
 class MainServiceTest {
-    @get:Rule val rule = JUnitDaggerMockRule()
+    @get:Rule val rule = jUnitDaggerMockRule()
 
     @Mock lateinit var restService: RestService
 

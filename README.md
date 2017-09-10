@@ -1,3 +1,6 @@
+builder are supported, objects defined using BindsInstance cannot be replaced
+
+
 # DaggerMock
 A JUnit rule to easily override Dagger 2 objects
 

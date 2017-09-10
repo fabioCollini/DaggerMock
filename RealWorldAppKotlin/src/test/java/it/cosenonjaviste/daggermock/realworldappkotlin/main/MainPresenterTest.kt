@@ -17,7 +17,7 @@
 package it.cosenonjaviste.daggermock.realworldappkotlin.main
 
 import it.cosenonjaviste.daggermock.InjectFromComponent
-import it.cosenonjaviste.daggermock.realworldappkotlin.JUnitDaggerMockRule
+import it.cosenonjaviste.daggermock.realworldappkotlin.jUnitDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.RestService
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.SnackBarManager
 import org.junit.Rule
@@ -27,7 +27,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 
 class MainPresenterTest {
-    @get:Rule val rule = JUnitDaggerMockRule()
+    @get:Rule val rule = jUnitDaggerMockRule()
 
     @Mock lateinit internal var restService: RestService
 
@@ -46,8 +46,8 @@ class MainPresenterTest {
 
         presenter.loadData()
 
-        verify<MainView>(view).showText("Hello world")
-        //        verify(snackBarManager, never()).showMessage(anyString());
+        verify(view).showText("Hello world")
+        verify(snackBarManager, never()).showMessage(anyString());
     }
 
     @Test
@@ -56,7 +56,7 @@ class MainPresenterTest {
 
         presenter.loadData()
 
-        verify<MainView>(view, never()).showText(ArgumentMatchers.anyString())
-        verify<SnackBarManager>(snackBarManager).showMessage("Error!")
+        verify(view, never()).showText(ArgumentMatchers.anyString())
+        verify(snackBarManager).showMessage("Error!")
     }
 }
