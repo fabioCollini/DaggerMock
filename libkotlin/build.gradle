@@ -17,8 +17,12 @@
 apply plugin: 'java'
 apply plugin: 'kotlin'
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+apply plugin: 'com.github.dcendents.android-maven'
+
+group='com.github.fabioCollini.daggermock'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 dependencies {
     compileOnly "org.mockito:mockito-core:$MOCKITO_VERSION"
