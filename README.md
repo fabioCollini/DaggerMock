@@ -1,6 +1,3 @@
-builder are supported, objects defined using BindsInstance cannot be replaced
-
-
 # DaggerMock
 A JUnit rule to easily override Dagger 2 objects
 
@@ -16,6 +13,7 @@ to inject your test object, a TestComponent.
 
 Using a `DaggerMockRule` it's possible to override easily (in Java or Kotlin) the objects defined in a Dagger module:
 
+###### Java
 ```java
 public class MainServiceTest {
 
@@ -39,6 +37,31 @@ public class MainServiceTest {
         mainService.doSomething();
 
         verify(myPrinter).print("ABC");
+    }
+}
+```
+
+###### Kotlin
+```kotlin
+class MainServiceTest {
+
+    @get:Rule val rule = DaggerMock.rule<MyComponent>(MyModule()) {
+        set { mainService = it.mainService() }
+    }
+
+    val restService: RestService = mock()
+
+    val myPrinter: MyPrinter = mock()
+
+    lateinit var mainService: MainService
+
+    @Test
+    fun testDoSomething() {
+        whenever(restService.something).thenReturn("abc")
+
+        mainService.doSomething()
+
+        verify(myPrinter).print("ABC")
     }
 }
 ```
@@ -73,6 +96,7 @@ All the modules containing objects that are going to be replaced must be provide
 
 A `DaggerMockRule` can also be used in an Espresso test:
 
+###### Java
 ```java
 public class MainActivityTest {
 
@@ -101,10 +125,38 @@ public class MainActivityTest {
 }
 ```
 
+###### Kotlin
+```kotlin
+class MainActivityTest {
+
+    @get:Rule val daggerRule = DaggerMock.rule<MyComponent>(MyModule()) {
+        set {
+            val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as App
+            app.component = it
+        }
+    }
+
+    @get:Rule var activityRule = ActivityTestRule(MainActivity::class.java, false, false)
+
+    val restService: RestService = mock()
+
+    val myPrinter: MyPrinter = mock()
+
+    @Test fun testCreateActivity() {
+        whenever(restService.something).thenReturn("abc")
+
+        activityRule.launchActivity(null)
+
+        verify(myPrinter).print("ABC")
+    }
+}
+```
+
 ## Robolectric support
 
 In a similar way a `DaggerMockRule` can be used in a Robolectric test:
 
+###### Java
 ```java
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -132,6 +184,32 @@ public class MainActivityTest {
 }
 ```
 
+###### Kotlin
+```kotlin
+@RunWith(RobolectricTestRunner::class)
+@Config(constants = BuildConfig::class, sdk = intArrayOf(21))
+class MainActivityTest {
+
+    @get:Rule val rule = DaggerMock.rule<MyComponent>(MyModule()) {
+        set { (RuntimeEnvironment.application as App).component = it }
+    }
+
+    val restService: RestService = mock()
+
+    val myPrinter: MyPrinter = mock()
+
+    @Test fun testCreateActivity() {
+        whenever(restService.something).thenReturn("abc")
+
+        Robolectric.setupActivity(MainActivity::class.java)
+
+        verify(myPrinter).print("ABC")
+    }
+}
+```
+
+> Note for Linux and Mac Users: working directory must be manually configured in Android Studio. More info on [Robolectric site](http://robolectric.org/getting-started/).
+
 DaggerMock is used in the [Just Another Android App](https://github.com/athkalia/Just-Another-Android-App) project, you can see an example of a robolectric test [here](https://github.com/athkalia/Just-Another-Android-App/blob/develop/app/src/unitTests/java/com/example/features/dashboard/view/MainActivityTest.java).
 
 ## InjectFromComponent annotation
@@ -151,6 +229,7 @@ MainService mainService;
 
 Since DaggerMock 0.6 this code can be written in an easier way using `InjectFromComponent` annotation:
 
+###### Java
 ```java
 public class MainServiceTest {
 
@@ -169,6 +248,28 @@ public class MainServiceTest {
         mainService.doSomething();
 
         verify(myPrinter).print("ABC");
+    }
+}
+```
+
+###### Kotlin
+```kotlin
+class MainServiceTest {
+
+    @get:Rule val rule = DaggerMock.rule<MyComponent>(MyModule())
+
+    val restService: RestService = mock()
+
+    val myPrinter: MyPrinter = mock()
+
+    @InjectFromComponent lateinit var mainService: MainService
+
+    @Test fun testDoSomething() {
+        whenever(restService.something).thenReturn("abc")
+
+        mainService.doSomething()
+
+        verify(myPrinter).print("ABC")
     }
 }
 ```
@@ -200,6 +301,19 @@ public class MyRule extends DaggerMockRule<MyComponent> {
     }
 }
 ```
+
+In Kotlin a method that creates the rule can be easily defined:
+
+```kotlin
+fun myRule() =
+        DaggerMock.rule<MyComponent>(MyModule()) {
+            set {
+                val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as App
+                app.component = it
+            }
+        }
+```
+
 
 The final test uses the rule subclass:
 
@@ -251,13 +365,45 @@ public interface AppComponent {
 Subcomponent support doesn't work on Dagger 2.0, you need to use Dagger version 2.1+.
 A complete example is available [here](https://github.com/fabioCollini/DaggerMock/tree/master/RealWorldApp).
 
+## Dagger Android support
+
+Dagger Android is supported with some limitations:
+
+ - JVM tests are not supported, DaggerMock can be used only in Espresso tests
+ - objects defined in subcomponent/dependent component cannot be replaces, DaggerMock works only for objects defined in application component
+ - application must be set manually using `customizeBuilder` method:
+ 
+```java
+public class EspressoDaggerMockRule extends DaggerMockRule<AppComponent> {
+    public EspressoDaggerMockRule() {
+        super(AppComponent.class, new AppModule());
+        customizeBuilder(new BuilderCustomizer<AppComponent.Builder>() {
+            @Override public AppComponent.Builder customize(AppComponent.Builder builder) {
+                return builder.application(getApp());
+            }
+        });
+        set(new DaggerMockRule.ComponentSetter<AppComponent>() {
+            @Override public void setComponent(AppComponent component) {
+                component.inject(getApp());
+            }
+        });
+    }
+
+    private static App getApp() {
+        return (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+    }
+}
+```
+
+A complete example is available [here](https://github.com/fabioCollini/DaggerMock/tree/master/RealWorldAppInjector).
+
 ## Kotlin support
 
 DaggerMock can be used in both Java and Kotlin projects. Kotlin classes are final by default, you need to
  _open_ them to create mocks using Mockito (and to use DaggerMock). There are three ways to solve this problem:
 
  - define classes as `open`: the big drawback is that classes are open also in production code
- - use [mock-maker](http://hadihariri.com/2016/10/04/Mocking-Kotlin-With-Mockito/) and [dexopener](https://github.com/tmurakami/dexopener):
+ - use [mock-maker](http://hadihariri.com/2016/10/04/Mocking-Kotlin-With-Mockito/) or mockito-inline dependency and [dexopener](https://github.com/tmurakami/dexopener):
  a demo is available in [RealWorldAppKotlin](https://github.com/fabioCollini/DaggerMock/tree/master/RealWorldAppKotlin) module
  - use [kotlin-allopen](https://kotlinlang.org/docs/reference/compiler-plugins.html#all-open-compiler-plugin):
  a demo is available in [RealWorldAppKotlinAllOpen](https://github.com/fabioCollini/DaggerMock/tree/master/RealWorldAppKotlinAllOpen) module
@@ -284,7 +430,7 @@ dependencies {
 
 ## License
 
-    Copyright 2016 Fabio Collini
+    Copyright 2016-2017 Fabio Collini
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
