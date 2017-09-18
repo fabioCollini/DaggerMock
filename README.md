@@ -70,6 +70,9 @@ When `DaggerMockRule` rule is instantiated, it looks for all @Mock annotated fie
 and it replaces them with Mockito mocks if there is a provider method in your module for that class.
 Then it uses all the test fields to override the objects defined in the Dagger configuration.
 
+> Note: only non static and non null fields are used by DaggerMock. Fields annotated with @Mock and @Spy can
+be used because `MockitoAnnotations.initMocks` method is automatically invoked before the test.
+
 In this example
 [MyModule](https://github.com/fabioCollini/DaggerMock/blob/master/app/src/main/java/it/cosenonjaviste/daggermock/demo/MyModule.java)
 contains two methods to provide `RestService` and `MyPrinter` objects. Behind the scenes, the
@@ -151,6 +154,9 @@ class MainActivityTest {
     }
 }
 ```
+
+In this example the third parameter of `ActivityTestRule` constructor is `false` to manually launch the Activity. In this way
+the behaviour of the mocks objects can be defined before the creation of the Activity. 
 
 ## Robolectric support
 
