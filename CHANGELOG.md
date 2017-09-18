@@ -1,3 +1,7 @@
+#### 0.8.0
+ - Added [Dagger-Android](https://google.github.io/dagger/android.html) support in Espresso tests
+ - New Kotlin module to simplify rule definition
+
 #### 0.7.0
  - Improved Kotlin support (thanks [lenguyenthanh](https://github.com/lenguyenthanh) for the pull request)
  - New Kotlin examples using [mock-maker](http://hadihariri.com/2016/10/04/Mocking-Kotlin-With-Mockito/)/
