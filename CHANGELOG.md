@@ -1,4 +1,4 @@
-#### 0.8.0
+#### 0.8.1
  - Added [Dagger-Android](https://google.github.io/dagger/android.html) support in Espresso tests
  - New Kotlin module to simplify rule definition
 
