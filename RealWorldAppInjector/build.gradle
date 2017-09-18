@@ -60,8 +60,8 @@ dependencies {
     compile "com.google.dagger:dagger-android-support:$DAGGER_VERSION"
     annotationProcessor "com.google.dagger:dagger-android-processor:$DAGGER_VERSION"
 
-    testCompile project(':lib')
-    androidTestCompile project(':lib')
+    testCompile project(':daggermock')
+    androidTestCompile project(':daggermock')
 
     testCompile "org.robolectric:robolectric:3.0"
     testCompile 'org.assertj:assertj-core:2.5.0'

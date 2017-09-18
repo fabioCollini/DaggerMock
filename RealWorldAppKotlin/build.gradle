@@ -65,10 +65,10 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     testCompile "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
-    testCompile project(':lib')
-    testCompile project(':libkotlin')
-    androidTestCompile project(':lib')
-    androidTestCompile project(':libkotlin')
+    testCompile project(':daggermock')
+    testCompile project(':daggermock-kotlin')
+    androidTestCompile project(':daggermock')
+    androidTestCompile project(':daggermock-kotlin')
 
     testCompile "org.robolectric:robolectric:3.4.2"
     testCompile 'org.assertj:assertj-core:2.5.0'

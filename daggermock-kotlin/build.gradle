@@ -29,7 +29,7 @@ dependencies {
     compileOnly 'junit:junit:4.12'
     compileOnly "com.google.dagger:dagger:$DAGGER_VERSION"
 
-    compile project(':lib')
+    compile project(':daggermock')
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
