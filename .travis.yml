@@ -36,4 +36,4 @@ before_script:
     - adb shell input keyevent 82 &
 
 script:
-    - ./gradlew :lib:test :app:test :app:connectedAndroidTest --stacktrace
+    - ./gradlew :daggermock:test :app:test :app:connectedAndroidTest --stacktrace
