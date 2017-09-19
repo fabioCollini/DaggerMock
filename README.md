@@ -2,6 +2,7 @@
 A JUnit rule to easily override Dagger 2 objects
 
 [![Build Status](https://travis-ci.org/fabioCollini/DaggerMock.svg?branch=master)](https://travis-ci.org/fabioCollini/DaggerMock)
+[![codecov](https://codecov.io/gh/fabioCollini/DaggerMock/branch/master/graph/badge.svg)](https://codecov.io/gh/fabioCollini/DaggerMock)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-DaggerMock-green.svg?style=true)](https://android-arsenal.com/details/1/2987)
 [![](https://jitpack.io/v/fabioCollini/DaggerMock.svg)](https://jitpack.io/#fabioCollini/DaggerMock)
 
