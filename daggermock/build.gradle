@@ -16,6 +16,8 @@
 
 apply plugin: 'java'
 
+apply plugin: 'jacoco'
+
 apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.fabioCollini.daggermock'
@@ -49,4 +51,18 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
+}
+
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    reports {
+        xml.enabled true
+      //  xml.destination "${buildDir}/reports/jacoco/report.xml"
+        html.enabled true
+        csv.enabled false
+    }
+
+    sourceDirectories = files('src/java')
+    classDirectories =  files('build/classes/java/main')
 }
