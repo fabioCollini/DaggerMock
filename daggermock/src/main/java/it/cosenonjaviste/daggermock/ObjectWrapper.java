@@ -53,6 +53,7 @@ public class ObjectWrapper<T> {
         Method m;
         try {
             m = obj.getClass().getMethod("build");
+            m.setAccessible(true);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Method " + methodName + " not found in object " + obj, e);
         }
@@ -168,6 +169,7 @@ public class ObjectWrapper<T> {
     public ObjectWrapper<T> invokeBuilderSetter(Class<?> parameterClass, Object parameter) {
         try {
             Method setMethod = getSetterMethod(obj, parameterClass);
+            setMethod.setAccessible(true);
             return new ObjectWrapper<T>((T) setMethod.invoke(obj, parameter));
         } catch (Exception e) {
             throw new RuntimeException("Error invoking setter with parameter " + parameterClass + " on object " + obj, e);
