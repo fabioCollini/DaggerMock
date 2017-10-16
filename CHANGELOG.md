@@ -1,3 +1,6 @@
+#### 0.8.2
+ - Fixed [Robolectric issue](https://github.com/fabioCollini/DaggerMock/issues/55) when used with Dagger-Android
+
 #### 0.8.1
  - Added [Dagger-Android](https://google.github.io/dagger/android.html) support in Espresso tests
  - New Kotlin module to simplify rule definition
