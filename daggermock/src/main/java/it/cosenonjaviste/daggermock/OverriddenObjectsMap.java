@@ -68,13 +68,13 @@ class OverriddenObjectsMap {
         }
     }
 
-    public void checkOverriddenInjectAnnotatedClass() {
+    public void checkOverriddenInjectAnnotatedClass(List<Object> modules) {
         Set<String> errors = new HashSet<>();
         for (Map.Entry<ObjectId, Provider> entry : fields.entrySet()) {
             ObjectId objectId = entry.getKey();
             Constructor[] constructors = objectId.objectClass.getConstructors();
             for (Constructor constructor : constructors) {
-                if (constructor.getAnnotation(Inject.class) != null) {
+                if (constructor.getAnnotation(Inject.class) != null && !existProvidesMethodInModule(objectId, modules)) {
                     errors.add(objectId.objectClass.getName());
                 }
             }
@@ -83,6 +83,18 @@ class OverriddenObjectsMap {
                 "Error while trying to override objects",
                 errors,
                 "You must define overridden objects using a @Provides annotated method instead of using @Inject annotation");
+    }
+
+    private boolean existProvidesMethodInModule(ObjectId objectId, List<Object> modules) {
+        for (Object module : modules) {
+            List<Method> allModulesMethod = ReflectUtils.getAllMethodsReturning(module.getClass(), objectId.objectClass);
+            for (Method method : allModulesMethod) {
+                if (objectId.equals(new ObjectId(method))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void checkOverridesInSubComponentsWithNoParameters(ComponentClassWrapper<?> componentClass) {
