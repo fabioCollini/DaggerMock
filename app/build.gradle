@@ -55,7 +55,7 @@ dependencies {
     compile 'javax.annotation:jsr250-api:1.0'
     annotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-    testCompile "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+    testAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
     testCompile project(':daggermock')
     androidTestCompile project(':daggermock')
