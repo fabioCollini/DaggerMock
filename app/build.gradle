@@ -60,7 +60,7 @@ dependencies {
     testCompile project(':daggermock')
     androidTestCompile project(':daggermock')
 
-    testCompile "org.robolectric:robolectric:3.3.2"
+    testCompile "org.robolectric:robolectric:3.4.2"
     testCompile 'org.assertj:assertj-core:2.5.0'
 
     androidTestCompile "org.mockito:mockito-core:$MOCKITO_VERSION"
