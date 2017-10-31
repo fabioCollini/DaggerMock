@@ -63,7 +63,7 @@ dependencies {
     compile "com.google.dagger:dagger:$DAGGER_VERSION"
     compile 'javax.annotation:jsr250-api:1.0'
     kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-    testCompile "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+    testAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
     testCompile project(':daggermock')
     testCompile project(':daggermock-kotlin')
