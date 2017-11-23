@@ -16,21 +16,23 @@
 
 package it.cosenonjaviste.daggermock.realworldapp.androidinjector;
 
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import it.cosenonjaviste.daggermock.realworldapp.services.MainService;
 import it.cosenonjaviste.daggermock.realworldapp.services.SnackBarManager;
 
 @Module
-public class AndroidInjectorActivityModule {
+public abstract class AndroidInjectorActivityModule {
+
+    @Binds
+    abstract AndroidInjectorView provideAndroidInjectorView(
+            AndroidInjectorActivity androidInjectorActivity);
 
     @Provides
-    public static AndroidInjectorView provideAndroidInjectorView(AndroidInjectorActivity androidInjectorActivity) {
-        return androidInjectorActivity;
-    }
-
-    @Provides
-    public AndroidInjectorPresenter provideAndroidInjectorPresenter(MainService mainService, AndroidInjectorView view, SnackBarManager snackBarManager) {
+    static AndroidInjectorPresenter provideAndroidInjectorPresenter(MainService mainService,
+                                                                    AndroidInjectorView view,
+                                                                    SnackBarManager snackBarManager) {
         return new AndroidInjectorPresenter(mainService, view, snackBarManager);
     }
 }
