@@ -24,7 +24,12 @@ android:
     - extra-google-m2repository
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-19
-
+    
+before_install:
+  # Install SDK license so Android Gradle plugin can install deps.
+  - mkdir "$ANDROID_HOME/licenses" || true
+  - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > "$ANDROID_HOME/licenses/android-sdk-license"
+  
 before_script:
     - export "JAVA_OPTS=-Xmx1024m"
     - export "JAVA7_HOME=/usr/lib/jvm/java-7-oracle"
