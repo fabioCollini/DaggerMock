@@ -13,7 +13,8 @@ import it.cosenonjaviste.daggermock.realworldapp.main.MainActivityComponent;
 @Module(subcomponents = {
         MainActivityComponent.class
 })
-abstract public class ActivityBindingModule {
+abstract public class MainActivityBindingModule {
+
     @Binds
     @IntoMap
     @ActivityKey(MainActivity.class)
