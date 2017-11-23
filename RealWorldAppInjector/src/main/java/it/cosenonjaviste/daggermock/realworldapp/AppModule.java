@@ -24,15 +24,8 @@ import it.cosenonjaviste.daggermock.realworldapp.main.MainActivity;
 import it.cosenonjaviste.daggermock.realworldapp.services.RestService;
 import it.cosenonjaviste.daggermock.realworldapp.services.SnackBarManager;
 
-@Module
+@Module(includes = NetModule.class)
 public class AppModule {
-
-    @Provides
-    @Singleton
-    public RestService provideRestService(App app) {
-        return new RestService(app);
-    }
-
 
     @Provides
     @Singleton
