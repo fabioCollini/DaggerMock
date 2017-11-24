@@ -14,24 +14,33 @@
  *  limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.realworldapp.main;
+package it.cosenonjaviste.daggermock.realworldapp.androidinjector;
 
-import dagger.Binds;
-import dagger.Module;
-import dagger.Provides;
+import android.app.Activity;
+
 import it.cosenonjaviste.daggermock.realworldapp.services.MainService;
 import it.cosenonjaviste.daggermock.realworldapp.services.SnackBarManager;
 
-@Module
-public abstract class MainActivityModule {
+public class AndroidInjectorPresenter {
 
-    @Binds
-    abstract MainView provideMainView(MainActivity mainActivity);
+    private MainService mainService;
 
-    @Provides
-    static MainPresenter provideMainPresenter(MainService mainService,
-                                              MainView view,
-                                              SnackBarManager snackBarManager) {
-        return new MainPresenter(mainService, view, snackBarManager);
+    private AndroidInjectorView view;
+
+    private SnackBarManager snackBarManager;
+
+    public AndroidInjectorPresenter(MainService mainService, AndroidInjectorView view, SnackBarManager snackBarManager) {
+        this.mainService = mainService;
+        this.view = view;
+        this.snackBarManager = snackBarManager;
+    }
+
+    public void loadData() {
+        try {
+            String s = mainService.doSomething();
+            view.showText(s);
+        } catch (Exception e) {
+            snackBarManager.showMessage((Activity) view, e.getMessage());
+        }
     }
 }

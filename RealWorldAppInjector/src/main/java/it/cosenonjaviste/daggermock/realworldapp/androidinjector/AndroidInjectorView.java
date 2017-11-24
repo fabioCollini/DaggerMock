@@ -14,23 +14,8 @@
  *  limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.realworldapp;
+package it.cosenonjaviste.daggermock.realworldapp.androidinjector;
 
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import it.cosenonjaviste.daggermock.realworldapp.main.MainActivity;
-import it.cosenonjaviste.daggermock.realworldapp.services.RestService;
-import it.cosenonjaviste.daggermock.realworldapp.services.SnackBarManager;
-
-@Module(includes = NetModule.class)
-public class AppModule {
-
-    @Provides
-    @Singleton
-    public SnackBarManager provideSnackBarManager() {
-        return new SnackBarManager();
-    }
-
+public interface AndroidInjectorView {
+    void showText(String text);
 }

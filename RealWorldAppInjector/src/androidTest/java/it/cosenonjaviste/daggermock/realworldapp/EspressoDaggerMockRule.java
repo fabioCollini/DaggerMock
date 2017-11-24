@@ -22,7 +22,7 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 
 public class EspressoDaggerMockRule extends DaggerMockRule<AppComponent> {
     public EspressoDaggerMockRule() {
-        super(AppComponent.class, new AppModule());
+        super(AppComponent.class, new AppModule(), new NetModule());
         customizeBuilder(new BuilderCustomizer<AppComponent.Builder>() {
             @Override public AppComponent.Builder customize(AppComponent.Builder builder) {
                 return builder.application(getApp());

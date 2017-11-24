@@ -25,13 +25,16 @@ import dagger.android.support.AndroidSupportInjectionModule;
 @Singleton
 @Component(modules = {
         AndroidSupportInjectionModule.class,
-        ActivityBindingModule.class,
+        MainActivityBindingModule.class,
+        AndroidInjectorActivityBindingModule.class,
         AppModule.class
 })
 public interface AppComponent {
     @Component.Builder
     interface Builder {
+        /* These two methods are neccessary for DaggerMock when running instrumentationstests */
         Builder appModule(AppModule appModule);
+        Builder netModule(NetModule netModule);
 
         @BindsInstance
         Builder application(App app);
