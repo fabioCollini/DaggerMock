@@ -1,4 +1,4 @@
-#### 0.8.3
+#### 0.8.4
  - Added `customizeBuilder` to `DaggerMock` Kotlin class to wrap Java method
  - Fix to throw an exception only when constructor is annotated with `@inject` and a module methods doesn't exist 
 
