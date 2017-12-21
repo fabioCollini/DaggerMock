@@ -17,15 +17,12 @@
 package it.cosenonjaviste.daggermock.realworldappkotlin
 
 import android.support.test.InstrumentationRegistry
+import it.cosenonjaviste.daggermock.DaggerMock
 
 import it.cosenonjaviste.daggermock.DaggerMockRule
 
-class EspressoDaggerMockRule : DaggerMockRule<AppComponent>(AppComponent::class.java, AppModule(getApp())) {
-    init {
-        set { component -> getApp().component = component }
-    }
-
-    companion object {
-        fun getApp() : App = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as App
-    }
+fun espressoDaggerMockRule() = DaggerMock.rule<AppComponent>(AppModule(app)) {
+    set { component -> app.component = component }
 }
+
+val app: App get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as App
