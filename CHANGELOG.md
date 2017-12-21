@@ -1,3 +1,7 @@
+#### 0.8.3
+ - Added `customizeBuilder` to `DaggerMock` Kotlin class to wrap Java method
+ - Fix to throw an exception only when constructor is annotated with `@inject` and a module methods doesn't exist 
+
 #### 0.8.2
  - Fixed [Robolectric issue](https://github.com/fabioCollini/DaggerMock/issues/55) when used with Dagger-Android
 
