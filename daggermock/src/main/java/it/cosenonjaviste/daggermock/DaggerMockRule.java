@@ -121,7 +121,7 @@ public class DaggerMockRule<C> implements MethodRule {
         overriddenObjectsMap.redefineMocksWithInitializer(targetWrapper);
 
         overriddenObjectsMap.init(target);
-        overriddenObjectsMap.checkOverriddenInjectAnnotatedClass();
+        overriddenObjectsMap.checkOverriddenInjectAnnotatedClass(modules);
 
         ModuleOverrider moduleOverrider = new ModuleOverrider(overriddenObjectsMap);
 
