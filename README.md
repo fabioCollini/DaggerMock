@@ -383,7 +383,8 @@ Dagger Android is supported with some limitations:
  - JVM tests are not supported, DaggerMock can be used only in Espresso tests
  - objects defined in subcomponent/dependent component cannot be replaces, DaggerMock works only for objects defined in application component
  - application must be set manually using `customizeBuilder` method:
- 
+
+###### Java
 ```java
 public class EspressoDaggerMockRule extends DaggerMockRule<AppComponent> {
     public EspressoDaggerMockRule() {
@@ -404,6 +405,16 @@ public class EspressoDaggerMockRule extends DaggerMockRule<AppComponent> {
         return (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
     }
 }
+```
+
+###### Kotlin
+```kotlin
+fun espressoDaggerMockRule() = DaggerMock.rule<AppComponent>(AppModule(app)) {
+    set { component -> component.inject(app) }
+    customizeBuilder<AppComponent.Builder> { it.application(app) }
+}
+
+val app: App get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as App
 ```
 
 A complete example is available [here](https://github.com/fabioCollini/DaggerMock/tree/master/RealWorldAppInjector).
