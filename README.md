@@ -381,7 +381,7 @@ A complete example is available [here](https://github.com/fabioCollini/DaggerMoc
 Dagger Android is supported with some limitations:
 
  - JVM tests are not supported, DaggerMock can be used only in Espresso tests
- - objects defined in subcomponent/dependent component cannot be replaces, DaggerMock works only for objects defined in application component
+ - objects defined in subcomponent/dependent component cannot be replaced, DaggerMock works only for objects defined in application component
  - application must be set manually using `customizeBuilder` method:
 
 ###### Java
