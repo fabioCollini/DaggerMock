@@ -350,7 +350,9 @@ public class MainActivityTest {
 }
 ```
 
-## Dagger Subcomponents
+## Supported Dagger features
+
+### Subcomponents
 
 Since version 0.6 Dagger subcomponents are supported by DaggerMock with a limitation:
 subcomponent module must be passed as parameter in subcomponent creation method.
@@ -376,7 +378,11 @@ public interface AppComponent {
 Subcomponent support doesn't work on Dagger 2.0, you need to use Dagger version 2.1+.
 A complete example is available [here](https://github.com/fabioCollini/DaggerMock/tree/master/RealWorldApp).
 
-## Dagger Android support
+### Abstract and static methods in module
+
+DaggerMock doesn't support modules with static or abstract methods (annotated with `@Binds`). However if a component contains multiple modules (some abstract and other not abstract) DaggerMock can be used to replace objects defined in the not abstract modules.
+
+### Dagger Android
 
 Dagger Android is supported with some limitations:
 
