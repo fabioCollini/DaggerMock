@@ -41,8 +41,14 @@ public class ObjectWrapper<T> {
         this.valueClass = valueClass;
     }
 
-    public Method getMethodReturning(Class<?> type) {
-        return ReflectUtils.getMethodReturning(obj.getClass(), type);
+    public Method getMethodReturning(ObjectId objectId) {
+        List<Method> methods = ReflectUtils.getAllMethodsReturning(obj.getClass(), objectId.objectClass);
+        for (Method method : methods) {
+            if (new ObjectId(method).equals(objectId)) {
+                return method;
+            }
+        }
+        return null;
     }
 
     public List<Method> getAllMethodsReturning(Class<?> type) {

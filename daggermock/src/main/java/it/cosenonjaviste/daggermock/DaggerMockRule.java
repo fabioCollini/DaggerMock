@@ -161,7 +161,7 @@ public class DaggerMockRule<C> implements MethodRule {
             InjectFromComponent annotation = field.getAnnotation(InjectFromComponent.class);
             Class<?>[] annotationValues = annotation.value();
             if (annotationValues.length == 0) {
-                Object obj = getObjectFromComponentOrDependencies(component, field);
+                Object obj = getObjectFromComponentOrDependencies(component, new ObjectId(field));
                 if (obj != null) {
                     target.setFieldValue(field, obj);
                 }
@@ -181,13 +181,13 @@ public class DaggerMockRule<C> implements MethodRule {
         }
     }
 
-    private Object getObjectFromComponentOrDependencies(ObjectWrapper<C> component, Field field) {
-        Method m = component.getMethodReturning(field.getType());
+    private Object getObjectFromComponentOrDependencies(ObjectWrapper<C> component, ObjectId objectId) {
+        Method m = component.getMethodReturning(objectId);
         if (m != null) {
             return component.invokeMethod(m);
         }
         for (ObjectWrapper<?> dependencyWrapper : dependenciesWrappers.values()) {
-            m = dependencyWrapper.getMethodReturning(field.getType());
+            m = dependencyWrapper.getMethodReturning(objectId);
             if (m != null) {
                 return dependencyWrapper.invokeMethod(m);
             }
