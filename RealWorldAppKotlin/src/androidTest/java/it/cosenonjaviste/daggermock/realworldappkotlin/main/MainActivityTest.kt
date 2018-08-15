@@ -31,6 +31,7 @@ import it.cosenonjaviste.daggeroverride.R
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.verify
+import javax.inject.Named
 
 class MainActivityTest {
 
@@ -38,6 +39,7 @@ class MainActivityTest {
 
     @get:Rule val activityRule = ActivityTestRule(MainActivity::class.java, false, false)
 
+    @get:Named("mock")
     val restService: RestService = mock()
 
     val snackBarManager: SnackBarManager = mock()

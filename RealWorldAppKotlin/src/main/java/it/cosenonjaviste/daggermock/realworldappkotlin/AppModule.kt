@@ -19,6 +19,7 @@ package it.cosenonjaviste.daggermock.realworldappkotlin
 import dagger.Module
 import dagger.Provides
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.RestService
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -26,6 +27,14 @@ class AppModule(private val app: App) {
 
     @Provides
     @Singleton
+    @Named("mock")
+    fun provideMockRestService(): RestService {
+        return RestService(app)
+    }
+
+    @Provides
+    @Singleton
+    @Named("real")
     fun provideRestService(): RestService {
         return RestService(app)
     }

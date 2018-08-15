@@ -17,8 +17,9 @@
 package it.cosenonjaviste.daggermock.realworldappkotlin.services
 
 import javax.inject.Inject
+import javax.inject.Named
 
-class MainService @Inject constructor(private val restService: RestService) {
+class MainService @Inject constructor(@Named("mock") private val restService: RestService) {
 
     fun doSomething(): String {
         if (restService.executeServerCall()) {
