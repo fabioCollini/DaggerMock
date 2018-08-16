@@ -37,5 +37,11 @@ class DaggerMock<C>(val rule: DaggerMockRule<C>) {
             DaggerMock<C>(rule).init()
             return rule
         }
+
+        inline fun <reified C> ruleWithSpys(spyAllUnMockedDependencies: Boolean = false, vararg modules: Any, noinline init: DaggerMock<C>.() -> Unit = {}): DaggerMockRule<C> {
+            val rule = DaggerMockRule(spyAllUnMockedDependencies, C::class.java, *modules)
+            DaggerMock<C>(rule).init()
+            return rule
+        }
     }
 }

@@ -42,13 +42,16 @@ public class ModuleOverrider {
 
     private final OverriddenObjectsMap overriddenObjectsMap;
 
+    private boolean spyUnMockedDependencies = false;
+
     public ModuleOverrider(Object target) {
-        this(new OverriddenObjectsMap());
+        this(new OverriddenObjectsMap(), false);
         overriddenObjectsMap.init(target);
     }
 
-    public ModuleOverrider(OverriddenObjectsMap overriddenObjectsMap) {
+    public ModuleOverrider(OverriddenObjectsMap overriddenObjectsMap, boolean spyUnMockedDependencies) {
         this.overriddenObjectsMap = overriddenObjectsMap;
+        this.spyUnMockedDependencies = spyUnMockedDependencies;
     }
 
     public <T> T override(final T module) {
@@ -56,14 +59,21 @@ public class ModuleOverrider {
         Answer defaultAnswer = new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object obj = null;
                 Method method = invocation.getMethod();
                 Provider provider = overriddenObjectsMap.getProvider(method);
                 if (provider != null) {
-                    return provider.get();
+                    obj = provider.get();
                 } else {
                     method.setAccessible(true);
-                    return method.invoke(module, invocation.getArguments());
+                    Object originalObj = method.invoke(module, invocation.getArguments());
+                    if (spyUnMockedDependencies) {
+                        obj = Mockito.spy(originalObj);
+                    } else {
+                        obj = originalObj;
+                    }
                 }
+                return obj;
             }
         };
         return (T) Mockito.mock(module.getClass(), defaultAnswer);
