@@ -26,6 +26,7 @@ buildscript {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: "kotlin-allopen"
 
 allOpen {
@@ -34,7 +35,6 @@ allOpen {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "26.0.2"
 
     defaultConfig {
         applicationId "it.cosenonjaviste.daggermock.realworldappkotlin"
@@ -55,36 +55,32 @@ android {
     }
 }
 
-kapt {
-    generateStubs = true
-}
-
 dependencies {
-    testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-core:$MOCKITO_VERSION"
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
+    testImplementation 'junit:junit:4.12'
+    testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
+    implementation 'com.android.support:appcompat-v7:24.2.1'
+    implementation 'com.android.support:design:24.2.1'
 
-    compile "com.google.dagger:dagger:$DAGGER_VERSION"
-    compile 'javax.annotation:jsr250-api:1.0'
+    implementation "com.google.dagger:dagger:$DAGGER_VERSION"
+    implementation 'javax.annotation:jsr250-api:1.0'
     kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     testAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
-    testCompile project(':daggermock')
-    androidTestCompile project(':daggermock')
+    testImplementation project(':daggermock')
+    androidTestImplementation project(':daggermock')
 
-    testCompile "org.robolectric:robolectric:3.4.2"
-    testCompile 'org.assertj:assertj-core:2.5.0'
+    testImplementation "org.robolectric:robolectric:3.4.2"
+    testImplementation 'org.assertj:assertj-core:2.5.0'
 
-    androidTestCompile "org.mockito:mockito-android:$MOCKITO_VERSION"
-    androidTestCompile "com.android.support.test:runner:$RUNNER_VERSION"
-    androidTestCompile "com.android.support.test:rules:$RUNNER_VERSION"
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2') {
+    androidTestImplementation "org.mockito:mockito-android:$MOCKITO_VERSION"
+    androidTestImplementation "com.android.support.test:runner:$RUNNER_VERSION"
+    androidTestImplementation "com.android.support.test:rules:$RUNNER_VERSION"
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2') {
         exclude group: 'javax.inject', module: 'javax.inject'
         exclude group: 'com.squareup', module: 'javawriter'
     }
-    androidTestCompile project(':daggermock-kotlin')
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    androidTestImplementation project(':daggermock-kotlin')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
     mavenCentral()

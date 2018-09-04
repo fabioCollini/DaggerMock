@@ -22,10 +22,10 @@ buildscript {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "26.0.2"
 
     defaultConfig {
         applicationId "it.cosenonjaviste.daggermock.realworldappkotlin"
@@ -46,45 +46,41 @@ android {
     }
 }
 
-kapt {
-    generateStubs = true
-}
-
 dependencies {
-    testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-core:$MOCKITO_VERSION"
-    testCompile "org.mockito:mockito-inline:$MOCKITO_VERSION"
-    testCompile('com.nhaarman:mockito-kotlin-kt1.1:1.5.0') {
+    testImplementation 'junit:junit:4.12'
+    testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
+    testImplementation "org.mockito:mockito-inline:$MOCKITO_VERSION"
+    testImplementation('com.nhaarman:mockito-kotlin-kt1.1:1.5.0') {
         exclude group: 'org.jetbrains.kotlin'
     }
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
+    implementation 'com.android.support:appcompat-v7:24.2.1'
+    implementation 'com.android.support:design:24.2.1'
 
-    compile "com.google.dagger:dagger:$DAGGER_VERSION"
-    compile 'javax.annotation:jsr250-api:1.0'
+    implementation "com.google.dagger:dagger:$DAGGER_VERSION"
+    implementation 'javax.annotation:jsr250-api:1.0'
     kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     testAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
-    testCompile project(':daggermock')
-    testCompile project(':daggermock-kotlin')
-    androidTestCompile project(':daggermock')
-    androidTestCompile project(':daggermock-kotlin')
+    testImplementation project(':daggermock')
+    testImplementation project(':daggermock-kotlin')
+    androidTestImplementation project(':daggermock')
+    androidTestImplementation project(':daggermock-kotlin')
 
-    testCompile "org.robolectric:robolectric:3.4.2"
-    testCompile 'org.assertj:assertj-core:2.5.0'
+    testImplementation "org.robolectric:robolectric:3.4.2"
+    testImplementation 'org.assertj:assertj-core:2.5.0'
 
-    androidTestCompile 'com.github.tmurakami:dexopener:0.10.3'
-    androidTestCompile "org.mockito:mockito-android:$MOCKITO_VERSION"
-    androidTestCompile('com.nhaarman:mockito-kotlin-kt1.1:1.5.0') {
+    androidTestImplementation 'com.github.tmurakami:dexopener:0.12.1'
+    androidTestImplementation "org.mockito:mockito-android:$MOCKITO_VERSION"
+    androidTestImplementation('com.nhaarman:mockito-kotlin-kt1.1:1.5.0') {
         exclude group: 'org.jetbrains.kotlin'
     }
-    androidTestCompile "com.android.support.test:runner:$RUNNER_VERSION"
-    androidTestCompile "com.android.support.test:rules:$RUNNER_VERSION"
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2') {
+    androidTestImplementation "com.android.support.test:runner:$RUNNER_VERSION"
+    androidTestImplementation "com.android.support.test:rules:$RUNNER_VERSION"
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2') {
         exclude group: 'javax.inject', module: 'javax.inject'
         exclude group: 'com.squareup', module: 'javawriter'
     }
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
     mavenCentral()
