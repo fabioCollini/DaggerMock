@@ -18,6 +18,7 @@ package it.cosenonjaviste.daggermock.realworldappkotlin.main
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.TextView
 import it.cosenonjaviste.daggermock.realworldappkotlin.App
 import it.cosenonjaviste.daggeroverride.R
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity(), MainView {
         setContentView(R.layout.main)
         textView = findViewById(R.id.text) as TextView
 
-        findViewById(R.id.reload).setOnClickListener { presenter.loadData() }
+        (findViewById(R.id.reload) as View).setOnClickListener { presenter.loadData() }
     }
 
     override fun showText(text: String) {

@@ -23,12 +23,12 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 27
 
     defaultConfig {
         applicationId "it.cosenonjaviste.daggeroverride"
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -48,7 +48,7 @@ android {
 dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
-    implementation 'com.android.support:appcompat-v7:24.2.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
 
     implementation "com.google.dagger:dagger:$DAGGER_VERSION"
     implementation 'javax.annotation:jsr250-api:1.0'
