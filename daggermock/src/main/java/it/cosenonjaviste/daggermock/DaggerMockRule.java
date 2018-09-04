@@ -37,11 +37,17 @@ public class DaggerMockRule<C> implements MethodRule {
     private ComponentClassWrapper<C> componentClass;
     private ComponentSetter<C> componentSetter;
     private BuilderCustomizer customizer;
+    private boolean spyUnMockedDependencies;
     private List<Object> modules = new ArrayList<>();
     private final List<DependentComponentInfo> dependencies = new ArrayList<>();
     private final Map<Class<?>, ObjectWrapper<?>> dependenciesWrappers = new HashMap<>();
     private final Map<Class<?>, ComponentSetter<?>> dependentComponentsSetters = new HashMap<>();
     private final OverriddenObjectsMap overriddenObjectsMap = new OverriddenObjectsMap();
+
+    public DaggerMockRule(boolean spyUnMockedDependencies, Class<C> componentClass, Object... modules) {
+        this(componentClass, modules);
+        this.spyUnMockedDependencies = spyUnMockedDependencies;
+    }
 
     public DaggerMockRule(Class<C> componentClass, Object... modules) {
         this.componentClass = new ComponentClassWrapper<>(componentClass);
@@ -123,7 +129,7 @@ public class DaggerMockRule<C> implements MethodRule {
         overriddenObjectsMap.init(target);
         overriddenObjectsMap.checkOverriddenInjectAnnotatedClass(modules);
 
-        ModuleOverrider moduleOverrider = new ModuleOverrider(overriddenObjectsMap);
+        ModuleOverrider moduleOverrider = new ModuleOverrider(overriddenObjectsMap, spyUnMockedDependencies);
 
         overriddenObjectsMap.checkOverridesInSubComponentsWithNoParameters(componentClass);
 
