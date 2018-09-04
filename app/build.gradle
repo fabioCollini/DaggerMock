@@ -64,8 +64,9 @@ dependencies {
     testImplementation project(':daggermock')
     androidTestImplementation project(':daggermock')
 
-    testImplementation "org.robolectric:robolectric:3.8"
     testImplementation 'org.assertj:assertj-core:2.5.0'
+
+    testImplementation "org.robolectric:robolectric:3.8"
     testImplementation "com.android.support.test:runner:1.0.2"
     testImplementation "com.android.support.test:rules:1.0.2"
 

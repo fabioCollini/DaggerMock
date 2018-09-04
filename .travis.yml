@@ -43,4 +43,4 @@ before_script:
 script:
     - ./gradlew :daggermock:test :daggermock:codeCoverageReport --stacktrace
     - bash <(curl -s https://codecov.io/bash)
-    - ./gradlew :app:test :app:connectedAndroidTest --stacktrace
+    - ./gradlew testDebugUnitTest :app:connectedAndroidTest --stacktrace
