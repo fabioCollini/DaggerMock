@@ -24,6 +24,8 @@ import dagger.Module;
 import dagger.Provides;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import it.cosenonjaviste.daggermock.InjectFromComponent;
+import it.cosenonjaviste.daggermock.Qualifier1;
+import it.cosenonjaviste.daggermock.Qualifier2;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

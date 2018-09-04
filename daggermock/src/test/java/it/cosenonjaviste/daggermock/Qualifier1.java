@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.injectfromcomponent;
+package it.cosenonjaviste.daggermock;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

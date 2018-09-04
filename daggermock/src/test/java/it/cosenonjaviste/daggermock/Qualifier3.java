@@ -14,11 +14,12 @@
  *  limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.qualifier;
+package it.cosenonjaviste.daggermock;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
 import javax.inject.Qualifier;
 
 @Qualifier

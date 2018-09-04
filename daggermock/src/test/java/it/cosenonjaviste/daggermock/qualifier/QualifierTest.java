@@ -16,12 +16,16 @@
 
 package it.cosenonjaviste.daggermock.qualifier;
 
+import org.junit.Rule;
+import org.junit.Test;
+
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import org.junit.Rule;
-import org.junit.Test;
+import it.cosenonjaviste.daggermock.Qualifier1;
+import it.cosenonjaviste.daggermock.Qualifier2;
+import it.cosenonjaviste.daggermock.Qualifier3;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

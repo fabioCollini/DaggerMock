@@ -18,6 +18,10 @@ package it.cosenonjaviste.daggermock.qualifier;
 
 import javax.inject.Inject;
 
+import it.cosenonjaviste.daggermock.Qualifier1;
+import it.cosenonjaviste.daggermock.Qualifier2;
+import it.cosenonjaviste.daggermock.Qualifier3;
+
 public class MainService {
     @Inject @Qualifier1 String s1;
 
