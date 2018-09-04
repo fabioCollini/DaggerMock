@@ -27,7 +27,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Provider;
 
@@ -52,18 +54,29 @@ public class ModuleOverrider {
     }
 
     public <T> T override(final T module) {
+        return override(module, Collections.<Class<?>, DaggerMockRule.ObjectDecorator<?>>emptyMap());
+    }
+
+    public <T> T override(final T module, final Map<Class<?>, DaggerMockRule.ObjectDecorator<?>> decorators) {
         checkMethodsVisibility(module);
         Answer defaultAnswer = new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Method method = invocation.getMethod();
                 Provider provider = overriddenObjectsMap.getProvider(method);
+                Object ret;
                 if (provider != null) {
-                    return provider.get();
+                    ret = provider.get();
                 } else {
                     method.setAccessible(true);
-                    return method.invoke(module, invocation.getArguments());
+                    ret = method.invoke(module, invocation.getArguments());
                 }
+                DaggerMockRule.ObjectDecorator<Object> decorator =
+                        (DaggerMockRule.ObjectDecorator<Object>) decorators.get(method.getReturnType());
+                if (decorator != null) {
+                    ret = decorator.decorate(ret);
+                }
+                return ret;
             }
         };
         return (T) Mockito.mock(module.getClass(), defaultAnswer);

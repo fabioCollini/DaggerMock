@@ -21,6 +21,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 public class ComponentOverrider {
 
@@ -30,7 +31,7 @@ public class ComponentOverrider {
         this.moduleOverrider = moduleOverrider;
     }
 
-    public <T> T override(Class<T> componentClass, final Object component) {
+    public <T> T override(Class<T> componentClass, final Object component, final Map<Class<?>, DaggerMockRule.ObjectDecorator<?>> decorators) {
         Answer defaultAnswer = new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -39,11 +40,11 @@ public class ComponentOverrider {
                 if (ReflectUtils.isSubComponent(method.getReturnType()) || ReflectUtils.isSubComponentBuilder(method.getReturnType())) {
                     Object[] mockedArguments = new Object[arguments.length];
                     for (int i = 0; i < arguments.length; i++) {
-                        mockedArguments[i] = moduleOverrider.override(arguments[i]);
+                        mockedArguments[i] = moduleOverrider.override(arguments[i], decorators);
                     }
                     arguments = mockedArguments;
                     Object originalSubComponent = method.invoke(component, arguments);
-                    return override(method.getReturnType(), originalSubComponent);
+                    return override(method.getReturnType(), originalSubComponent, decorators);
                 } else {
                     return method.invoke(component, arguments);
                 }

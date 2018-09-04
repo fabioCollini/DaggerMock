@@ -42,6 +42,7 @@ public class DaggerMockRule<C> implements MethodRule {
     private final Map<Class<?>, ObjectWrapper<?>> dependenciesWrappers = new HashMap<>();
     private final Map<Class<?>, ComponentSetter<?>> dependentComponentsSetters = new HashMap<>();
     private final OverriddenObjectsMap overriddenObjectsMap = new OverriddenObjectsMap();
+    private final Map<Class<?>, ObjectDecorator<?>> decorators = new HashMap<>();
 
     public DaggerMockRule(Class<C> componentClass, Object... modules) {
         this.componentClass = new ComponentClassWrapper<>(componentClass);
@@ -92,6 +93,11 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
+    public <S> DaggerMockRule<C> decorate(Class<S> originalClass, ObjectDecorator<S> decorator) {
+        decorators.put(originalClass, decorator);
+        return this;
+    }
+
     public void initMocks(Object target) {
         MockitoAnnotations.initMocks(target);
 
@@ -127,7 +133,7 @@ public class DaggerMockRule<C> implements MethodRule {
 
         overriddenObjectsMap.checkOverridesInSubComponentsWithNoParameters(componentClass);
 
-        ObjectWrapper<Object> componentBuilder = initComponent(componentClass, modules, moduleOverrider);
+        ObjectWrapper<Object> componentBuilder = initComponent(componentClass, modules, moduleOverrider, decorators);
 
         componentBuilder = initComponentDependencies(componentClass.getWrappedClass(), componentBuilder, moduleOverrider);
 
@@ -137,7 +143,7 @@ public class DaggerMockRule<C> implements MethodRule {
 
         C component = componentBuilder.invokeMethod("build");
 
-        component = new ComponentOverrider(moduleOverrider).override(componentClass.getWrappedClass(), component);
+        component = new ComponentOverrider(moduleOverrider).override(componentClass.getWrappedClass(), component, decorators);
 
         invokeSetters(component);
 
@@ -231,11 +237,12 @@ public class DaggerMockRule<C> implements MethodRule {
         return false;
     }
 
-    private ObjectWrapper<Object> initComponent(ComponentClassWrapper<?> componentClass, List<Object> modules, ModuleOverrider moduleOverrider) {
+    private ObjectWrapper<Object> initComponent(ComponentClassWrapper<?> componentClass, List<Object> modules, ModuleOverrider moduleOverrider,
+                                                Map<Class<?>, DaggerMockRule.ObjectDecorator<?>> decorators) {
         Class<Object> daggerComponent = componentClass.getDaggerComponentClass();
         ObjectWrapper<Object> builderWrapper = ObjectWrapper.invokeStaticMethod(daggerComponent, "builder");
         for (Object module : modules) {
-            builderWrapper = builderWrapper.invokeBuilderSetter(module.getClass(), moduleOverrider.override(module));
+            builderWrapper = builderWrapper.invokeBuilderSetter(module.getClass(), moduleOverrider.override(module, decorators));
         }
         return builderWrapper;
     }
@@ -243,7 +250,7 @@ public class DaggerMockRule<C> implements MethodRule {
     private ObjectWrapper<Object> initComponentDependencies(Class<?> componentClass, ObjectWrapper<Object> componentBuilder, ModuleOverrider moduleOverrider) {
         for (DependentComponentInfo entry : dependencies) {
             if (entry.parentComponent.getWrappedClass().equals(componentClass)) {
-                ObjectWrapper<Object> componentDependencyBuilder = initComponent(entry.childComponent, entry.modules, moduleOverrider);
+                ObjectWrapper<Object> componentDependencyBuilder = initComponent(entry.childComponent, entry.modules, moduleOverrider, decorators);
                 componentDependencyBuilder = initComponentDependencies(entry.childComponent.getWrappedClass(), componentDependencyBuilder, moduleOverrider);
                 Object componentDependency = componentDependencyBuilder.invokeMethod("build");
                 Class<?> componentClazz = entry.childComponent.getWrappedClass();
@@ -264,5 +271,9 @@ public class DaggerMockRule<C> implements MethodRule {
 
     public interface MockInitializer<M> {
         void init(M mock);
+    }
+
+    public interface ObjectDecorator<T> {
+        T decorate(T obj);
     }
 }
