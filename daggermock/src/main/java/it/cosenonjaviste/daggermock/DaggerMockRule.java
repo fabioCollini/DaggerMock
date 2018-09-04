@@ -93,7 +93,7 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
-    public <S> DaggerMockRule<C> decorate(Class<S> originalClass, ObjectDecorator<S> decorator) {
+    public <S> DaggerMockRule<C> decorates(Class<S> originalClass, ObjectDecorator<S> decorator) {
         decorators.put(originalClass, decorator);
         return this;
     }

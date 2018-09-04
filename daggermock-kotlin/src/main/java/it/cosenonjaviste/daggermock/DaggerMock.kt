@@ -20,6 +20,9 @@ class DaggerMock<C>(val rule: DaggerMockRule<C>) {
     inline fun <reified S> provides(noinline provider: () -> S): DaggerMockRule<C> =
             rule.provides(S::class.java, provider)
 
+    inline fun <reified S> decorates(noinline decorator: (S) -> S): DaggerMockRule<C> =
+            rule.decorates(S::class.java, decorator)
+
     inline fun <reified CC> addComponentDependency(vararg modules: Any): DaggerMockRule<C> =
             rule.addComponentDependency(CC::class.java, *modules)
 

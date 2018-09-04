@@ -25,7 +25,7 @@ import it.cosenonjaviste.daggermock.InjectFromComponent;
 
 public class DecoratorTest {
     @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
-            .decorate(MyService.class, new DaggerMockRule.ObjectDecorator<MyService>() {
+            .decorates(MyService.class, new DaggerMockRule.ObjectDecorator<MyService>() {
                 @Override
                 public MyService decorate(MyService obj) {
                     return Mockito.spy(obj);
