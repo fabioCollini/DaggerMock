@@ -49,16 +49,6 @@ class ReflectUtils {
         return ret;
     }
 
-    public static Method getMethodReturning(Class<?> declaringClass, Class<?> returnClass) {
-        Method[] methods = declaringClass.getMethods();
-        for (Method method : methods) {
-            if (method.getReturnType().equals(returnClass)) {
-                return method;
-            }
-        }
-        return null;
-    }
-
     public static List<Method> getAllMethodsReturning(Class<?> declaringClass, Class<?> returnClass) {
         List<Method> ret = new ArrayList<>();
         Method[] methods = declaringClass.getMethods();
