@@ -19,6 +19,7 @@ package it.cosenonjaviste.daggermock;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+
 import javax.inject.Named;
 import javax.inject.Qualifier;
 
@@ -33,6 +34,18 @@ class ObjectId {
         this.objectClass = objectClass;
         name = null;
         qualifierAnnotation = null;
+    }
+
+    public ObjectId(Class objectClass, String name) {
+        this.objectClass = objectClass;
+        this.name = name;
+        qualifierAnnotation = Named.class;
+    }
+
+    public ObjectId(Class objectClass, Class<?> qualifierAnnotation) {
+        this.objectClass = objectClass;
+        this.name = null;
+        this.qualifierAnnotation = qualifierAnnotation;
     }
 
     public ObjectId(Method method) {

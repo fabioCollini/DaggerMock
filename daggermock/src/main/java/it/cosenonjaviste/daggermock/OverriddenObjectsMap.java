@@ -53,12 +53,7 @@ class OverriddenObjectsMap {
                     try {
                         final Object value = field.get(target);
                         if (value != null) {
-                            fields.put(new ObjectId(field), new Provider() {
-                                @Override
-                                public Object get() {
-                                    return value;
-                                }
-                            });
+                            fields.put(new ObjectId(field), createProvider(value));
                         }
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException("Error accessing field " + field, e);
@@ -139,16 +134,27 @@ class OverriddenObjectsMap {
     }
 
     public <S> void put(Class<S> originalClass, final S newObject) {
-        fields.put(new ObjectId(originalClass), new Provider() {
-            @Override
-            public Object get() {
-                return newObject;
-            }
-        });
+        fields.put(new ObjectId(originalClass), createProvider(newObject));
+    }
+
+    public <S> void put(Class<S> originalClass, String name, final S newObject) {
+        fields.put(new ObjectId(originalClass, name), createProvider(newObject));
+    }
+
+    public <S> void put(Class<S> originalClass, Class<?> qualifierAnnotation, final S newObject) {
+        fields.put(new ObjectId(originalClass, qualifierAnnotation), createProvider(newObject));
     }
 
     public <S> void putProvider(Class<S> originalClass, Provider<S> provider) {
         fields.put(new ObjectId(originalClass), provider);
+    }
+
+    public <S> void putProvider(Class<S> originalClass, String name, Provider<S> provider) {
+        fields.put(new ObjectId(originalClass, name), provider);
+    }
+
+    public <S> void putProvider(Class<S> originalClass, Class<?> qualifierAnnotation, Provider<S> provider) {
+        fields.put(new ObjectId(originalClass, qualifierAnnotation), provider);
     }
 
     public void putMocks(Class<?>[] originalClasses) {
@@ -214,5 +220,14 @@ class OverriddenObjectsMap {
                 }
             }
         }
+    }
+
+    private <S> Provider<S> createProvider(final S newObject) {
+        return new Provider<S>() {
+            @Override
+            public S get() {
+                return newObject;
+            }
+        };
     }
 }

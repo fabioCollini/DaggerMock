@@ -17,8 +17,20 @@ class DaggerMock<C>(val rule: DaggerMockRule<C>) {
     inline fun <reified S> provides(newObject: S): DaggerMockRule<C> =
             rule.provides(S::class.java, newObject)
 
+    inline fun <reified S> provides(newObject: S, name: String): DaggerMockRule<C> =
+            rule.provides(S::class.java, name, newObject)
+
+    inline fun <reified S, reified A> providesAnnotatedObject(newObject: S): DaggerMockRule<C> =
+            rule.provides(S::class.java, A::class.java, newObject)
+
     inline fun <reified S> provides(noinline provider: () -> S): DaggerMockRule<C> =
             rule.provides(S::class.java, provider)
+
+    inline fun <reified S> provides(name: String, noinline provider: () -> S): DaggerMockRule<C> =
+            rule.provides(S::class.java, name, provider)
+
+    inline fun <reified S, reified A> providesAnnotatedObject(noinline provider: () -> S): DaggerMockRule<C> =
+            rule.provides(S::class.java, A::class.java, provider)
 
     inline fun <reified S> decorates(noinline decorator: (S) -> S): DaggerMockRule<C> =
             rule.decorates(S::class.java, decorator)

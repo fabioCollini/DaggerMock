@@ -74,6 +74,26 @@ public class DaggerMockRule<C> implements MethodRule {
         return this;
     }
 
+    public <S> DaggerMockRule<C> provides(Class<S> originalClass, String name, final S newObject) {
+        overriddenObjectsMap.put(originalClass, name, newObject);
+        return this;
+    }
+
+    public <S> DaggerMockRule<C> provides(Class<S> originalClass, String name, Provider<S> provider) {
+        overriddenObjectsMap.putProvider(originalClass, name, provider);
+        return this;
+    }
+
+    public <S> DaggerMockRule<C> provides(Class<S> originalClass, Class<?> qualifierAnnotation, final S newObject) {
+        overriddenObjectsMap.put(originalClass, qualifierAnnotation, newObject);
+        return this;
+    }
+
+    public <S> DaggerMockRule<C> provides(Class<S> originalClass, Class<?> qualifierAnnotation, Provider<S> provider) {
+        overriddenObjectsMap.putProvider(originalClass, qualifierAnnotation, provider);
+        return this;
+    }
+
     public DaggerMockRule<C> addComponentDependency(Class<?> childcomponentClass, Object... modules) {
         return addComponentDependency(componentClass.getWrappedClass(), childcomponentClass, modules);
     }
