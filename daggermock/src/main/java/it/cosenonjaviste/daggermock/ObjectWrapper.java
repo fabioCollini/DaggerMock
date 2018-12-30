@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Provider;
@@ -172,11 +173,24 @@ public class ObjectWrapper<T> {
         return null;
     }
 
+    @android.support.annotation.RequiresApi(api = 24)
     public ObjectWrapper<T> invokeBuilderSetter(Class<?> parameterClass, Object parameter) {
         try {
-            Method setMethod = getSetterMethod(obj, parameterClass);
-            setMethod.setAccessible(true);
-            return new ObjectWrapper<T>((T) setMethod.invoke(obj, parameter));
+            Class<?> aClass = obj.getClass();
+            Method[] methods = aClass.getMethods();
+            String name = parameterClass.getSimpleName();
+            Method method = Arrays.stream(methods).filter(m -> m.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+            if(method != null) {
+                method.setAccessible(true);
+                return new ObjectWrapper<T>((T) method.invoke(obj, parameter));
+            } else {
+                Field[] declaredFields = aClass.getDeclaredFields();
+                Field field = Arrays.stream(declaredFields).filter(m -> m.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+                if(field == null) throw new Exception("Method or field not found");
+                field.setAccessible(true);
+                field.set(obj, parameter);
+                return new ObjectWrapper<>(obj);
+            }
         } catch (Exception e) {
             throw new RuntimeException("Error invoking setter with parameter " + parameterClass + " on object " + obj, e);
         }
