@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         applicationId "it.cosenonjaviste.daggeroverride"
-        minSdkVersion 14
+        minSdkVersion 24
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
