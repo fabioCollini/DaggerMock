@@ -16,8 +16,7 @@
 
 package it.cosenonjaviste.daggermock.realworldapp;
 
-import android.support.test.InstrumentationRegistry;
-
+import androidx.test.InstrumentationRegistry;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 
 public class EspressoDaggerMockRule extends DaggerMockRule<AppComponent> {

@@ -17,12 +17,12 @@
 package it.cosenonjaviste.daggermock.realworldapp.main;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
 import javax.inject.Inject;
 
+import androidx.appcompat.app.AppCompatActivity;
 import it.cosenonjaviste.daggermock.realworldapp.App;
 import it.cosenonjaviste.daggeroverride.R;
 

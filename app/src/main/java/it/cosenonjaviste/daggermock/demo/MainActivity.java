@@ -17,11 +17,11 @@
 package it.cosenonjaviste.daggermock.demo;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import javax.inject.Inject;
 
+import androidx.appcompat.app.AppCompatActivity;
 import it.cosenonjaviste.daggeroverride.R;
 
 public class MainActivity extends AppCompatActivity {

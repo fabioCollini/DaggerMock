@@ -17,7 +17,8 @@
 package it.cosenonjaviste.daggermock.realworldapp.services;
 
 import android.app.Activity;
-import android.support.design.widget.Snackbar;
+
+import com.google.android.material.snackbar.Snackbar;
 
 public class SnackBarManager {
     public void showMessage(Activity activity, String message) {

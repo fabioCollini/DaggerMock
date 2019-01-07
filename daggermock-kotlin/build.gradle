@@ -30,7 +30,7 @@ dependencies {
     compileOnly "com.google.dagger:dagger:$DAGGER_VERSION"
 
     compile project(':daggermock')
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

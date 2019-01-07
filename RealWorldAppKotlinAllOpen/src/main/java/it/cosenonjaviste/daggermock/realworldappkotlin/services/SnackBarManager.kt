@@ -17,7 +17,7 @@
 package it.cosenonjaviste.daggermock.realworldappkotlin.services
 
 import android.app.Activity
-import android.support.design.widget.Snackbar
+import com.google.android.material.snackbar.Snackbar
 import it.cosenonjaviste.daggermock.realworldappkotlin.OpenForTesting
 
 @OpenForTesting

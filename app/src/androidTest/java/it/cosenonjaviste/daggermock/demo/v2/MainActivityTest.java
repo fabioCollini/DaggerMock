@@ -16,13 +16,12 @@
 
 package it.cosenonjaviste.daggermock.demo.v2;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import androidx.test.InstrumentationRegistry;
+import androidx.test.rule.ActivityTestRule;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import it.cosenonjaviste.daggermock.demo.App;
 import it.cosenonjaviste.daggermock.demo.MainActivity;

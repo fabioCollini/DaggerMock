@@ -17,7 +17,8 @@
 package it.cosenonjaviste.daggermock.demo;
 
 import android.app.Application;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.VisibleForTesting;
 
 public class App extends Application {
     private MyComponent component;

@@ -16,7 +16,7 @@
 
 package it.cosenonjaviste.daggermock.realworldappkotlin
 
-import android.support.test.InstrumentationRegistry
+import androidx.test.InstrumentationRegistry
 import it.cosenonjaviste.daggermock.DaggerMock
 
 fun espressoDaggerMockRule() = DaggerMock.rule<AppComponent>(AppModule(app)) {
