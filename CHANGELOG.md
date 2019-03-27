@@ -1,3 +1,7 @@
+#### 0.8.5
+ - Support for provides definitions of Named/Qualifier annotated objects
+ - Support for @InjectFromComponent fields annotated with qualifier annotations
+
 #### 0.8.4
  - Added `customizeBuilder` to `DaggerMock` Kotlin class to wrap Java method
  - Fix to throw an exception only when constructor is annotated with `@inject` and a module methods doesn't exist 
