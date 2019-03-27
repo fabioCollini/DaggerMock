@@ -450,14 +450,14 @@ and the dependency in the build.gradle of the module:
 
 ```gradle
 dependencies {
-    testImplementation 'com.github.fabioCollini.daggermock:daggermock:0.8.4'
+    testImplementation 'com.github.fabioCollini.daggermock:daggermock:0.8.5'
     //and/or
-    androidTestImplementation 'com.github.fabioCollini.daggermock:daggermock:0.8.4'
+    androidTestImplementation 'com.github.fabioCollini.daggermock:daggermock:0.8.5'
     
     //kotlin helper methods
-    testImplementation 'com.github.fabioCollini.daggermock:daggermock-kotlin:0.8.4'
+    testImplementation 'com.github.fabioCollini.daggermock:daggermock-kotlin:0.8.5'
     //and/or
-    androidTestImplementation 'com.github.fabioCollini.daggermock:daggermock-kotlin:0.8.4'
+    androidTestImplementation 'com.github.fabioCollini.daggermock:daggermock-kotlin:0.8.5'
 }
 ```
 
