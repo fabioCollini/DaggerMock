@@ -15,6 +15,8 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
 
 apply plugin: 'jacoco'
 
@@ -30,7 +32,11 @@ dependencies {
     testImplementation "com.google.dagger:dagger:$DAGGER_VERSION"
     testImplementation 'org.glassfish:javax.annotation:10.0-b28'
     testAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+    kaptTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     testImplementation 'org.assertj:assertj-core:2.5.0'
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
+    testImplementation "org.mockito:mockito-inline:$MOCKITO_VERSION"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 task codeCoverageReport(type: JacocoReport) {
