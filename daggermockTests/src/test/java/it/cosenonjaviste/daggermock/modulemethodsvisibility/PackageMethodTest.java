@@ -14,54 +14,45 @@
  * limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.named;
+package it.cosenonjaviste.daggermock.modulemethodsvisibility;
+
+import org.junit.Test;
+
+import javax.inject.Singleton;
 
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import javax.inject.Named;
-import org.junit.Rule;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
-public class NamedTest {
-    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
-            .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
-                @Override public void setComponent(MyComponent component) {
-                    mainService = component.mainService();
-                }
-            });
-
-    @Named("s1") String s1 = "test1";
-
-    @Named("s2") String s2 = "test2";
-
-    String s3 = "test3";
-
-    private MainService mainService;
+public class PackageMethodTest {
 
     @Test
-    public void testNamed() {
-        assertThat(mainService.get()).isEqualTo("test1test2s3");
+    public void testErrorOnPackageMethods() throws Throwable {
+        try {
+            DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
+            rule.apply(null, null, this).evaluate();
+            fail();
+        } catch (RuntimeException e) {
+            assertThat(e.getMessage()).isEqualTo("The following methods must be declared public or protected:\n" +
+                    "it.cosenonjaviste.daggermock.modulemethodsvisibility.MyService it.cosenonjaviste.daggermock.modulemethodsvisibility.PackageMethodTest$MyModule.provideMyService()");
+        }
     }
 
     @Module
     public static class MyModule {
-        @Provides @Named("s1") public String provideS1() {
-            return "s1";
+        @Provides MyService provideMyService() {
+            return new MyService();
         }
 
-        @Provides @Named("s2") public String provideS2() {
-            return "s2";
-        }
-
-        @Provides @Named("s3") public String provideS3() {
-            return "s3";
+        private void privateMethod() {
         }
     }
 
+    @Singleton
     @Component(modules = MyModule.class)
     public interface MyComponent {
         MainService mainService();

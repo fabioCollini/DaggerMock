@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-include ':app', ':daggermock', ':daggermock-kotlin', 'RealWorldApp', 'RealWorldAppKotlin', 'RealWorldAppKotlinAllOpen', 'RealWorldAppInjector'
+include ':app', ':daggermock', ':daggermock-kotlin', ':daggermockTests', 'RealWorldApp', 'RealWorldAppKotlin', 'RealWorldAppKotlinAllOpen', 'RealWorldAppInjector'

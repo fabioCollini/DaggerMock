@@ -14,46 +14,52 @@
  *  limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.injectfromcomponentwithparams;
+package it.cosenonjaviste.daggermock.simple;
+
+import org.junit.Rule;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import it.cosenonjaviste.daggermock.InjectFromComponent;
-import org.junit.Rule;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InjectFromComponentWithMultipleParametersLazyTest {
+public class IgnoreStaticTest {
     @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
 
-    String s1 = "test1";
+    public static String MY_TEST_STRING = "MY_TEST_STRING";
 
-    @InjectFromComponent(MyActivityWithLazy.class)
-    MainService mainService;
-
-    @InjectFromComponent({MyActivityWithLazy.class, MainService.class, Service1.class, Service2.class})
-    Service3 service3;
+    @InjectFromComponent StringHolder stringHolder;
 
     @Test
-    public void testInjectFromComponentWithMultipleParameters() {
-        assertThat(mainService).isNotNull();
-        assertThat(service3).isNotNull();
-        assertThat(service3.get()).isEqualTo("test1");
+    public void testConstructorArgs() {
+        assertThat(stringHolder.s).isEqualTo("aaa");
+    }
+
+    @Singleton
+    @Component(modules = MyModule.class)
+    public interface MyComponent {
+        StringHolder stringHolder();
     }
 
     @Module
-    public static class MyModule {
-        @Provides
-        public String provideS1() {
-            return "s1";
+    public class MyModule {
+        @Provides public String provideString() {
+            return "aaa";
         }
+
     }
 
-    @Component(modules = MyModule.class)
-    public interface MyComponent {
-        void inject(MyActivityWithLazy myActivity);
+    public static class StringHolder {
+        @Inject String s;
+
+        @Inject public StringHolder() {
+        }
     }
 }

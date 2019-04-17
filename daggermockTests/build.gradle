@@ -1,0 +1,48 @@
+/*
+ *  Copyright 2016 Fabio Collini.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'java'
+
+apply plugin: 'jacoco'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile "com.google.dagger:dagger:$DAGGER_VERSION"
+
+    testImplementation project(':daggermock')
+    testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
+    testImplementation 'junit:junit:4.12'
+    testImplementation "com.google.dagger:dagger:$DAGGER_VERSION"
+    testImplementation 'org.glassfish:javax.annotation:10.0-b28'
+    testAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+    testImplementation 'org.assertj:assertj-core:2.5.0'
+}
+
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/report.xml")
+        html.enabled false
+        csv.enabled false
+    }
+
+    sourceDirectories = files('src/java')
+    classDirectories =  files('build/classes/java/main')
+}

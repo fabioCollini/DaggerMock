@@ -16,12 +16,14 @@
 
 package it.cosenonjaviste.daggermock.modulemethodsvisibility;
 
+import org.junit.Test;
+
+import javax.inject.Singleton;
+
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import javax.inject.Singleton;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;

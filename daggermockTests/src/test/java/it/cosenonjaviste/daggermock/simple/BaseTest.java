@@ -14,14 +14,14 @@
  *  limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.injectfromcomponentwithparams;
+package it.cosenonjaviste.daggermock.simple;
 
-import dagger.Lazy;
-import javax.inject.Inject;
+import org.mockito.Mock;
 
-public class MyActivityWithLazy {
-    @Inject
-    Lazy<MainService> mainServiceProvider;
+import it.cosenonjaviste.daggermock.InjectFromComponent;
 
-    MainService mainService;
+public class BaseTest {
+    @Mock MyService myService;
+
+    @InjectFromComponent MainService mainService;
 }

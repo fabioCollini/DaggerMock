@@ -16,11 +16,19 @@
 
 package it.cosenonjaviste.daggermock.simple;
 
-import it.cosenonjaviste.daggermock.InjectFromComponent;
-import org.mockito.Mock;
+import org.junit.Rule;
+import org.junit.Test;
 
-public class BaseTest {
-    @Mock MyService myService;
+import it.cosenonjaviste.daggermock.DaggerMockRule;
 
-    @InjectFromComponent MainService mainService;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class ChildTest extends BaseTest {
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
+
+    @Test
+    public void testConstructorArgs() {
+        assertThat(mainService).isNotNull();
+        assertThat(mainService.getMyService()).isSameAs(myService);
+    }
 }

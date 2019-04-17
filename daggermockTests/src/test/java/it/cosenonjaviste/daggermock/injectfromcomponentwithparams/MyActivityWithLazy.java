@@ -14,20 +14,15 @@
  *  limitations under the License.
  */
 
-package it.cosenonjaviste.daggermock.simple;
+package it.cosenonjaviste.daggermock.injectfromcomponentwithparams;
 
-import it.cosenonjaviste.daggermock.DaggerMockRule;
-import org.junit.Rule;
-import org.junit.Test;
+import javax.inject.Inject;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import dagger.Lazy;
 
-public class ChildTest extends BaseTest {
-    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
+public class MyActivityWithLazy {
+    @Inject
+    Lazy<MainService> mainServiceProvider;
 
-    @Test
-    public void testConstructorArgs() {
-        assertThat(mainService).isNotNull();
-        assertThat(mainService.getMyService()).isSameAs(myService);
-    }
+    MainService mainService;
 }

@@ -16,8 +16,6 @@
 
 apply plugin: 'java'
 
-apply plugin: 'jacoco'
-
 apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.fabioCollini.daggermock'
@@ -29,13 +27,6 @@ dependencies {
     compileOnly "org.mockito:mockito-core:$MOCKITO_VERSION"
     compileOnly 'junit:junit:4.12'
     compileOnly "com.google.dagger:dagger:$DAGGER_VERSION"
-
-    testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
-    testImplementation 'junit:junit:4.12'
-    testImplementation "com.google.dagger:dagger:$DAGGER_VERSION"
-    testImplementation 'org.glassfish:javax.annotation:10.0-b28'
-    testAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-    testImplementation 'org.assertj:assertj-core:2.5.0'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -51,18 +42,4 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
-}
-
-task codeCoverageReport(type: JacocoReport) {
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-
-    reports {
-        xml.enabled true
-        xml.destination file("${buildDir}/reports/jacoco/report.xml")
-        html.enabled false
-        csv.enabled false
-    }
-
-    sourceDirectories = files('src/java')
-    classDirectories =  files('build/classes/java/main')
 }

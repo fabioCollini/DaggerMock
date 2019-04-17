@@ -1,5 +1,5 @@
 /*
- *   Copyright 2016 Fabio Collini.
+ *   Copyright 2016 2017 Fabio Collini.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,34 +16,33 @@
 
 package it.cosenonjaviste.daggermock.injectfromcomponentwithparams;
 
+import org.junit.Rule;
+import org.junit.Test;
+
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import it.cosenonjaviste.daggermock.InjectFromComponent;
-import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
-public class InjectFromComponentInjectMethodNotFoundErrorTest {
+public class InjectFromComponentWithMultipleParametersLazyTest {
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
+
     String s1 = "test1";
 
-    @InjectFromComponent(MyActivity.class)
+    @InjectFromComponent(MyActivityWithLazy.class)
     MainService mainService;
 
-    @Test
-    public void testInjectFromComponentWithSingleParameter() {
-        try {
-            DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
-            rule.apply(null, null, this).evaluate();
+    @InjectFromComponent({MyActivityWithLazy.class, MainService.class, Service1.class, Service2.class})
+    Service3 service3;
 
-            fail();
-        } catch (Throwable e) {
-            assertThat(e.getMessage())
-                    .isEqualTo("Inject method for class it.cosenonjaviste.daggermock.injectfromcomponentwithparams.MyActivity "
-                            + "not found in component it.cosenonjaviste.daggermock.injectfromcomponentwithparams.InjectFromComponentInjectMethodNotFoundErrorTest$MyComponent or in subComponents");
-        }
+    @Test
+    public void testInjectFromComponentWithMultipleParameters() {
+        assertThat(mainService).isNotNull();
+        assertThat(service3).isNotNull();
+        assertThat(service3.get()).isEqualTo("test1");
     }
 
     @Module
@@ -56,6 +55,6 @@ public class InjectFromComponentInjectMethodNotFoundErrorTest {
 
     @Component(modules = MyModule.class)
     public interface MyComponent {
-        void inject(MyActivityConstructorError myActivity);
+        void inject(MyActivityWithLazy myActivity);
     }
 }
