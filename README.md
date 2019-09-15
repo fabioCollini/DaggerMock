@@ -221,7 +221,6 @@ class MainActivityTest {
 
 > Note for Linux and Mac Users: working directory must be manually configured in Android Studio. More info on [Robolectric site](http://robolectric.org/getting-started/).
 
-DaggerMock is used in the [Just Another Android App](https://github.com/athkalia/Just-Another-Android-App) project, you can see an example of a robolectric test [here](https://github.com/athkalia/Just-Another-Android-App/blob/develop/app/src/unitTests/java/com/example/features/dashboard/view/MainActivityTest.java).
 
 ## InjectFromComponent annotation
 
