@@ -43,6 +43,6 @@ before_script:
     - adb shell input keyevent 82 &
 
 script:
-    - ./gradlew :daggermock:test :daggermock:codeCoverageReport --stacktrace
+    - ./gradlew :daggermockTests:test :daggermockTests:codeCoverageReport --stacktrace
     - bash <(curl -s https://codecov.io/bash)
     - ./gradlew testDebugUnitTest :app:connectedAndroidTest --stacktrace
