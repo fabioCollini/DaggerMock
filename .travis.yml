@@ -19,8 +19,10 @@ android:
     - tools
     - platform-tools
     - build-tools-26.0.3
+    - build-tools-28.0.3
     - android-19
     - android-24
+    - android-28
     - extra-google-m2repository
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-19
