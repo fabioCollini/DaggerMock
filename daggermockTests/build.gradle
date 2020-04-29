@@ -28,7 +28,10 @@ dependencies {
 
     testImplementation project(':daggermock')
     testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
-    testImplementation 'junit:junit:4.12'
+    testImplementation "org.junit.jupiter:junit-jupiter:5.6.1"
+    testImplementation 'org.junit.vintage:junit-vintage-engine:5.6.1'
+    testCompile("org.junit.platform:junit-platform-commons:1.6.1")
+    testCompile 'org.junit.platform:junit-platform-engine:1.6.1'
     testImplementation "com.google.dagger:dagger:$DAGGER_VERSION"
     testImplementation 'org.glassfish:javax.annotation:10.0-b28'
     testAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
@@ -37,6 +40,13 @@ dependencies {
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
     testImplementation "org.mockito:mockito-inline:$MOCKITO_VERSION"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 task codeCoverageReport(type: JacocoReport) {
