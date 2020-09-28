@@ -49,6 +49,6 @@ task codeCoverageReport(type: JacocoReport) {
         csv.enabled false
     }
 
-    sourceDirectories = files('src/java')
-    classDirectories =  files('build/classes/java/main')
+    sourceDirectories.from files('src/java')
+    classDirectories.from  files('build/classes/java/main')
 }
