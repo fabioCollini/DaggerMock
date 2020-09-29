@@ -16,12 +16,13 @@
 
 package it.cosenonjaviste.daggermock.demo.v2;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.rule.ActivityTestRule;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import androidx.test.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import it.cosenonjaviste.daggermock.demo.App;
 import it.cosenonjaviste.daggermock.demo.MainActivity;
@@ -36,20 +37,17 @@ import static org.mockito.Mockito.when;
 public class MainActivityTest {
 
     @Rule public final DaggerMockRule<MyComponent> daggerRule = new DaggerMockRule<>(MyComponent.class, new MyModule())
-            .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
-                @Override public void setComponent(MyComponent component) {
-                    getAppFromInstrumentation().setComponent(component);
-                }
-            });
+            .set(component -> getAppFromInstrumentation().setComponent(component));
 
-    @Rule public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, false, false);
+    @Rule public ActivityTestRule<MainActivity> activityRule =
+            new ActivityTestRule<>(MainActivity.class, false, false);
 
     @Mock RestService restService;
 
     @Mock MyPrinter myPrinter;
 
     private App getAppFromInstrumentation() {
-        return (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        return ApplicationProvider.getApplicationContext();
     }
 
     @Test

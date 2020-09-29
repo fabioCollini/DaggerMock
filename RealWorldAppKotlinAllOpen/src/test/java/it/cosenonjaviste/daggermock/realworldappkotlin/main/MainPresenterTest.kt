@@ -29,16 +29,20 @@ import org.mockito.Mockito.*
 class MainPresenterTest {
     @get:Rule val rule = JUnitDaggerMockRule()
 
-    @Mock lateinit internal var restService: RestService
+    @Mock
+    internal lateinit var restService: RestService
 
-    @Mock lateinit internal var activity: MainActivity
+    @Mock
+    internal lateinit var activity: MainActivity
 
-    @Mock lateinit internal var view: MainView
+    @Mock
+    internal lateinit var view: MainView
 
-    @Mock lateinit internal var snackBarManager: SnackBarManager
+    @Mock
+    internal lateinit var snackBarManager: SnackBarManager
 
     @InjectFromComponent(MainActivity::class)
-    lateinit internal var presenter: MainPresenter
+    internal lateinit var presenter: MainPresenter
 
     @Test
     fun testLoadData() {
@@ -47,7 +51,7 @@ class MainPresenterTest {
         presenter.loadData()
 
         verify(view).showText("Hello world")
-        verify(snackBarManager, never()).showMessage(anyString());
+        verify(snackBarManager, never()).showMessage(anyString())
     }
 
     @Test

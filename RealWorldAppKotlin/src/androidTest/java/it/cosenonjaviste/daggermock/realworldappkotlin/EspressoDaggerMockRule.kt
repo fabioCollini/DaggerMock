@@ -16,11 +16,11 @@
 
 package it.cosenonjaviste.daggermock.realworldappkotlin
 
-import androidx.test.InstrumentationRegistry
+import androidx.test.core.app.ApplicationProvider
 import it.cosenonjaviste.daggermock.DaggerMock
 
 fun espressoDaggerMockRule() = DaggerMock.rule<AppComponent>(AppModule(app)) {
     set { component -> app.component = component }
 }
 
-val app: App get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as App
+val app: App get() = ApplicationProvider.getApplicationContext()

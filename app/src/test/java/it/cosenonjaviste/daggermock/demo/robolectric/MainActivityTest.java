@@ -16,13 +16,14 @@
 
 package it.cosenonjaviste.daggermock.demo.robolectric;
 
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import it.cosenonjaviste.daggermock.DaggerMockRule;
@@ -32,21 +33,16 @@ import it.cosenonjaviste.daggermock.demo.MyComponent;
 import it.cosenonjaviste.daggermock.demo.MyModule;
 import it.cosenonjaviste.daggermock.demo.MyPrinter;
 import it.cosenonjaviste.daggermock.demo.RestService;
-import it.cosenonjaviste.daggeroverride.BuildConfig;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(sdk = 21)
 public class MainActivityTest {
 
     @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule())
-            .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
-                @Override public void setComponent(MyComponent component) {
-                    ((App) RuntimeEnvironment.application).setComponent(component);
-                }
-            });
+            .set(component -> ((App) ApplicationProvider.getApplicationContext()).setComponent(component));
 
     @Mock RestService restService;
 
@@ -56,8 +52,8 @@ public class MainActivityTest {
     public void testCreateActivity() {
         when(restService.getSomething()).thenReturn("abc");
 
-        Robolectric.setupActivity(MainActivity.class);
-
-        verify(myPrinter).print("ABC");
+        try(ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            verify(myPrinter).print("ABC");
+        }
     }
 }

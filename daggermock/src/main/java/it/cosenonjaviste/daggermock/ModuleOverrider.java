@@ -19,7 +19,6 @@ package it.cosenonjaviste.daggermock;
 import org.mockito.Mockito;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.internal.creation.bytebuddy.ByteBuddyMockMaker;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.plugins.MockMaker;
 import org.mockito.stubbing.Answer;
 
@@ -54,30 +53,27 @@ public class ModuleOverrider {
     }
 
     public <T> T override(final T module) {
-        return override(module, Collections.<Class<?>, DaggerMockRule.ObjectDecorator<?>>emptyMap());
+        return override(module, Collections.emptyMap());
     }
 
     public <T> T override(final T module, final Map<Class<?>, DaggerMockRule.ObjectDecorator<?>> decorators) {
         checkMethodsVisibility(module);
-        Answer defaultAnswer = new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Method method = invocation.getMethod();
-                Provider provider = overriddenObjectsMap.getProvider(method);
-                Object ret;
-                if (provider != null) {
-                    ret = provider.get();
-                } else {
-                    method.setAccessible(true);
-                    ret = method.invoke(module, invocation.getArguments());
-                }
-                DaggerMockRule.ObjectDecorator<Object> decorator =
-                        (DaggerMockRule.ObjectDecorator<Object>) decorators.get(method.getReturnType());
-                if (decorator != null) {
-                    ret = decorator.decorate(ret);
-                }
-                return ret;
+        Answer defaultAnswer = invocation -> {
+            Method method = invocation.getMethod();
+            Provider provider = overriddenObjectsMap.getProvider(method);
+            Object ret;
+            if (provider != null) {
+                ret = provider.get();
+            } else {
+                method.setAccessible(true);
+                ret = method.invoke(module, invocation.getArguments());
             }
+            DaggerMockRule.ObjectDecorator<Object> decorator =
+                    (DaggerMockRule.ObjectDecorator<Object>) decorators.get(method.getReturnType());
+            if (decorator != null) {
+                ret = decorator.decorate(ret);
+            }
+            return ret;
         };
         return (T) Mockito.mock(module.getClass(), defaultAnswer);
     }

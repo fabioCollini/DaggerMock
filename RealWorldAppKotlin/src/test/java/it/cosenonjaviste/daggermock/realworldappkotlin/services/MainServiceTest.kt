@@ -16,27 +16,24 @@
 
 package it.cosenonjaviste.daggermock.realworldappkotlin.services
 
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import it.cosenonjaviste.daggermock.InjectFromComponent
 import it.cosenonjaviste.daggermock.realworldappkotlin.jUnitDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.main.MainActivity
 import it.cosenonjaviste.daggermock.realworldappkotlin.main.MainPresenter
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 
 class MainServiceTest {
     @get:Rule val rule = jUnitDaggerMockRule()
 
+    val activity: MainActivity = mock() // Don't remove or tests will fail
     val restService: RestService = mock()
 
-    val mainActivity: MainActivity = mock()
-
-    val snackBarManager: SnackBarManager = mock()
-
     @InjectFromComponent(MainActivity::class, MainPresenter::class)
-    lateinit var mainService: MainService
+    internal lateinit var mainService: MainService
 
     @Test
     fun testDoSomething() {

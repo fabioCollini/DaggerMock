@@ -16,7 +16,7 @@
 
 package it.cosenonjaviste.daggermock.realworldappkotlin
 
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.mock
 import it.cosenonjaviste.daggermock.DaggerMock
 import it.cosenonjaviste.daggermock.realworldappkotlin.main.MainView
 

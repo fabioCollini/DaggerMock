@@ -16,13 +16,12 @@
 
 package it.cosenonjaviste.daggermock.realworldapp.main;
 
+import androidx.test.rule.ActivityTestRule;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import androidx.test.rule.ActivityTestRule;
 import it.cosenonjaviste.daggermock.realworldapp.EspressoDaggerMockRule;
 import it.cosenonjaviste.daggermock.realworldapp.services.SnackBarManager;
 import it.cosenonjaviste.daggeroverride.R;
@@ -49,12 +48,9 @@ public class MainActivityMockPresenterTest {
     public void testOnCreate() {
         final MainActivity activity = activityRule.launchActivity(null);
 
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                activity.showText("Hello world");
-                return null;
-            }
+        doAnswer(invocation -> {
+            activity.showText("Hello world");
+            return null;
         }).when(presenter).loadData();
 
         onView(withId(R.id.reload)).perform(click());
@@ -64,12 +60,9 @@ public class MainActivityMockPresenterTest {
 
     @Test
     public void testErrorOnCreate() {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                snackBarManager.showMessage("Error!");
-                return null;
-            }
+        doAnswer(invocation -> {
+            snackBarManager.showMessage("Error!");
+            return null;
         }).when(presenter).loadData();
 
         activityRule.launchActivity(null);

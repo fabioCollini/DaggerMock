@@ -16,7 +16,7 @@
 
 package it.cosenonjaviste.daggermock.realworldappkotlin.main
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.*
 import it.cosenonjaviste.daggermock.InjectFromComponent
 import it.cosenonjaviste.daggermock.realworldappkotlin.jUnitDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.RestService
@@ -30,23 +30,23 @@ class MainPresenterTest {
 
     val restService: RestService = mock()
 
-    val activity: MainActivity = mock()
+    val activity: MainActivity = mock() // Don't remove or tests will fail
 
     val view: MainView = mock()
 
     val snackBarManager: SnackBarManager = mock()
 
     @InjectFromComponent(MainActivity::class)
-    lateinit internal var presenter: MainPresenter
+    internal lateinit var presenter: MainPresenter
 
     @Test
     fun testLoadData() {
-        doReturn(true).`when`<RestService>(restService).executeServerCall()
+        doReturn(true).whenever(restService).executeServerCall()
 
         presenter.loadData()
 
         verify(view).showText("Hello world")
-        verify(snackBarManager, never()).showMessage(anyString());
+        verify(snackBarManager, never()).showMessage(anyString())
     }
 
     @Test

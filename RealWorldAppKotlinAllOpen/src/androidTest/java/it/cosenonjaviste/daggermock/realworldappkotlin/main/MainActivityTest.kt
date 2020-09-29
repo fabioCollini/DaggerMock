@@ -60,6 +60,6 @@ class MainActivityTest {
         onView(withId(R.id.reload)).perform(click())
 
         onView(withId(R.id.text)).check(matches(withText("")))
-        verify<SnackBarManager>(snackBarManager).showMessage("Error!")
+        verify(snackBarManager).showMessage("Error!")
     }
 }
