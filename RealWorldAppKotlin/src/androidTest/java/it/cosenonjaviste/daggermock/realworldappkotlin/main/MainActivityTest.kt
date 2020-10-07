@@ -22,8 +22,8 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.rule.ActivityTestRule
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import it.cosenonjaviste.daggermock.realworldappkotlin.espressoDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.RestService
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.SnackBarManager

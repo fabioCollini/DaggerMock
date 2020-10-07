@@ -119,7 +119,7 @@ public class DaggerMockRule<C> implements MethodRule {
     }
 
     public void initMocks(Object target) {
-        MockitoAnnotations.initMocks(target);
+        MockitoAnnotations.openMocks(target);
 
         setupComponent(target);
 
@@ -131,7 +131,7 @@ public class DaggerMockRule<C> implements MethodRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                MockitoAnnotations.initMocks(target);
+                MockitoAnnotations.openMocks(target);
 
                 setupComponent(target);
 

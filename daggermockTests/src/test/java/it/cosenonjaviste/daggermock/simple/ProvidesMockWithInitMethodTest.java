@@ -32,22 +32,12 @@ public class ProvidesMockWithInitMethodTest {
     public static class MyRule extends DaggerMockRule<MyComponent> {
         public MyRule() {
             super(MyComponent.class, new MyModule());
-            providesMock(MyService.class, new DaggerMockRule.MockInitializer<MyService>() {
-                @Override
-                public void init(MyService mock) {
-                    when(mock.getWithParam(anyInt())).thenReturn("default");
-                }
-            });
+            providesMock(MyService.class, mock -> when(mock.getWithParam(anyInt())).thenReturn("default"));
         }
     }
 
     @Rule public final DaggerMockRule<MyComponent> rule = new MyRule()
-            .providesMock(MyService.class, new DaggerMockRule.MockInitializer<MyService>() {
-                @Override
-                public void init(MyService mock) {
-                    when(mock.getWithParam(1)).thenReturn("rule");
-                }
-            })
+            .providesMock(MyService.class, mock -> when(mock.getWithParam(1)).thenReturn("rule"))
             .set(new DaggerMockRule.ComponentSetter<MyComponent>() {
                 @Override
                 public void setComponent(MyComponent component) {

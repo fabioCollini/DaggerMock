@@ -20,7 +20,7 @@ import it.cosenonjaviste.daggermock.InjectFromComponent
 import it.cosenonjaviste.daggermock.realworldappkotlin.JUnitDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.main.MainActivity
 import it.cosenonjaviste.daggermock.realworldappkotlin.main.MainPresenter
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock

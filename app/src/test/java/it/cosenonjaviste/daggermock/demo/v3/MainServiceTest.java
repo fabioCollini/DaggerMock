@@ -46,8 +46,9 @@ public class MainServiceTest {
     private MainService mainService;
 
     @Before
-    public void setUp() throws Exception {
-        MyComponent component = DaggerMyComponent.builder().myModule(new ModuleOverrider(this).override(new MyModule())).build();
+    public void setUp() {
+        MyComponent component = DaggerMyComponent.builder()
+                .myModule(new ModuleOverrider(this).override(new MyModule())).build();
         mainService = component.mainService();
     }
 

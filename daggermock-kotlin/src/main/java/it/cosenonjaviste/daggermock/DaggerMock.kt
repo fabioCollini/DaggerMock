@@ -1,5 +1,6 @@
 package it.cosenonjaviste.daggermock
 
+
 class DaggerMock<C>(val rule: DaggerMockRule<C>) {
 
     inline fun <reified M> providesMock(): DaggerMockRule<C> =

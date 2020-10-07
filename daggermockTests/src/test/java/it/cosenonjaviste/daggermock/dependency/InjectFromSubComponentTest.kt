@@ -36,6 +36,6 @@ class InjectFromSubComponentTest {
 
     @Test
     fun testInjectFromComponentOnObjectDeclaredInDependentComponent() {
-        assertThat(myService2).isNotNull()
+        assertThat(myService2).isNotNull
     }
 }

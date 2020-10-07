@@ -16,11 +16,12 @@
 
 package it.cosenonjaviste.daggermock.robolectric;
 
+import androidx.test.core.app.ActivityScenario;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -28,12 +29,13 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 import it.cosenonjaviste.daggermock.realworldapp.AppComponent;
 import it.cosenonjaviste.daggermock.realworldapp.main.MainActivity;
 import it.cosenonjaviste.daggermock.realworldapp.services.RestService;
-import it.cosenonjaviste.daggeroverride.BuildConfig;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(sdk = 21)
 public class MainActivityTest {
 
     @Rule public final DaggerMockRule<AppComponent> rule = new RobolectricMockTestRule();
@@ -44,6 +46,11 @@ public class MainActivityTest {
     public void testOnCreate() {
         when(restService.executeServerCall()).thenReturn(true);
 
-        Robolectric.setupActivity(MainActivity.class);
+        // As ActivityScenario implements AutoClosable we use try-finally to ensure ActivityScenario
+        // is closed
+        try(ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            assertThat(restService.executeServerCall()).isEqualTo(true);
+            verify(restService).executeServerCall();
+        }
     }
 }

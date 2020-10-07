@@ -39,8 +39,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     testOptions {
         unitTests {
@@ -50,10 +50,10 @@ android {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
+    testImplementation "junit:junit:$JUNIT_VERSION"
     testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
-    implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
 
     implementation "com.google.dagger:dagger:$DAGGER_VERSION"
     implementation 'javax.annotation:jsr250-api:1.0'
@@ -63,18 +63,17 @@ dependencies {
     testImplementation project(':daggermock')
     androidTestImplementation project(':daggermock')
 
-    testImplementation 'org.assertj:assertj-core:2.5.0'
+    testImplementation 'org.assertj:assertj-core:3.17.2'
 
-    testImplementation "org.robolectric:robolectric:3.8"
-    testImplementation 'androidx.test:runner:1.1.1'
-    testImplementation 'androidx.test:rules:1.1.1'
+    testImplementation "org.robolectric:robolectric:$ROBOLECTRIC_VERSION"
+    testImplementation "androidx.test:runner:$ANDROIDX_TEST_VERSION"
+    testImplementation "androidx.test:rules:$ANDROIDX_TEST_VERSION"
+    testImplementation "androidx.test:core:$ANDROIDX_TEST_VERSION"
 
     androidTestImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
     androidTestImplementation "org.mockito:mockito-android:$MOCKITO_VERSION"
-    androidTestImplementation "androidx.test:runner:$RUNNER_VERSION"
-    androidTestImplementation "androidx.test:rules:$RUNNER_VERSION"
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-alpha4') {
-        exclude group: 'javax.inject', module: 'javax.inject'
-        exclude group: 'com.squareup', module: 'javawriter'
-    }
+    androidTestImplementation "androidx.test:runner:$ANDROIDX_TEST_VERSION"
+    androidTestImplementation "androidx.test:rules:$ANDROIDX_TEST_VERSION"
+    androidTestImplementation "androidx.test:core:$ANDROIDX_TEST_VERSION"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$ANDROIDX_ESPRESSO_VERSION"
 }

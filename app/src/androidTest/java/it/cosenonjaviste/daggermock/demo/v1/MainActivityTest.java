@@ -16,14 +16,15 @@
 
 package it.cosenonjaviste.daggermock.demo.v1;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.rule.ActivityTestRule;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import javax.inject.Inject;
 
-import androidx.test.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
 import it.cosenonjaviste.daggermock.demo.App;
 import it.cosenonjaviste.daggermock.demo.MainActivity;
 import it.cosenonjaviste.daggermock.demo.MyPrinter;
@@ -41,7 +42,7 @@ public class MainActivityTest {
     @Inject MyPrinter myPrinter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         EspressoTestComponent component = DaggerEspressoTestComponent.builder().myModule(new EspressoTestModule()).build();
 
         getAppFromInstrumentation().setComponent(component);
@@ -50,7 +51,7 @@ public class MainActivityTest {
     }
 
     private App getAppFromInstrumentation() {
-        return (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        return ApplicationProvider.getApplicationContext();
     }
 
     @Test

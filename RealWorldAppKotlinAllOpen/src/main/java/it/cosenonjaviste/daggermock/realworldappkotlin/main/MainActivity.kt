@@ -39,9 +39,9 @@ class MainActivity : AppCompatActivity(), MainView {
         app.component.mainActivityComponentBuilder().mainActivityModule(MainActivityModule(this)).build().inject(this)
 
         setContentView(R.layout.main)
-        textView = findViewById(R.id.text) as TextView
+        textView = findViewById<TextView>(R.id.text)
 
-        (findViewById(R.id.reload) as View).setOnClickListener { presenter.loadData() }
+        (findViewById<View>(R.id.reload)).setOnClickListener { presenter.loadData() }
     }
 
     override fun showText(text: String) {

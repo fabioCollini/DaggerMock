@@ -32,7 +32,7 @@ class SetDependentComponentTest {
 
     @Test
     fun testComponentDependencyModulesCanBeOverriden() {
-        assertThat(myService2).isNotNull()
+        assertThat(myService2).isNotNull
         assertThat(myService2.get()).isEqualTo("AAA")
     }
 }

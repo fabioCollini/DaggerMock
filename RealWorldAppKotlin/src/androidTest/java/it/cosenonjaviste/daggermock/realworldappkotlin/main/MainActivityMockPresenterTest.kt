@@ -22,7 +22,8 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.rule.ActivityTestRule
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import it.cosenonjaviste.daggermock.realworldappkotlin.espressoDaggerMockRule
 import it.cosenonjaviste.daggermock.realworldappkotlin.services.SnackBarManager
 import it.cosenonjaviste.daggeroverride.R
@@ -37,9 +38,9 @@ class MainActivityMockPresenterTest {
 
     @get:Rule val activityRule = ActivityTestRule(MainActivity::class.java, false, false)
 
-    val presenter: MainPresenter = mock()
+    private val presenter: MainPresenter = mock()
 
-    val snackBarManager: SnackBarManager = mock()
+    private val snackBarManager: SnackBarManager = mock()
 
     @Test
     fun testOnCreate() {
@@ -48,7 +49,7 @@ class MainActivityMockPresenterTest {
         doAnswer {
             activity.showText("Hello world")
             null
-        }.`when`<MainPresenter>(presenter).loadData()
+        }.whenever(presenter).loadData()
 
         onView(withId(R.id.reload)).perform(click())
 
@@ -60,7 +61,7 @@ class MainActivityMockPresenterTest {
         doAnswer {
             snackBarManager.showMessage("Error!")
             null
-        }.`when`<MainPresenter>(presenter).loadData()
+        }.whenever(presenter).loadData()
 
         activityRule.launchActivity(null)
         onView(withId(R.id.reload)).perform(click())

@@ -16,7 +16,8 @@
 
 package it.cosenonjaviste.daggermock.demo.v3;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
+
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import it.cosenonjaviste.daggermock.demo.App;
 import it.cosenonjaviste.daggermock.demo.MyComponent;
@@ -25,14 +26,10 @@ import it.cosenonjaviste.daggermock.demo.MyModule;
 public class MyRule extends DaggerMockRule<MyComponent> {
     public MyRule() {
         super(MyComponent.class, new MyModule());
-        set(new DaggerMockRule.ComponentSetter<MyComponent>() {
-            @Override public void setComponent(MyComponent component) {
-                getApp().setComponent(component);
-            }
-        });
+        set(component -> getApp().setComponent(component));
     }
 
     private App getApp() {
-        return (App) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        return ApplicationProvider.getApplicationContext();
     }
 }

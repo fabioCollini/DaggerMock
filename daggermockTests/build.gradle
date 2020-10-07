@@ -20,23 +20,17 @@ apply plugin: 'kotlin-kapt'
 
 apply plugin: 'jacoco'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 dependencies {
-    compile "com.google.dagger:dagger:$DAGGER_VERSION"
-
     testImplementation project(':daggermock')
     testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
-    testImplementation 'junit:junit:4.12'
+    testImplementation "junit:junit:$JUNIT_VERSION"
     testImplementation "com.google.dagger:dagger:$DAGGER_VERSION"
-    testImplementation 'org.glassfish:javax.annotation:10.0-b28'
     testAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
     kaptTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-    testImplementation 'org.assertj:assertj-core:2.5.0'
-    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
+    testImplementation 'org.assertj:assertj-core:3.17.2'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$MOCKITO_KOTLIN_VERSION"
     testImplementation "org.mockito:mockito-inline:$MOCKITO_VERSION"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
 task codeCoverageReport(type: JacocoReport) {
@@ -49,6 +43,6 @@ task codeCoverageReport(type: JacocoReport) {
         csv.enabled false
     }
 
-    sourceDirectories = files('src/java')
-    classDirectories =  files('build/classes/java/main')
+    sourceDirectories.from files('src/java')
+    classDirectories.from  files('build/classes/java/main')
 }

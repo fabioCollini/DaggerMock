@@ -16,11 +16,12 @@
 
 package it.cosenonjaviste.daggermock.demo.v3;
 
+import androidx.test.rule.ActivityTestRule;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import androidx.test.rule.ActivityTestRule;
 import it.cosenonjaviste.daggermock.demo.MainActivity;
 import it.cosenonjaviste.daggermock.demo.MyPrinter;
 import it.cosenonjaviste.daggermock.demo.RestService;
@@ -32,7 +33,8 @@ public class MainActivityTest {
 
     @Rule public MyRule daggerRule = new MyRule();
 
-    @Rule public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, false, false);
+    @Rule public ActivityTestRule<MainActivity> activityRule =
+            new ActivityTestRule<>(MainActivity.class, false, false);
 
     @Mock RestService restService;
 
