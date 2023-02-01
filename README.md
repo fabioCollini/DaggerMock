@@ -294,6 +294,75 @@ For example if the MainService object is injected in MainActivity we can use the
 A MainActivity object is created using reflection, the inject method is invoked on this object and then
 the mainService field is extracted and used to populate the test field. 
 
+### InjectFromComponent annotation with qualifiers
+
+In order to use qualified injects, you need to annotate the fields with the qualifiers and provide the dependencies from your custom component.
+
+###### Java
+```java
+public class MainServiceTest {
+
+    @Rule public final DaggerMockRule<MyComponent> rule = new DaggerMockRule<>(MyComponent.class, new MyModule());
+
+    @InjectFromComponent @Qualifier1 String s1;
+    @InjectFromComponent @Qualifier2 String s2;
+
+    @Test
+    public void testInjectFromComponentWithQualifiers() {
+        assertThat(s1).isEqualTo("s1");
+        assertThat(s2).isEqualTo("s2");
+    }
+
+    @Module
+    public static class MyModule {
+        @Qualifier1 @Provides public String provideS1() {
+            return "s1";
+        }
+
+        @Qualifier2 @Provides public String provideS2() {
+            return "s2";
+        }
+    }
+    
+    @Component(modules = MyModule.class)
+    public interface MyComponent {
+        @Qualifier1 String s1();
+        @Qualifier2 String s2();
+    }
+}
+```
+
+Note that in Kotlin you need to annotate the fields with `@field:`
+
+###### Kotlin
+```kotlin
+class MainServiceTest {
+
+    @get:Rule val rule = DaggerMock.rule<MyComponent>(MyModule)
+
+    @InjectFromComponent @field:Qualifier1 lateinit var s1: String
+    @InjectFromComponent @field:Qualifier2 lateinit var s2: String
+
+    @Test
+    fun testInjectFromComponentWithQualifiers() {
+        assertThat(s1).isEqualTo("s1")
+        assertThat(s2).isEqualTo("s2")
+    }
+    
+    @Module
+    object MyModule {
+        @Qualifier1 @Provides fun provideS1(): String = "s1"
+        @Qualifier2 @Provides fun provideS2(): String = "s2"
+    }
+    
+    @Component(modules = [MyModule::class])
+    interface MyComponent {
+        @Qualifier1 fun s1(): String
+        @Qualifier2 fun s2(): String
+    }
+}
+```
+
 ## Custom rules
 
 It's easy to create a `DaggerMockRule` subclass to avoid copy and paste and simplify the test code:
